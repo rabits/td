@@ -1,0 +1,20 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="1024px" height="1024px" viewBox="0px 0px 1024px 1024px"
+     xmlns="http://www.w3.org/2000/svg" version="1.1">
+<desc>objectcube1.blend, objectcube1, Cube (Blender 2.54 (sub 0))</desc>
+<polygon fill="rgb(204, 204, 204)" fill-opacity="0.5" stroke="black" stroke-width="1px" 
+  points="676.000,676.000 676.000,1011.000 341.000,1011.000 341.000,676.000 " />
+<polygon fill="rgb(204, 204, 204)" fill-opacity="0.5" stroke="black" stroke-width="1px" 
+  points="676.000,341.000 341.000,341.000 341.000,6.000 676.000,6.000 " />
+<polygon fill="rgb(204, 204, 204)" fill-opacity="0.5" stroke="black" stroke-width="1px" 
+  points="676.000,676.000 676.000,341.000 1011.000,341.000 1011.000,676.000 " />
+<polygon fill="rgb(204, 204, 204)" fill-opacity="0.5" stroke="black" stroke-width="1px" 
+  points="1018.000,683.000 1018.000,1018.000 683.000,1018.000 683.000,683.000 " />
+<polygon fill="rgb(204, 204, 204)" fill-opacity="0.5" stroke="black" stroke-width="1px" 
+  points="6.000,676.000 6.000,341.000 341.000,341.000 341.000,676.000 " />
+<polygon fill="rgb(204, 204, 204)" fill-opacity="0.5" stroke="black" stroke-width="1px" 
+  points="676.000,341.000 676.000,676.000 341.000,676.000 341.000,341.000 " />
+
+</svg>

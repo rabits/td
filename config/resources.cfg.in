@@ -1,0 +1,11 @@
+# Resource locations to be added to the 'boostrap' path
+# This also contains the minimum you need to use the Ogre example framework
+[Bootstrap]
+Zip=${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/data/graph/OgreCore.zip
+Zip=${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/data/graph/SdkTrays.zip
+
+# Resource locations to be added to the default path
+[General]
+FileSystem=${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/data/graph
+FileSystem=${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/data/graph/meshes
+FileSystem=${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/data/graph/textures

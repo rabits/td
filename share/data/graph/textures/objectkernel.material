@@ -1,0 +1,15 @@
+material objectkernel/SOLID/TEX/objectkernel.png
+{
+	technique
+	{
+		pass
+		{
+			diffuse 0.000000 0.000000 0.000000
+			specular 0.500000 0.500000 0.500000 12.500000
+			texture_unit
+			{
+				texture objectkernel.png
+			}
+		}
+	}
+}

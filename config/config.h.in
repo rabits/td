@@ -1,0 +1,33 @@
+#ifndef CONFIG_H_INCLUDED
+#define CONFIG_H_INCLUDED
+
+// Debug
+#cmakedefine CONFIG_DEBUG
+
+// Version
+#define VERSION "${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}"
+
+// Name of application and its some dirs
+#define CONFIG_APP_NAME "${CONFIG_APP_NAME}"
+
+
+// Maximum number of joysticks
+#define CONFIG_JOYSTICK_MAX_NUMBER ${CONFIG_JOYSTICK_MAX_NUMBER}
+
+// Use forcefeedback for joysticks
+#cmakedefine CONFIG_JOYSTICK_USE_FORCEFEEDBACK
+
+
+// Absolute path to default data directory (some data may be contained in ~/.config/${CONFIG_APP_NAME}/data/)
+#define CONFIG_PATH_SHARE "${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/"
+
+// Absolute path to default data directory (some data may be contained in ~/.config/${CONFIG_APP_NAME}/data/)
+#define CONFIG_PATH_DATA "${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/data/"
+
+// Absolute path to default config directory (some configs may be contained in ~/.config/${CONFIG_APP_NAME}/config/)
+#define CONFIG_PATH_CONFIG "${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/config/"
+
+// Absolute path to default users directory (some configs may be contained in ~/.config/${CONFIG_APP_NAME}/users/)
+#define CONFIG_PATH_USERS "${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/users/"
+
+#endif //CONFIG_H_INCLUDED
