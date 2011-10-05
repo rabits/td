@@ -1,2 +1,101 @@
 td project files
 Total Destruction project - free opensource game
+
+=== NEWS ===
+
+You find any news on our site: www.rabits.ru
+
+=== INSTALL ===
+
+The way to download, compile, install and run TotalDestruction depends on how you want
+to download it and where do you want to install it to.
+So follow the step by step instructions below.
+
+== 1. Get the requirements ==
+
+You need get and compile next libs:
+ - OIS 1.2.0
+    $ cd $HOME/tmp/src
+    $ wget -O ois_v1-3.tar.gz http://sourceforge.net/projects/wgois/files/Source%20Release/1.3/ois_v1-3.tar.gz/download
+    $ tar xf ois_v1-3.tar.gz
+    $ cd ./ois-v1-3
+    $ sudo aptitude install libtool automake autoconf libxaw7-dev
+    $ ./configure && make -j2
+    $ sudo make install
+    
+ - OGRE 1.7.3:
+    $ cd $HOME/tmp/src
+    $ wget -O ogre_src_v1-7-3.tar.bz2 https://sourceforge.net/projects/ogre/files/ogre/1.7/ogre_src_v1-7-3.tar.bz2/download
+    $ tar xf ogre_src_v1-7-3.tar.bz2
+    $ cd ./ogre_src_v1-7-3
+    $ mkdir build
+    $ cd ./build
+    $ sudo aptitude install libfreetype6-dev libfreeimage-dev libzzip-dev libxrandr-dev libxaw7-dev freeglut3-dev libpng-dev libxt-dev nvidia-cg-toolkit libboost-thread-dev
+        (libxv-dev libxxf86misc-dev libxft-dev libxdamage-dev libtbb-dev libpoco-dev)
+    $ cmake -DOGRE_BUILD_SAMPLES=off -DOGRE_BUILD_TOOLS=off -DCMAKE_BUILD_TYPE=Release ../ && make -j4
+    $ sudo make install
+    
+ - Bullet 2.79
+    $ cd $HOME/tmp/src
+    $ wget http://bullet.googlecode.com/files/bullet-2.79-rev2440.tgz
+    $ tar xf bullet-2.79-rev2440.tgz
+    $ cd ./bullet-2.79
+    $ mkdir build
+    $ cd ./build
+    $ cmake -DBUILD_DEMOS=off -DBUILD_SHARED_LIBS=on -DINSTALL_LIBS=on -DINSTALL_EXTRA_LIBS=on -DUSE_GRAPHICAL_BENCHMARK=off -DCMAKE_BUILD_TYPE=Release ../ && make -j4
+    $ sudo make install
+
+== 2. Get the sources ==
+
+ - Download source from http://www.rabits.ru/projects/td
+  unpack them:
+    $ cd $HOME/tmp/src
+    $ tar xvf td.tar.bz2
+
+ - get source from github repo:
+    $ cd $HOME/tmp/src
+    $ git clone https://github.com/rabits/td.git
+
+ - update library cache
+    $ sudo ldconfig
+
+== 3. Configure and install TotalDestruction ==
+
+ - To be installed on system (you need root permissions to do this)
+    $ mkdir $HOME/tmp/src/td/build
+    $ cd $HOME/tmp/src/td/build
+    $ cmake -DCMAKE_BUILD_TYPE=Release ../
+    $ make
+    $ sudo make install
+
+ - Or, to be installed locally on "$HOME/local/td" but you can replace
+it with something else (you do not need root permissions to do this)
+    $ mkdir $HOME/tmp/src/td/build
+    $ cd $HOME/tmp/src/td/build
+    $ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/local/td ../
+    $ make
+    $ make install
+
+== 4. Run TotalDestruction ==
+
+ - If installed in the system
+    $ td
+* Or, if installed in "$HOME/local/td" local directory
+    $ $HOME/local/td/games/td
+
+== 5. Contact the development team, or report bugs or wishes ==
+  If you find any compile problems with TotalDestruction, please report them on 
+our site: http://www.rabits.ru
+
+=== FAQ ===
+
+No questions - no answers...
+
+=== BUGS ===
+
+None known bugs now...
+
+=== AUTHORS ===
+
+Core
+  Rabits <home.rabits@gmail.com>

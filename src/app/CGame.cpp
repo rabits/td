@@ -85,10 +85,9 @@ void CGame::updateUsers(const Ogre::FrameEvent& evt)
 //-------------------------------------------------------------------------------------
 bool CGame::setup()
 {
-    printf("asdasd\n");
-    Ogre::LogManager::getSingletonPtr()->logMessage("Starting configuration");
-    printf("asd\n");
     m_pRoot = new Ogre::Root(CONFIG_PATH_CONFIG "plugins.cfg", CONFIG_PATH_CONFIG "main.cfg", CONFIG_PATH_CONFIG "logfile.log");
+
+    Ogre::LogManager::getSingletonPtr()->logMessage("Starting configuration");
 
     //-------- setupResources ----------
     Ogre::LogManager::getSingletonPtr()->logMessage("Setup resources");

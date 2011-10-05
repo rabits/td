@@ -1,0 +1,8 @@
+# Ignoring all object files to compile
+build
+
+# Ignore log files
+*.log
+
+# Ignore .save files
+*.save

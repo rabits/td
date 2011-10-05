@@ -7,7 +7,7 @@ set(TARGET_VERSION_MINOR "0")
 set(TARGET_VERSION_PATCH "1")
 
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
         "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
         FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
@@ -27,9 +27,9 @@ file(GLOB_RECURSE td_SRCS "src/*.cpp")
 include(FindPkgConfig)
 
 if(${PKG_CONFIG_FOUND})
-    pkg_check_modules(OGRE OGRE>=1.7.1)
-    pkg_check_modules(OIS OIS>=1.2.0)
-    pkg_check_modules(BULLET bullet>=2.77)
+    pkg_check_modules(OGRE OGRE>=1.7.3)
+    pkg_check_modules(OIS OIS>=1.3.0)
+    pkg_check_modules(BULLET bullet>=2.79)
 else()
     message(FATAL_ERROR "pkg-config NOT FOUND")
 endif()
@@ -100,7 +100,7 @@ endif(NOT CONFIG_OGRE_PLUGINS_PATH)
 include(InstallRequiredSystemLibraries)
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "My own game")
-set(CPACK_PACKAGE_VENDOR "PSAStudio")
+set(CPACK_PACKAGE_VENDOR "Rabits")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
 set(CPACK_PACKAGE_VERSION_MAJOR ${TARGET_VERSION_MAJOR})
@@ -131,6 +131,8 @@ include(CPack)
 #
 # Adding binaries
 #
+
+message("Install to: ${CMAKE_INSTALL_PREFIX}")
 
 add_executable(${CONFIG_APP_NAME} ${td_SRCS})
 
