@@ -1,8 +1,8 @@
 /** // CINPUTHANDLER_CPP
- *  ---------------------------
+ *  --------------------------------------
  *   Total Destruction Project
- *   Sergej Parshev       2010
- *  ---------------------------
+ *   Rabits <home.rabits@gmail.com>  2010
+ *  --------------------------------------
  */
 
 #include <string>

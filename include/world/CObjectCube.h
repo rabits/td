@@ -1,8 +1,8 @@
 /** // COBJECTCUBE_H
- *  ---------------------------
+ *  --------------------------------------
  *   Total Destruction Project
- *   Sergej Parshev       2010
- *  ---------------------------
+ *   Rabits <home.rabits@gmail.com>  2010
+ *  --------------------------------------
  */
 
 #ifndef COBJECTCUBE_H_INCLUDED
@@ -17,7 +17,7 @@ class CObjectCube : public CObject
 public:
     enum Cube_Size
     {
-        CUBE    = 1,
+        CUBE     = 1,
         ACUBE    = 10,
         BCUBE    = 20,
         CCUBE    = 30,

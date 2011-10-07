@@ -1,8 +1,8 @@
 /** // CUSER_CPP
- *  ---------------------------
+ *  --------------------------------------
  *   Total Destruction Project
- *   Sergej Parshev       2010
- *  ---------------------------
+ *   Rabits <home.rabits@gmail.com>  2010
+ *  --------------------------------------
  */
 
 #include <map>
@@ -271,7 +271,7 @@ bool CUser::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
         /*-----------------------------------------------------------------------------
         | Processes mouse presses. Only applies for orbit style.
         | Left button is for orbiting, and right button is for zooming.
-        -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------*/
         if( m_style == USER_CS_ORBIT )
         {
             if( id == OIS::MB_Left ) m_orbiting = true;
@@ -289,7 +289,7 @@ bool CUser::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
         /*-----------------------------------------------------------------------------
         | Processes mouse releases. Only applies for orbit style.
         | Left button is for orbiting, and right button is for zooming.
-        -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------*/
         if( m_style == USER_CS_ORBIT )
         {
             if( id == OIS::MB_Left ) m_orbiting = false;
