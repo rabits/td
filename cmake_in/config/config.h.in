@@ -11,6 +11,9 @@
 #define CONFIG_APP_NAME "${CONFIG_APP_NAME}"
 
 
+// FullName of application
+#define CONFIG_APP_FULLNAME "${CONFIG_APP_FULLNAME}"
+
 // Maximum number of joysticks
 #define CONFIG_JOYSTICK_MAX_NUMBER ${CONFIG_JOYSTICK_MAX_NUMBER}
 

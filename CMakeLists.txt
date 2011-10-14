@@ -3,8 +3,10 @@ project(td CXX)
 cmake_minimum_required(VERSION 2.8)
 
 set(TARGET_VERSION_MAJOR "0")
-set(TARGET_VERSION_MINOR "0")
-set(TARGET_VERSION_PATCH "1")
+set(TARGET_VERSION_MINOR "1")
+set(TARGET_VERSION_PATCH "0")
+
+set(CONFIG_APP_FULLNAME "Total Destruction")
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
@@ -140,9 +142,10 @@ add_executable(${CONFIG_APP_NAME} ${td_SRCS})
     message("Linked: ${TARGET_LD_FLAGS}")
     target_link_libraries(${CONFIG_APP_NAME} ${TARGET_LD_FLAGS})
 
-    set(TARGET_INCLUDE_DIRS "${OGRE_INCLUDE_DIRS};${OIS_INCLUDE_DIRS};${BULLET_INCLUDE_DIRS}")
-    message("Included: ${TARGET_INCLUDE_DIRS}")
-    include_directories(include ${CMAKE_CURRENT_BINARY_DIR}/config /usr/local/include ${TARGET_INCLUDE_DIRS})
+    set(TARGET_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include;${CMAKE_CURRENT_BINARY_DIR}/config")
+    set(SYSTEM_INCLUDE_DIRS "${OGRE_INCLUDE_DIRS};${OIS_INCLUDE_DIRS};${BULLET_INCLUDE_DIRS}")
+    message("Included: ${TARGET_INCLUDE_DIRS} ${SYSTEM_INCLUDE_DIRS}")
+    include_directories(include ${TARGET_INCLUDE_DIRS} SYSTEM ${SYSTEM_INCLUDE_DIRS})
 
 #
 # Seting CXX GCC flags
@@ -150,7 +153,8 @@ add_executable(${CONFIG_APP_NAME} ${td_SRCS})
 
 add_definitions( -std=c++0x -Wall )
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_definitions( ${CMAKE_CXX_FLAGS_DEBUG} )
+    add_definitions( -Wextra -Weffc++ -Woverloaded-virtual -Wctor-dtor-privacy -Wnon-virtual-dtor -Wold-style-cast -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code -O2 -g )
+    find_program( CPPCHECK_EXEC "cppcheck" )
 else()
     add_definitions( -s -O2 -DNDEBUG )
 endif()
@@ -166,11 +170,11 @@ endif()
 # Writing config files
 #
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config/config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config/config.h)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config/main.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/config/main.cfg)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config/plugins.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/config/plugins.cfg)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config/resources.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/config/resources.cfg)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config/main.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/config/main.cfg)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config/plugins.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/config/plugins.cfg)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config/resources.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/config/resources.cfg)
 
 #
 # Adding Make targets
@@ -184,11 +188,30 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config/main.cfg
         ${CMAKE_CURRENT_BINARY_DIR}/config/resources.cfg
         ${CMAKE_CURRENT_BINARY_DIR}/config/plugins.cfg DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/config)
 
+# Cppcheck execute if found and Debug mode
+if(CPPCHECK_EXEC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CPPCHECK_SRC ${td_SRCS})
+    string(REPLACE ";" ";-I;" CPPCHECK_INCLUDE_PARAMS "${TARGET_INCLUDE_DIRS};${SYSTEM_INCLUDE_DIRS}")
+    add_custom_target(cppcheck ALL ${CPPCHECK_EXEC} -f --enable=style --enable=all --verbose --template gcc -I ${CPPCHECK_INCLUDE_PARAMS} ${CMAKE_CURRENT_SOURCE_DIR}/src
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Analyzing source code by cppcheck" VERBATIM)
+endif()
+
+# Doxygen documentation
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+    add_custom_target(doc ALL ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM)
+endif()
+
 # uninstall
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake"
     IMMEDIATE @ONLY)
 
 add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake)

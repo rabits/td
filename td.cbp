@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Total Destruction" />
+		<Option makefile_is_custom="1" />
+		<Option execution_dir="/home/psa/Projects/td/build" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<MakeCommands>
+			<Build command="$make -j4 -f $makefile" />
+			<CompileFile command="$make -j4 -f $makefile $file" />
+			<Clean command="$make -f $makefile clean" />
+			<DistClean command="$make -f $makefile distclean$target" />
+			<AskRebuildNeeded command="$make -q -j4 -f $makefile" />
+			<SilentBuild command="$make -s -j4 -f $makefile" />
+		</MakeCommands>
+		<Build>
+			<Target title="Debug">
+				<Option output="build/local/games/td" prefix_auto="1" extension_auto="1" />
+				<Option object_output="build/cb/obj/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<ExtraCommands>
+					<Add before="cmake -DCMAKE_INSTALL_PREFIX=./local ../" />
+					<Mode after="always" />
+				</ExtraCommands>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command="" />
+				</MakeCommands>
+			</Target>
+			<Target title="Release">
+				<Option output="build/local/games/td" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<ExtraCommands>
+					<Add before="cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./local ../" />
+					<Mode after="always" />
+				</ExtraCommands>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command="" />
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<ExtraCommands>
+			<Add after="make -f $makefile install" />
+			<Mode after="always" />
+		</ExtraCommands>
+		<Unit filename="CMakeLists.txt">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="cmake_uninstall.cmake.in">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="config/config.h.in">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="config/main.cfg.in">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="config/plugins.cfg.in">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="config/resources.cfg.in">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/app/CGame.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/main.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/object/CMove.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/object/CObject.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/physics/BtOgreExtras.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/physics/BtOgreGP.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/physics/BtOgrePG.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/user/CControl.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/user/CControlled.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/user/CInputEvent.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/user/CInputHandler.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/user/CUser.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/world/CGravityField.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/world/CObjectCube.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/world/CObjectKernel.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/world/CObjectWorld.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/app/CGame.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/main.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/object/CMove.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/object/CObject.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/physics/BtOgre.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/user/CControl.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/user/CControlled.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/user/CInputEvent.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/user/CInputHandler.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/user/CUser.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/world/CGravityField.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/world/CObjectCube.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/world/CObjectKernel.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src/world/CObjectWorld.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

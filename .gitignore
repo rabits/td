@@ -6,3 +6,4 @@ build
 
 # Ignore .save files
 *.save
+*.layout
