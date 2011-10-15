@@ -1,14 +1,7 @@
-/** // BTOGREEXTRAS_H
- *  --------------------------------------
- *   Total Destruction Project
- *   Rabits <home.rabits@gmail.com>  2010
- *  --------------------------------------
- */
-
 /*
  * =====================================================================================
  *
- *       Filename:  BtOgreShapes.h
+ *       Filename:  BtOgreExtras.h
  *
  *    Description:  Contains the Ogre Mesh to Bullet Shape converters.
  *
@@ -24,14 +17,15 @@
 #define _BtOgreShapes_H_
 
 #include "btBulletDynamicsCommon.h"
-#include "OGRE/OgreSimpleRenderable.h"
-#include "OGRE/OgreCamera.h"
-#include "OGRE/OgreHardwareBufferManager.h"
-#include "OGRE/OgreMaterialManager.h"
-#include "OGRE/OgreTechnique.h"
-#include "OGRE/OgrePass.h"
+#include "OgreSceneNode.h"
+#include "OgreSimpleRenderable.h"
+#include "OgreCamera.h"
+#include "OgreHardwareBufferManager.h"
+#include "OgreMaterialManager.h"
+#include "OgreTechnique.h"
+#include "OgrePass.h"
 
-#include "OGRE/OgreLogManager.h"
+#include "OgreLogManager.h"
 
 namespace BtOgre
 {
@@ -42,26 +36,26 @@ typedef std::vector<Ogre::Vector3> Vector3Array;
 class Convert
 {
 public:
-    Convert() {};
-    ~Convert() {};
+	Convert() {};
+	~Convert() {};
 
-    static btQuaternion toBullet(const Ogre::Quaternion &q)
-    {
-        return btQuaternion(q.x, q.y, q.z, q.w);
-    }
-    static btVector3 toBullet(const Ogre::Vector3 &v)
-    {
-        return btVector3(v.x, v.y, v.z);
-    }
+	static btQuaternion toBullet(const Ogre::Quaternion &q)
+	{
+		return btQuaternion(q.x, q.y, q.z, q.w);
+	}
+	static btVector3 toBullet(const Ogre::Vector3 &v)
+	{
+		return btVector3(v.x, v.y, v.z);
+	}
 
-    static Ogre::Quaternion toOgre(const btQuaternion &q)
-    {
-        return Ogre::Quaternion(q.w(), q.x(), q.y(), q.z());
-    }
-    static Ogre::Vector3 toOgre(const btVector3 &v)
-    {
-        return Ogre::Vector3(v.x(), v.y(), v.z());
-    }
+	static Ogre::Quaternion toOgre(const btQuaternion &q)
+	{
+		return Ogre::Quaternion(q.w(), q.x(), q.y(), q.z());
+	}
+	static Ogre::Vector3 toOgre(const btVector3 &v)
+	{
+		return Ogre::Vector3(v.x(), v.y(), v.z());
+	}
 };
 
 //From here on its debug-drawing stuff. ------------------------------------------------------------------
@@ -188,88 +182,92 @@ private:
 class DebugDrawer : public btIDebugDraw
 {
 protected:
-    Ogre::SceneNode *mNode;
-    btDynamicsWorld *mWorld;
-    DynamicLines *mLineDrawer;
-    bool mDebugOn;
+	Ogre::SceneNode *mNode;
+	btDynamicsWorld *mWorld;
+	DynamicLines *mLineDrawer;
+	bool mDebugOn;
 
 public:
 
-    DebugDrawer(Ogre::SceneNode *node, btDynamicsWorld *world)
-        : mNode(node),
-          mWorld(world),
-          mDebugOn(true)
-    {
-        mLineDrawer = new DynamicLines(Ogre::RenderOperation::OT_LINE_LIST);
-        mNode->attachObject(mLineDrawer);
+	DebugDrawer(Ogre::SceneNode *node, btDynamicsWorld *world)
+		: mNode(node),
+		  mWorld(world),
+		  mDebugOn(true)
+	{
+		mLineDrawer = new DynamicLines(Ogre::RenderOperation::OT_LINE_LIST);
+		mNode->attachObject(mLineDrawer);
 
-                Ogre::ResourceGroupManager::getSingleton().createResourceGroup("BtOgre");
-        Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().create("BtOgre/DebugLines", "BtOgre");
-        mat->setReceiveShadows(false);
-        mat->setSelfIllumination(1,1,1);
+                if (!Ogre::ResourceGroupManager::getSingleton().resourceGroupExists("BtOgre"))
+                    Ogre::ResourceGroupManager::getSingleton().createResourceGroup("BtOgre");
+                if (!Ogre::MaterialManager::getSingleton().resourceExists("BtOgre/DebugLines"))
+                {
+                    Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().create("BtOgre/DebugLines", "BtOgre");
+                    mat->setReceiveShadows(false);
+                    mat->setSelfIllumination(1,1,1);
+                }
 
-        mLineDrawer->setMaterial("BtOgre/DebugLines");
-    }
+		mLineDrawer->setMaterial("BtOgre/DebugLines");
+	}
 
-    ~DebugDrawer()
-    {
+	~DebugDrawer()
+	{
                 Ogre::MaterialManager::getSingleton().remove("BtOgre/DebugLines");
                 Ogre::ResourceGroupManager::getSingleton().destroyResourceGroup("BtOgre");
-        delete mLineDrawer;
-    }
+		delete mLineDrawer;
+	}
 
-    void step()
-    {
-        if (mDebugOn)
-        {
-            mWorld->debugDrawWorld();
-            mLineDrawer->update();
-            mNode->needUpdate();
-            mLineDrawer->clear();
-        }
-        else
-        {
-            mLineDrawer->clear();
-            mLineDrawer->update();
-            mNode->needUpdate();
-        }
-    }
+	void step()
+	{
+		if (mDebugOn)
+		{
+			mWorld->debugDrawWorld();
+			mLineDrawer->update();
+			mNode->needUpdate();
+			mLineDrawer->clear();
+		}
+		else
+		{
+			mLineDrawer->clear();
+			mLineDrawer->update();
+			mNode->needUpdate();
+		}
+	}
 
-    void drawLine(const btVector3& from,const btVector3& to,const btVector3& color)
-    {
-        mLineDrawer->addPoint(Convert::toOgre(from));
-        mLineDrawer->addPoint(Convert::toOgre(to));
-    }
+	void drawLine(const btVector3& from,const btVector3& to,const btVector3& color)
+	{
+		mLineDrawer->addPoint(Convert::toOgre(from));
+		mLineDrawer->addPoint(Convert::toOgre(to));
+	}
 
-    void drawContactPoint(const btVector3& PointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color)
-    {
-        mLineDrawer->addPoint(Convert::toOgre(PointOnB));
-        mLineDrawer->addPoint(Convert::toOgre(PointOnB) + (Convert::toOgre(normalOnB) * distance * 20));
-    }
+	void drawContactPoint(const btVector3& PointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color)
+	{
+		mLineDrawer->addPoint(Convert::toOgre(PointOnB));
+		mLineDrawer->addPoint(Convert::toOgre(PointOnB) + (Convert::toOgre(normalOnB) * distance * 20));
+	}
 
-    void reportErrorWarning(const char* warningString)
-    {
-        Ogre::LogManager::getSingletonPtr()->logMessage(warningString);
-    }
+	void reportErrorWarning(const char* warningString)
+	{
+		Ogre::LogManager::getSingleton().logMessage(warningString);
+	}
 
-    void draw3dText(const btVector3& location,const char* textString)
-    {
-    }
+	void draw3dText(const btVector3& location,const char* textString)
+	{
+	}
 
-    //0 for off, anything else for on.
-    void setDebugMode(int isOn)
-    {
-        mDebugOn = (isOn == 0) ? false : true;
+	//0 for off, anything else for on.
+	void setDebugMode(int isOn)
+	{
+		mDebugOn = (isOn == 0) ? false : true;
 
-        if (!mDebugOn)
-            mLineDrawer->clear();
-    }
+		if (!mDebugOn)
+			mLineDrawer->clear();
+	}
 
-    //0 for off, anything else for on.
-    int    getDebugMode() const
-    {
-        return mDebugOn;
-    }
+	//0 for off, anything else for on.
+	int	getDebugMode() const
+	{
+		return mDebugOn;
+	}
 
 };
 

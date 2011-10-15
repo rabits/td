@@ -1,10 +1,3 @@
-/** // BTOGREPG_H
- *  --------------------------------------
- *   Total Destruction Project
- *   Rabits <home.rabits@gmail.com>  2010
- *  --------------------------------------
- */
-
 /*
  * =====================================================================================
  *
@@ -25,7 +18,7 @@
 #define _BtOgreGP_H_
 
 #include "btBulletDynamicsCommon.h"
-#include "OGRE/OgreSceneNode.h"
+#include "OgreSceneNode.h"
 #include "BtOgreExtras.h"
 
 namespace BtOgre {
