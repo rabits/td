@@ -6,7 +6,7 @@ set(TARGET_VERSION_MAJOR "0")
 set(TARGET_VERSION_MINOR "1")
 set(TARGET_VERSION_PATCH "0")
 
-set(CONFIG_APP_FULLNAME "Total Destruction")
+set(CONFIG_TD_FULLNAME "Total Destruction")
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
@@ -32,6 +32,7 @@ if(${PKG_CONFIG_FOUND})
     pkg_check_modules(OGRE OGRE>=1.7.3)
     pkg_check_modules(OIS OIS>=1.3.0)
     pkg_check_modules(BULLET bullet>=2.79)
+    find_package( Boost 1.46.1 COMPONENTS filesystem system )
 else()
     message(FATAL_ERROR "pkg-config NOT FOUND")
 endif()
@@ -50,7 +51,15 @@ if(NOT BULLET_FOUND)
     message("bullet NOT FOUND")
 endif()
 
-if(NOT (OGRE_FOUND AND OIS_FOUND AND BULLET_FOUND ))
+if(NOT Boost_SYSTEM_FOUND)
+    message("Boost system NOT FOUND")
+endif()
+
+if(NOT Boost_FILESYSTEM_FOUND)
+    message("Boost filesystem NOT FOUND")
+endif()
+
+if(NOT (OGRE_FOUND AND OIS_FOUND AND BULLET_FOUND AND Boost_SYSTEM_FOUND AND Boost_FILESYSTEM_FOUND))
     message(FATAL_ERROR "Error: some libraries not found")
 endif()
 
@@ -59,19 +68,19 @@ endif()
 #
 
 # Paths
-if(NOT CONFIG_APP_NAME)
-    set(CONFIG_APP_NAME "td" CACHE STRING
+if(NOT CONFIG_TD_NAME)
+    set(CONFIG_TD_NAME "td" CACHE STRING
         "Target binary and share install directory name"
         FORCE)
-endif(NOT CONFIG_APP_NAME)
+endif(NOT CONFIG_TD_NAME)
 if(NOT CONFIG_PATH_BIN)
     set(CONFIG_PATH_BIN "games" CACHE PATH
         "Target path to install binary (CMAKE_INSTALL_PREFIX/games)"
         FORCE)
 endif(NOT CONFIG_PATH_BIN)
 if(NOT CONFIG_PATH_SHARE)
-    set(CONFIG_PATH_SHARE "share/${CONFIG_APP_NAME}" CACHE PATH
-        "Target path to install data (CMAKE_INSTALL_PREFIX/share/${CONFIG_APP_NAME})"
+    set(CONFIG_PATH_SHARE "share/${CONFIG_TD_NAME}" CACHE PATH
+        "Target path to install data (CMAKE_INSTALL_PREFIX/share/${CONFIG_TD_NAME})"
         FORCE)
 endif(NOT CONFIG_PATH_SHARE)
 
@@ -126,7 +135,7 @@ else(WIN32 AND NOT UNIX)
     #set(CPACK_STRIP_FILES "bin/MyExecutable")
     #set(CPACK_SOURCE_STRIP_FILES "")
 endif(WIN32 AND NOT UNIX)
-set(CPACK_PACKAGE_EXECUTABLES ${CONFIG_APP_NAME} "Total Destruction")
+set(CPACK_PACKAGE_EXECUTABLES ${CONFIG_TD_NAME} "Total Destruction")
 
 include(CPack)
 
@@ -136,14 +145,14 @@ include(CPack)
 
 message("Install to: ${CMAKE_INSTALL_PREFIX}")
 
-add_executable(${CONFIG_APP_NAME} ${td_SRCS})
+add_executable(${CONFIG_TD_NAME} ${td_SRCS})
 
     set(TARGET_LD_FLAGS "${OGRE_LDFLAGS};${OIS_LDFLAGS};${BULLET_LDFLAGS}")
     message("Linked: ${TARGET_LD_FLAGS}")
-    target_link_libraries(${CONFIG_APP_NAME} ${TARGET_LD_FLAGS})
+    target_link_libraries(${CONFIG_TD_NAME} ${TARGET_LD_FLAGS} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 
-    set(TARGET_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src;${CMAKE_CURRENT_SOURCE_DIR}/lib;${CMAKE_CURRENT_BINARY_DIR}/config")
-    set(SYSTEM_INCLUDE_DIRS "${OGRE_INCLUDE_DIRS};${OIS_INCLUDE_DIRS};${BULLET_INCLUDE_DIRS}")
+    set(TARGET_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src;${CMAKE_CURRENT_BINARY_DIR}/config")
+    set(SYSTEM_INCLUDE_DIRS "${OGRE_INCLUDE_DIRS};${OIS_INCLUDE_DIRS};${BULLET_INCLUDE_DIRS};${CMAKE_CURRENT_SOURCE_DIR}/lib")
     message("Included: ${TARGET_INCLUDE_DIRS} ${SYSTEM_INCLUDE_DIRS}")
     include_directories(include ${TARGET_INCLUDE_DIRS} SYSTEM ${SYSTEM_INCLUDE_DIRS})
 
@@ -181,7 +190,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config/resources.cfg.in ${CM
 #
 
 # install
-install(TARGETS ${CONFIG_APP_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_BIN})
+install(TARGETS ${CONFIG_TD_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_BIN})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/data DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/users DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config/main.cfg

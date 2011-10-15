@@ -15,8 +15,13 @@
 
 #include <OGRE/SdkTrays.h>
 
+#include <cstdlib>
 #include <vector>
 
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+
+#include "CData.h"
 #include "CObject.h"
 #include "CObjectCube.h"
 #include "CObjectWorld.h"
@@ -33,7 +38,7 @@ class CInputHandler;
  * =====================================================================================
  */
 
-class CGame : public Ogre::FrameListener, public Ogre::WindowEventListener, OgreBites::SdkTrayListener
+class CGame : public Ogre::FrameListener, public Ogre::WindowEventListener, OgreBites::SdkTrayListener, CData
 {
 public:
     ~CGame();
@@ -45,30 +50,31 @@ public:
             delete m_pInstance;
     };
 
-    bool setup();
+    bool initialise();
+    bool loadConfig();
     void start();
     void getScreenshot();
     void exit();
 
     // Scene Manager object
-    Ogre::SceneManager                        *m_pSceneMgr;
+    Ogre::SceneManager                      *m_pSceneMgr;
     // Main camera
     Ogre::Camera                            *m_pCamera;
     // Main window
-    Ogre::RenderWindow                        *m_pWindow;
+    Ogre::RenderWindow                      *m_pWindow;
 
     // Input Handler object
-    CInputHandler                            *m_pInputHandler;
+    CInputHandler                           *m_pInputHandler;
 
     // OgreBites
-    OgreBites::SdkTrayManager                *m_pTrayMgr;            // Tray Manager object
-    OgreBites::ParamsPanel                    *m_pDetailsPanel;        // Sample details panel
+    OgreBites::SdkTrayManager               *m_pTrayMgr;            // Tray Manager object
+    OgreBites::ParamsPanel                  *m_pDetailsPanel;        // Sample details panel
 
     std::vector<CObjectWorld*>::iterator    o_currentWorld;
 
     // Users list
-    std::vector<CUser*>                        m_vUsers;
-    std::vector<CUser*>::iterator            o_currentUser;
+    std::vector<CUser*>                     m_vUsers;
+    std::vector<CUser*>::iterator           o_currentUser;
 
 private:
     // Instance of game
@@ -78,7 +84,7 @@ protected:
     CGame(); // Constructor
 
     // World list
-    std::vector<CObjectWorld*>                m_vWorlds;
+    std::vector<CObjectWorld*>              m_vWorlds;
 
     void createFrameListener();
     void updateWorlds(const Ogre::FrameEvent& evt);
@@ -91,12 +97,12 @@ protected:
     //Unattach OIS before window shutdown (very important under Linux)
     void windowClosed(Ogre::RenderWindow* rw);
 
-    Ogre::Root                            *m_pRoot;
-    Ogre::Timer                            *m_pTimer;
+    Ogre::Root                              *m_pRoot;
+    Ogre::Timer                             *m_pTimer;
     // Render next frame in this time (microseconds)
-    unsigned long                        m_NextFrameTime;
+    unsigned long                           m_NextFrameTime;
 
-    bool                                m_ShutDown;
+    bool                                    m_ShutDown;
 
 };
 

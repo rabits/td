@@ -45,6 +45,9 @@ You need get and compile next libs:
     $ cmake -DBUILD_DEMOS=off -DBUILD_SHARED_LIBS=on -DINSTALL_LIBS=on -DINSTALL_EXTRA_LIBS=on -DUSE_GRAPHICAL_BENCHMARK=off -DCMAKE_BUILD_TYPE=Release ../ && make -j4
     $ sudo make install
 
+ - libboost-filesystem-dev 1.46.1
+ - libboost-system-dev 1.46.1
+
 == 2. Get the sources ==
 
  - Download source from http://www.rabits.ru/projects/td
@@ -93,9 +96,8 @@ No questions - no answers...
 
 === THANKS ===
 
-lib/tinyxmlpp
-  TinyXML: Lee Thomason
-  TiCPP: Ryan Pusztai, Ryan Mulder
+lib/pugixml
+  Arseny Kapoulkine <arseny.kapoulkine@gmail.com>
 
 lib/btogre
   BtOGRE: Nikhilesh (nikki)

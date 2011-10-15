@@ -82,8 +82,9 @@ void CGame::updateUsers(const Ogre::FrameEvent& evt)
         (*o_currentUser)->update(evt);
 }
 
-bool CGame::setup()
+bool CGame::initialise()
 {
+    loadConfig();
     m_pRoot = new Ogre::Root(CONFIG_PATH_CONFIG "plugins.cfg", CONFIG_PATH_CONFIG "main.cfg", CONFIG_PATH_CONFIG "logfile.log");
 
     Ogre::LogManager::getSingletonPtr()->logMessage("Starting configuration");
@@ -151,7 +152,7 @@ bool CGame::setup()
         miscParams["gamma"] = opt->second.currentValue;
     miscParams["border"] = "fixed";
 
-    m_pWindow = m_pRoot->createRenderWindow(CONFIG_APP_FULLNAME, w, h, fullscreen, &miscParams);
+    m_pWindow = m_pRoot->createRenderWindow(CONFIG_TD_FULLNAME, w, h, fullscreen, &miscParams);
 
     m_pTimer = new Ogre::Timer();
     //-------- !configure! ---------------
@@ -202,6 +203,21 @@ bool CGame::setup()
     Ogre::LogManager::getSingletonPtr()->logMessage("Complete configuration");
 
     return true;
+};
+
+bool CGame::loadConfig()
+{
+    pugi::xml_node data_env = m_pData->append_child("env");
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+    data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("USERPROFILE"));
+#else
+    data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("HOME"));
+#endif
+
+    if( !fs::is_directory(Ogre::String(data_env.child("HOME").value()) + Ogre::String("/") + Ogre::String(CONFIG_PATH_HOME)) )
+    {
+        m_pData->save(std::cout);
+    }
 };
 
 //-------------------------------------------------------------------------------------

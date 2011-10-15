@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 {
     printf("Starting program\n");
     try {
-        if( CGame::getInstance()->setup() )
+        if( CGame::getInstance()->initialise() )
             CGame::getInstance()->start();
     } catch( Ogre::Exception& e ) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
