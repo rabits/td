@@ -91,6 +91,15 @@ our site: http://www.rabits.ru
 
 No questions - no answers...
 
+=== THANKS ===
+
+lib/tinyxmlpp
+  TinyXML: Lee Thomason
+  TiCPP: Ryan Pusztai, Ryan Mulder
+
+lib/btogre
+  BtOGRE: Nikhilesh (nikki)
+
 === BUGS ===
 
 None known bugs now...
@@ -99,3 +108,4 @@ None known bugs now...
 
 Core
   Rabits <home.rabits@gmail.com>
+  

@@ -20,7 +20,7 @@ message("Making ${CMAKE_BUILD_TYPE} configuration. Version: ${TARGET_VERSION_MAJ
 # Adding sources
 #
 
-file(GLOB_RECURSE td_SRCS "src/*.cpp")
+file(GLOB_RECURSE td_SRCS "src/*.cpp" "lib/*.cpp")
 
 #
 # Finding requirement libs
@@ -142,7 +142,7 @@ add_executable(${CONFIG_APP_NAME} ${td_SRCS})
     message("Linked: ${TARGET_LD_FLAGS}")
     target_link_libraries(${CONFIG_APP_NAME} ${TARGET_LD_FLAGS})
 
-    set(TARGET_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include;${CMAKE_CURRENT_BINARY_DIR}/config")
+    set(TARGET_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src;${CMAKE_CURRENT_SOURCE_DIR}/lib;${CMAKE_CURRENT_BINARY_DIR}/config")
     set(SYSTEM_INCLUDE_DIRS "${OGRE_INCLUDE_DIRS};${OIS_INCLUDE_DIRS};${BULLET_INCLUDE_DIRS}")
     message("Included: ${TARGET_INCLUDE_DIRS} ${SYSTEM_INCLUDE_DIRS}")
     include_directories(include ${TARGET_INCLUDE_DIRS} SYSTEM ${SYSTEM_INCLUDE_DIRS})
@@ -189,7 +189,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config/main.cfg
         ${CMAKE_CURRENT_BINARY_DIR}/config/plugins.cfg DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/config)
 
 # Cppcheck execute if found and Debug mode
-if(CPPCHECK_EXEC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CPPCHECK_EXEC AND CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CPPCHECK_SRC ${td_SRCS})
     string(REPLACE ";" ";-I;" CPPCHECK_INCLUDE_PARAMS "${TARGET_INCLUDE_DIRS};${SYSTEM_INCLUDE_DIRS}")
     add_custom_target(cppcheck ALL ${CPPCHECK_EXEC} -f --enable=style --enable=all --verbose --template gcc -I ${CPPCHECK_INCLUDE_PARAMS} ${CMAKE_CURRENT_SOURCE_DIR}/src

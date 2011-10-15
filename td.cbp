@@ -62,114 +62,47 @@
 			<Add after="make -f $makefile install" />
 			<Mode after="always" />
 		</ExtraCommands>
-		<Unit filename="CMakeLists.txt">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="cmake_uninstall.cmake.in">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="config/config.h.in">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="config/main.cfg.in">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="config/plugins.cfg.in">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="config/resources.cfg.in">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/app/CGame.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/main.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/object/CMove.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/object/CObject.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/physics/BtOgreExtras.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/physics/BtOgreGP.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/physics/BtOgrePG.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/user/CControl.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/user/CControlled.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/user/CInputEvent.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/user/CInputHandler.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/user/CUser.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/world/CGravityField.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/world/CObjectCube.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/world/CObjectKernel.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="include/world/CObjectWorld.h">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/app/CGame.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/main.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/object/CMove.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/object/CObject.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/physics/BtOgre.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/user/CControl.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/user/CControlled.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/user/CInputEvent.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/user/CInputHandler.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/user/CUser.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/world/CGravityField.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/world/CObjectCube.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/world/CObjectKernel.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="src/world/CObjectWorld.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="lib/btogre/BtOgre.cpp" />
+		<Unit filename="lib/btogre/BtOgreExtras.h" />
+		<Unit filename="lib/btogre/BtOgreGP.h" />
+		<Unit filename="lib/btogre/BtOgrePG.h" />
+		<Unit filename="lib/tinyxmlpp/ticpp.cpp" />
+		<Unit filename="lib/tinyxmlpp/ticpp.h" />
+		<Unit filename="lib/tinyxmlpp/ticpprc.h" />
+		<Unit filename="lib/tinyxmlpp/tinystr.cpp" />
+		<Unit filename="lib/tinyxmlpp/tinystr.h" />
+		<Unit filename="lib/tinyxmlpp/tinyxml.cpp" />
+		<Unit filename="lib/tinyxmlpp/tinyxml.h" />
+		<Unit filename="lib/tinyxmlpp/tinyxmlerror.cpp" />
+		<Unit filename="lib/tinyxmlpp/tinyxmlparser.cpp" />
+		<Unit filename="src/CControl.cpp" />
+		<Unit filename="src/CControl.h" />
+		<Unit filename="src/CControlled.cpp" />
+		<Unit filename="src/CControlled.h" />
+		<Unit filename="src/CGame.cpp" />
+		<Unit filename="src/CGame.h" />
+		<Unit filename="src/CGravityField.cpp" />
+		<Unit filename="src/CGravityField.h" />
+		<Unit filename="src/CInputEvent.cpp" />
+		<Unit filename="src/CInputEvent.h" />
+		<Unit filename="src/CInputHandler.cpp" />
+		<Unit filename="src/CInputHandler.h" />
+		<Unit filename="src/CMove.cpp" />
+		<Unit filename="src/CMove.h" />
+		<Unit filename="src/CObject.cpp" />
+		<Unit filename="src/CObject.h" />
+		<Unit filename="src/CObjectCube.cpp" />
+		<Unit filename="src/CObjectCube.h" />
+		<Unit filename="src/CObjectKernel.cpp" />
+		<Unit filename="src/CObjectKernel.h" />
+		<Unit filename="src/CObjectWorld.cpp" />
+		<Unit filename="src/CObjectWorld.h" />
+		<Unit filename="src/CPreferences.cpp" />
+		<Unit filename="src/CPreferences.h" />
+		<Unit filename="src/CUser.cpp" />
+		<Unit filename="src/CUser.h" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/main.h" />
 		<Extensions>
 			<envvars />
 			<code_completion />

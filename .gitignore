@@ -1,5 +1,6 @@
 # Ignoring all object files to compile
 build
+tmp
 
 # Ignore log files
 *.log
