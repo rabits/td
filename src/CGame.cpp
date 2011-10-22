@@ -1,9 +1,17 @@
-/** // CGAME_CPP
- *  --------------------------------------
- *   Total Destruction Project
- *   Rabits <home.rabits@gmail.com>  2010
- *  --------------------------------------
+/**
+ * @file    CGame.cpp
+ * @date    2010-09-26T13:44:21+0400
+ *
+ * @author  Rabits <home.rabits@gmail.com>
+ * @url     http://www.rabits.ru/td
+ *
+ * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * @brief   Game master object
+ *
+ *
  */
+
 
 #include "CGame.h"
 #include "CInputHandler.h"
@@ -207,17 +215,28 @@ bool CGame::initialise()
 
 bool CGame::loadConfig()
 {
-    pugi::xml_node data_env = m_pData->append_child("env");
+    pugi::xml_node data_env = m_pData.append_child("env");
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
     data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("USERPROFILE"));
 #else
     data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("HOME"));
 #endif
 
-    if( !fs::is_directory(Ogre::String(data_env.child("HOME").value()) + Ogre::String("/") + Ogre::String(CONFIG_PATH_HOME)) )
+    pugi::xml_node data_current_path = m_pData.append_child("current_path");
+
+    fs::path path_root_share(CONFIG_PATH_ROOT_SHARE);
+    data_current_path.append_child("path_root_share").append_child(pugi::node_pcdata).set_value(path_root_share.c_str());
+
+    fs::path path_home_share(data_env.child_value("HOME"));
+    path_home_share /= CONFIG_PATH_HOME_SHARE;
+    data_current_path.append_child("path_home_share").append_child(pugi::node_pcdata).set_value(path_home_share.c_str());
+
+    if( ! fs::is_directory(path_home_share) )
     {
-        m_pData->save(std::cout);
+        m_pDataRoot.save(std::cout);
     }
+
+    return true;
 };
 
 //-------------------------------------------------------------------------------------

@@ -1,9 +1,17 @@
-/** // COBJECT_CPP
- *  --------------------------------------
- *   Total Destruction Project
- *   Rabits <home.rabits@gmail.com>  2010
- *  --------------------------------------
+/**
+ * @file    CObject.cpp
+ * @date    2010-10-06T12:18:13+0400
+ *
+ * @author  Rabits <home.rabits@gmail.com>
+ * @url     http://www.rabits.ru/td
+ *
+ * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * @brief   Base object
+ *
+ *
  */
+
 
 #include "CObject.h"
 #include "CGame.h"

@@ -17,15 +17,15 @@
 // Maximum number of joysticks
 #define CONFIG_JOYSTICK_MAX_NUMBER ${CONFIG_JOYSTICK_MAX_NUMBER}
 
-// Use forcefeedback for joysticks
+// Usage forcefeedback for joysticks
 #cmakedefine CONFIG_JOYSTICK_USE_FORCEFEEDBACK
 
-
-// Absolute path to default share directory
-#define CONFIG_PATH_SHARE "${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/"
+// PATHs:
+// Absolute path to default share directory (with default configs)
+#define CONFIG_PATH_ROOT_SHARE "${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/"
 
 // Relative path to default data directory
-#define CONFIG_PATH_HOME ".config/${CONFIG_TD_NAME}/"
+#define CONFIG_PATH_HOME_SHARE ".config/${CONFIG_TD_NAME}/"
 
 // Relative path to data directory
 #define CONFIG_PATH_DATA "data/"

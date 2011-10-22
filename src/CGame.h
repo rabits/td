@@ -1,9 +1,17 @@
-/** // CGAME_H
- *  --------------------------------------
- *   Total Destruction Project
- *   Rabits <home.rabits@gmail.com>  2010
- *  --------------------------------------
+/**
+ * @file    CGame.h
+ * @date    2010-09-26T13:44:21+0400
+ *
+ * @author  Rabits <home.rabits@gmail.com>
+ * @url     http://www.rabits.ru/td
+ *
+ * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * @brief   Game master object
+ *
+ *
  */
+
 
 #ifndef CGAME_H_INCLUDED
 #define CGAME_H_INCLUDED
@@ -19,7 +27,7 @@
 #include <vector>
 
 #include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
+namespace fs = boost::filesystem3;
 
 #include "CData.h"
 #include "CObject.h"
