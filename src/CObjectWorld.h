@@ -3,15 +3,14 @@
  * @date    2010-10-06T12:18:13+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   World object
  *
  *
  */
-
 
 #ifndef COBJECTWORLD_H_INCLUDED
 #define COBJECTWORLD_H_INCLUDED
@@ -25,35 +24,66 @@
 
 #include "config.h"
 
+/** @brief World object
+ */
 class CObjectWorld : public CObject
 {
 public:
+    /** @brief Constructor
+     */
     CObjectWorld();
+
+    /** @brief Constructor
+     *
+     * @param pGame CGame&
+     * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
+     */
     CObjectWorld(CGame &pGame, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
+
+    /** @brief Destructor
+     */
     ~CObjectWorld();
 
-    // Update object data, it may be animation or just object translation or so on.
+
+    /** @brief Update object data, it may be animation or just object translation or so on
+     *
+     * @param evt const Ogre::FrameEvent&
+     * @return void
+     *
+     */
     void update(const Ogre::FrameEvent& evt);
-    // Update from CObject
+
+    /** @brief Update from CObject
+     *
+     * @return void
+     *
+     */
     void update(){};
-    // Initialize object
+
+    /** @brief Initialize object
+     *
+     * @return void
+     *
+     */
     void init();
-    // Seeting up object state.
+
+    /** @brief Setting up object state
+     *
+     * @param State int
+     * @return void
+     *
+     */
     void setObjectState(int State);
 
-    // Physical World
-    btDiscreteDynamicsWorld                *phyWorld;
-    // Gravity Field Container
-    CGravityField                        *m_pGravityField;
-
-    BtOgre::DebugDrawer                    *dbgdraw;
+    btDiscreteDynamicsWorld              *m_pPhyWorld;     ///< Physical World
+    CGravityField                        *m_pGravityField; ///< World gravity field
+    BtOgre::DebugDrawer                  *m_pDbgDraw;      ///< Debug drawer
 
 private:
-    // Bullet Stuff
-    btAxisSweep3                        *mBroadphase;
-    btDefaultCollisionConfiguration        *mCollisionConfig;
-    btCollisionDispatcher                *mDispatcher;
-    btSequentialImpulseConstraintSolver    *mSolver;
+    btAxisSweep3                         *m_pBroadphase;      ///< Bullet broadphase
+    btDefaultCollisionConfiguration      *m_pCollisionConfig; ///< Bullet collision config
+    btCollisionDispatcher                *m_pDispatcher;      ///< Bullet dispatcher
+    btSequentialImpulseConstraintSolver  *m_pSolver;          ///< Bullet solver
 };
 
 #endif // COBJECTWORLD_H_INCLUDED

@@ -1,11 +1,11 @@
 /**
- * @file    CMove.h
+ * @file    CAction.cpp
  * @date    2010-09-29T22:42:56+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Action of object
  *
@@ -13,16 +13,14 @@
  */
 
 
-#ifndef CMOVE_H
-#define CMOVE_H
+#include "CAction.h"
 
-class CMove
+CAction::CAction()
 {
-public:
-    CMove();
-    ~CMove();
-protected:
-private:
-};
+    //ctor
+}
 
-#endif // CMOVE_H
+CAction::~CAction()
+{
+    //dtor
+}

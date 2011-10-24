@@ -3,27 +3,35 @@
  * @date    2010-09-26T13:44:21+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Entry point
  *
  *
  */
 
-
 #include "main.h"
 
-/*
- * =====================================================================================
- *     Function:  main
- * =====================================================================================
- */
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+/** @brief Main started function
+ *
+ * @param hInst HINSTANCE
+ * @param strCmdLine LPSTR
+ * @return INT WINAPI
+ *
+ */
 INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
 #else
+/** @brief Main started function
+ *
+ * @param argc int
+ * @param argv[] char*
+ * @return int
+ *
+ */
 int main(int argc, char *argv[])
 #endif
 {

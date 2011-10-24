@@ -3,9 +3,9 @@
  * @date    2010-10-06T12:18:13+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Kernel object
  *
@@ -53,7 +53,7 @@ void CObjectKernel::init()
 
         //Create the Body.
         m_pBody = new btRigidBody(m_mass, m_pState, m_pShape, inertia);
-        m_pWorld->phyWorld->addRigidBody(m_pBody, CObject::DYNAMIC_OBJECT, CObject::DYNAMIC_OBJECT | CObject::STATIC_OBJECT);
+        m_pWorld->m_pPhyWorld->addRigidBody(m_pBody, CObject::DYNAMIC_OBJECT, CObject::DYNAMIC_OBJECT | CObject::STATIC_OBJECT);
         m_pBody->setFriction(6.0f);
 
         m_pWorld->m_pGravityField->zeroObjectGravity(m_pBody->getBroadphaseProxy()->getUid(), new btVector3(0.0f,0.0f,0.0f));
@@ -70,7 +70,7 @@ void CObjectKernel::update()
     m_pBody->setGravity(m_pWorld->m_pGravityField->getObjectGravity(m_pBody->getBroadphaseProxy()->getUid()));
 
     // Draw gravity line
-    m_pWorld->dbgdraw->drawLine(m_pBody->getCenterOfMassPosition(), m_pBody->getCenterOfMassPosition() + m_pBody->getGravity()*4, btVector3());
+    m_pWorld->m_pDbgDraw->drawLine(m_pBody->getCenterOfMassPosition(), m_pBody->getCenterOfMassPosition() + m_pBody->getGravity()*4, btVector3());
 
     // Set rotation
     m_pBody->setAngularVelocity(btVector3(-2.5f,m_pBody->getAngularVelocity().y(),m_pBody->getAngularVelocity().z()));

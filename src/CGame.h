@@ -3,15 +3,14 @@
  * @date    2010-09-26T13:44:21+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Game master object
  *
  *
  */
-
 
 #ifndef CGAME_H_INCLUDED
 #define CGAME_H_INCLUDED
@@ -39,60 +38,44 @@ namespace fs = boost::filesystem3;
 
 class CInputHandler;
 
-/*
- * =====================================================================================
- *        Class:  CGame
- *  Description:  Provides all game.
- * =====================================================================================
+/** @brief Provides all game.
  */
-
 class CGame : public Ogre::FrameListener, public Ogre::WindowEventListener, OgreBites::SdkTrayListener, CData
 {
 public:
     ~CGame();
 
-    static CGame* getInstance(void);
-    static void destroyInstance(void)
-    {
-        if( m_pInstance )
-            delete m_pInstance;
-    };
+    static CGame* getInstance();
+    static void   destroyInstance();
 
     bool initialise();
-    bool loadConfig();
     void start();
     void getScreenshot();
     void exit();
 
-    // Scene Manager object
-    Ogre::SceneManager                      *m_pSceneMgr;
-    // Main camera
-    Ogre::Camera                            *m_pCamera;
-    // Main window
-    Ogre::RenderWindow                      *m_pWindow;
+    Ogre::SceneManager                      *m_pSceneMgr; ///< Scene Manager object
+    Ogre::Camera                            *m_pCamera; ///< Main camera
+    Ogre::RenderWindow                      *m_pWindow; ///< Main window
 
-    // Input Handler object
-    CInputHandler                           *m_pInputHandler;
+    CInputHandler                           *m_pInputHandler; ///< Input Handler object
 
-    // OgreBites
-    OgreBites::SdkTrayManager               *m_pTrayMgr;            // Tray Manager object
-    OgreBites::ParamsPanel                  *m_pDetailsPanel;        // Sample details panel
+    OgreBites::SdkTrayManager               *m_pTrayMgr; ///< Tray Manager object
+    OgreBites::ParamsPanel                  *m_pDetailsPanel; ///< Sample details panel
 
-    std::vector<CObjectWorld*>::iterator    o_currentWorld;
+    std::vector<CUser*>                     m_vUsers; ///< Users list
+    std::vector<CUser*>::iterator           o_currentUser; ///< Current processing user
 
-    // Users list
-    std::vector<CUser*>                     m_vUsers;
-    std::vector<CUser*>::iterator           o_currentUser;
+    std::vector<CObjectWorld*>::iterator    o_currentWorld; ///< Current processing world
 
 private:
-    // Instance of game
-    static CGame                            *m_pInstance;
+    static CGame                            *m_pInstance; ///< Instance of game
 
 protected:
-    CGame(); // Constructor
+    CGame();
 
-    // World list
-    std::vector<CObjectWorld*>              m_vWorlds;
+    std::vector<CObjectWorld*>              m_vWorlds; ///< Worlds list
+
+    bool loadConfig();
 
     void createFrameListener();
     void updateWorlds(const Ogre::FrameEvent& evt);
@@ -100,17 +83,14 @@ protected:
     bool frameRenderingQueued(const Ogre::FrameEvent& evt);
     bool frameStarted(const Ogre::FrameEvent& evt);
 
-    //Adjust mouse clipping area
     void windowResized(Ogre::RenderWindow* rw);
-    //Unattach OIS before window shutdown (very important under Linux)
     void windowClosed(Ogre::RenderWindow* rw);
 
-    Ogre::Root                              *m_pRoot;
-    Ogre::Timer                             *m_pTimer;
-    // Render next frame in this time (microseconds)
-    unsigned long                           m_NextFrameTime;
+    Ogre::Root                              *m_pRoot; ///< Root Ogre object
+    Ogre::Timer                             *m_pTimer; ///< Game timer for restriction of frame rendering speed
+    unsigned long                           m_NextFrameTime; ///< Render next frame in this time (microseconds)
 
-    bool                                    m_ShutDown;
+    bool                                    m_ShutDown; ///< Game need to stop
 
 };
 

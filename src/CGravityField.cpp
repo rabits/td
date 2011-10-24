@@ -3,9 +3,9 @@
  * @date    2010-09-26T13:44:21+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Gravity field
  *
@@ -28,37 +28,27 @@ CGravityElement::CGravityElement(btVector3* box, btVector3* position, btVector3*
 
 CGravityElement::~CGravityElement()
 {
+    delete m_pGravityObj;
 }
 
-//-----------------------------
 
-CGravityField::CGravityField(CObjectWorld *world, float gravityValue)
-{
-    m_pWorld = world;
-    m_gravityValue = gravityValue;
-    m_gravityFieldMap.clear();
-    m_objectGravityMap.clear();
-}
-
-CGravityField::~CGravityField()
-{
-}
-
-//-----------------------------
-
-void CGravityField::setGravityValue(float newGravity)
-{
-    m_gravityValue = newGravity;
-}
-
-float CGravityField::getGravityValue()
-{
-    return m_gravityValue;
-}
-
+/** @brief Struct for auto-detecting objects in field
+ */
 struct CGravityField::SForceFieldCallback : public btCollisionWorld::ContactResultCallback
 {
-    virtual    btScalar addSingleResult(btManifoldPoint& cp, const btCollisionObject* colObj0, int partId0, int index0, const btCollisionObject* colObj1, int partId1, int index1)
+    /** @brief Bullet auto-execute this function if object contacts with field
+     *
+     * @param cp btManifoldPoint&
+     * @param colObj0 const btCollisionObject*
+     * @param partId0 int
+     * @param index0 int
+     * @param colObj1 const btCollisionObject*
+     * @param partId1 int
+     * @param index1 int
+     * @return virtual btScalar
+     *
+     */
+    virtual btScalar addSingleResult(btManifoldPoint& cp, const btCollisionObject* colObj0, int partId0, int index0, const btCollisionObject* colObj1, int partId1, int index1)
     {
         if (colObj1->getInternalType() == btCollisionObject::CO_RIGID_BODY)
         {
@@ -73,19 +63,40 @@ struct CGravityField::SForceFieldCallback : public btCollisionWorld::ContactResu
 
         return 0;
     }
-} CGravityField::m_callbackResult;
+} CGravityField::m_callbackResult; ///< Callback object for Bullet
+
+
+CGravityField::CGravityField(CObjectWorld *world, float gravityValue)
+{
+    m_pWorld = world;
+    m_gravityValue = gravityValue;
+    m_gravityFieldMap.clear();
+    m_objectGravityMap.clear();
+}
+
+CGravityField::~CGravityField()
+{
+}
+
+void CGravityField::setGravityValue(float newGravity)
+{
+    m_gravityValue = newGravity;
+}
+
+float CGravityField::getGravityValue()
+{
+    return m_gravityValue;
+}
 
 void CGravityField::catchFieldContact()
 {
     for ( m_itGravityFieldMap = m_gravityFieldMap.begin() ; m_itGravityFieldMap != m_gravityFieldMap.end(); m_itGravityFieldMap++ )
-        m_pWorld->phyWorld->contactTest((*m_itGravityFieldMap).second->m_pGravityObj, m_callbackResult);
+        m_pWorld->m_pPhyWorld->contactTest((*m_itGravityFieldMap).second->m_pGravityObj, m_callbackResult);
 }
-
-//-----------------------------
 
 int CGravityField::add(CGravityElement *el)
 {
-    m_pWorld->phyWorld->addCollisionObject(el->m_pGravityObj, CObject::FIELD_OBJECT, CObject::DYNAMIC_OBJECT);
+    m_pWorld->m_pPhyWorld->addCollisionObject(el->m_pGravityObj, CObject::FIELD_OBJECT, CObject::DYNAMIC_OBJECT);
     el->m_uid = el->m_pGravityObj->getBroadphaseHandle()->getUid();
     m_gravityFieldMap[el->m_uid] = el;
 
@@ -94,7 +105,7 @@ int CGravityField::add(CGravityElement *el)
 
 void CGravityField::remove(int elId)
 {
-    m_pWorld->phyWorld->removeCollisionObject(m_gravityFieldMap[elId]->m_pGravityObj);
+    m_pWorld->m_pPhyWorld->removeCollisionObject(m_gravityFieldMap[elId]->m_pGravityObj);
     m_gravityFieldMap.erase(elId);
 }
 
@@ -103,7 +114,7 @@ btVector3* CGravityField::get(int elId)
     if( m_gravityFieldMap.find(elId) != m_gravityFieldMap.end() )
         return m_gravityFieldMap[elId]->m_pForce;
 
-    Ogre::LogManager::getSingletonPtr()->logMessage("ERROR: Not found Gravity Field with id#"+Ogre::StringConverter::toString(elId));
+    Ogre::LogManager::getSingletonPtr()->logMessage("ERROR: Not found Gravity Field with id#" + Ogre::StringConverter::toString(elId));
     return NULL;
 }
 
@@ -115,7 +126,10 @@ void CGravityField::disable(int elId)
 {
 }
 
-//-----------------------------
+void CGravityField::zeroObjectGravity(int objectId, btVector3* gravity)
+{
+    m_objectGravityMap[objectId] = (*gravity);
+}
 
 void CGravityField::setObjectGravity(int objectId, btVector3* gravity)
 {
@@ -124,11 +138,6 @@ void CGravityField::setObjectGravity(int objectId, btVector3* gravity)
 
     // Change Gravity Vector
     m_objectGravityMap[objectId] = m_objectGravityMap[objectId] + (*gravity);
-}
-
-void CGravityField::zeroObjectGravity(int objectId, btVector3* gravity)
-{
-    m_objectGravityMap[objectId] = (*gravity);
 }
 
 btVector3 CGravityField::getObjectGravity(int objectId)

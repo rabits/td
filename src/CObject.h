@@ -3,15 +3,14 @@
  * @date    2010-10-06T12:18:13+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Base object
  *
  *
  */
-
 
 #ifndef COBJECT_H_INCLUDED
 #define COBJECT_H_INCLUDED
@@ -28,73 +27,121 @@
 class CObjectWorld;
 class CGame;
 
+/** @brief Father of all objects in game
+ */
 class CObject
 {
 public:
-    // Vars
-    // Object has any child
-    bool                m_bHasChild;
-    // Object name (for debug purpose and for scripts)
-    std::string            m_sObjectName;
+    bool                   m_bHasChild; ///< Object is has any child
+    std::string            m_sObjectName; ///< Object name (for debug purpose and for scripts)
 
-    // Functions
+    /** @brief Constructor of object
+     */
     CObject();
+
+    /** @brief Destructor of object
+     */
     ~CObject();
 
-    // Delete all objects children to aviod memory leaks.
+
+    /** @brief Delete all objects children to aviod memory leaks
+     *
+     * @return void
+     *
+     */
     void clearChildrenList();
-    // Setting object parent
+
+    /** @brief Setting object parent
+     *
+     * @param pParent CObject*
+     * @return void
+     *
+     */
     void setParent(CObject* pParent);
-    // Setting Game pointer
+
+    /** @brief Setting Game pointer
+     *
+     * @param pGame CGame*
+     * @return void
+     *
+     */
     void setGame(CGame* pGame);
-    // Setting object World
+
+    /** @brief Setting object World
+     *
+     * @param pWorld CObjectWorld*
+     * @return void
+     *
+     */
     void setWorld(CObjectWorld* pWorld);
-    // Add child object
+
+    /** @brief Add child object
+     *
+     * @param pChild CObject*
+     * @return void
+     *
+     */
     void attachChild(CObject* pChild);
-    // Return children list for the recursive scene traversal
+
+    /** @brief Return children list for the recursive scene traversal
+     *
+     * @return std::vector<CObject*>*
+     *
+     */
     std::vector<CObject*> *getChildrenList();
 
     //--------------------------------------------------------------------------------------
     // Pure virtual functions. Must be overriden in derived objects.
     //--------------------------------------------------------------------------------------
-    // Update object data, it may be animation or just object translation or so on.
+
+    /** @brief Update object data, it may be animation or just object translation or so on
+     *
+     * @return virtual void
+     *
+     */
     virtual void update() = 0;
-    // Initialize object
+
+    /** @brief Initialize object
+     *
+     * @return virtual void
+     *
+     */
     virtual void init() = 0;
-    // Seeting up object state.
+
+    /** @brief Setting up object state
+     *
+     * @param State int
+     * @return virtual void
+     *
+     */
     virtual void setObjectState(int State) = 0;
 
-    Ogre::SceneNode                        *m_pNode;
+    Ogre::SceneNode                     *m_pNode; ///< Object scene node
 
-    // Groups for collision detection
+    /** @brief Groups for collision detection
+     */
     enum CollisionObjectGroup {
-        STATIC_OBJECT        = 0x1,    //00000001
-        DYNAMIC_OBJECT        = 0x2,    //00000010
-        FIELD_OBJECT        = 0x4    //00000100
+        STATIC_OBJECT       = 0x1,   ///< Static object 00000001
+        DYNAMIC_OBJECT      = 0x2,   ///< Dynamic object 00000010
+        FIELD_OBJECT        = 0x4    ///< Field object 00000100
     };
 
 protected:
-    // List of child objects
-    std::vector<CObject*>                m_ChildrenList;
-    std::vector<CObject*>::iterator        m_itChildrenList;
+    std::vector<CObject*>                m_ChildrenList; ///< List of child objects
+    std::vector<CObject*>::iterator      m_itChildrenList; ///< Current processing child object
 
-    // Pointer to parent object
-    CObject                                *m_pParent;
-    // Pointer to Game Object
-    CGame                                *m_pGame;
-    // Pointer to World
-    CObjectWorld                        *m_pWorld;
+    CObject                             *m_pParent; ///< Pointer to parent object
+    CGame                               *m_pGame;   ///< Pointer to Game Object
+    CObjectWorld                        *m_pWorld;  ///< Pointer to World
 
-    // Object start position (position may be changed by bullet)
-    Ogre::Vector3                        m_position;
+    Ogre::Vector3                        m_position; ///< Object position (position may be changed by bullet and user)
 
-    Ogre::Entity                        *m_pEntity;
+    Ogre::Entity                        *m_pEntity;  ///< Ogre entity
 
-    btRigidBody                         *m_pBody;
-    btCollisionShape                     *m_pShape;
-    btScalar                             m_mass;
-
-    BtOgre::RigidBodyState                *m_pState;
+    btRigidBody                         *m_pBody;    ///< Physics rigid body
+    btCollisionShape                    *m_pShape;   ///< Shape of collision
+    btScalar                             m_mass;     ///< Mass of object
+    BtOgre::RigidBodyState              *m_pState;   ///< Rigid body state
 };
 
 

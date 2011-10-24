@@ -3,25 +3,24 @@
  * @date    2010-09-29T22:42:56+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Input handler
  *
  *
  */
 
-
-#include <string>
 #include "CInputHandler.h"
 
+#include <string>
+
 CInputHandler::CInputHandler(size_t windowHnd)
-    : m_pInputManager(0),
-    m_pMouse(0),
-    m_pKeyboard(0),
-    m_pJoyStick({0,0,0,0}),
-    m_joysticsNum(0)
+    : m_pInputManager(0)
+    , m_pMouse(0)
+    , m_pKeyboard(0)
+    , m_pJoyStick({0,0,0,0})
 {
     Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
 
@@ -129,7 +128,6 @@ OIS::JoyStick* CInputHandler::getJoyStick(int joyId)
     return NULL;            // WARNING! May return NULL if joystick not present!
 }
 
-//-------------------------------------------------------------------------------------
 bool CInputHandler::keyPressed( const OIS::KeyEvent &arg )
 {
     // Log

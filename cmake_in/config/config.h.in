@@ -1,39 +1,36 @@
+/**
+ * @file    config.h
+ * @date    2010-09-26T13:44:21+0400
+ *
+ * @author  Rabits <home.rabits@gmail.com>
+ * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
+ *
+ * @brief   Main header
+ *
+ *
+ */
+
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
 
-// Debug
-#cmakedefine CONFIG_DEBUG
 
-// Version
-#define CONFIG_TD_VERSION "${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}"
+#cmakedefine CONFIG_DEBUG ///< Debug on
 
-// Name of application and its some dirs
-#define CONFIG_TD_NAME "${CONFIG_TD_NAME}"
+#define CONFIG_TD_VERSION  "${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}" ///< Version
+#define CONFIG_TD_NAME     "${CONFIG_TD_NAME}" ///< Name of application and its some dirs
+#define CONFIG_TD_FULLNAME "${CONFIG_TD_FULLNAME}" ///< FullName of application
 
+#define CONFIG_JOYSTICK_MAX_NUMBER ${CONFIG_JOYSTICK_MAX_NUMBER} ///< Maximum number of joysticks
 
-// FullName of application
-#define CONFIG_TD_FULLNAME "${CONFIG_TD_FULLNAME}"
-
-// Maximum number of joysticks
-#define CONFIG_JOYSTICK_MAX_NUMBER ${CONFIG_JOYSTICK_MAX_NUMBER}
-
-// Usage forcefeedback for joysticks
-#cmakedefine CONFIG_JOYSTICK_USE_FORCEFEEDBACK
+#cmakedefine CONFIG_JOYSTICK_USE_FORCEFEEDBACK ///< Usage forcefeedback for joysticks
 
 // PATHs:
-// Absolute path to default share directory (with default configs)
-#define CONFIG_PATH_ROOT_SHARE "${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/"
-
-// Relative path to default data directory
-#define CONFIG_PATH_HOME_SHARE ".config/${CONFIG_TD_NAME}/"
-
-// Relative path to data directory
-#define CONFIG_PATH_DATA "data/"
-
-// Relative path to config directory
-#define CONFIG_PATH_CONFIG "config/"
-
-// Relative path to users directory
-#define CONFIG_PATH_USERS "users/"
+#define CONFIG_PATH_ROOT_SHARE "${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/" ///< Absolute path to default share directory (with default configs)
+#define CONFIG_PATH_HOME_SHARE ".config/${CONFIG_TD_NAME}/" ///< Relative path to default data directory
+#define CONFIG_PATH_DATA       "data/" ///< Relative path to data directory
+#define CONFIG_PATH_CONFIG     "config/" ///< Relative path to config directory
+#define CONFIG_PATH_USERS      "users/" ///< Relative path to users directory
 
 #endif //CONFIG_H_INCLUDED

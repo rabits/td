@@ -1,5 +1,5 @@
 /**
- * @file    CInputEvent.cpp
+ * @file    CAction.h
  * @date    2010-09-29T22:42:56+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
@@ -7,20 +7,23 @@
  *
  * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
- * @brief   Input event
+ * @brief   Action of object
  *
  *
  */
 
+#ifndef CACTION_H
+#define CACTION_H
 
-#include "CInputEvent.h"
-
-CInputEvent::CInputEvent()
+/** @brief Action, registered by object for controlling them
+ */
+class CAction
 {
-    //ctor
-}
+public:
+    CAction();
+    ~CAction();
+protected:
+private:
+};
 
-CInputEvent::~CInputEvent()
-{
-    //dtor
-}
+#endif // CACTION_H

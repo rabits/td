@@ -3,9 +3,9 @@
  * @date    2010-09-29T22:42:56+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Input event
  *
@@ -20,18 +20,23 @@
 
 #include <OIS/OIS.h>
 
+/** @brief Event of user from controller (keyboard, mouse)
+ *
+ * Have 1 parameter:
+ * - value (if button: 0.0,1.0; if stick: 0.0...1.0)
+ */
 class CInputEvent
 {
 public:
+    /** @brief Constructor
+     */
     CInputEvent();
+
+    /** @brief Destructor
+     */
     ~CInputEvent();
 protected:
-    // KeyBoard, Mouse or JoyStick
-    OIS::Type m_inputType;
-
-    // Use static force
-    bool m_staticUse;
-    int m_staticValue;
+    float  m_value; ///< Value of event
 private:
 };
 

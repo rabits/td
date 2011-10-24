@@ -3,9 +3,9 @@
  * @date    2010-09-26T13:44:21+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Game master object
  *
@@ -32,7 +32,6 @@
  * Esc - Quit
  */
 
-//-------------------------------------------------------------------------------------
 CGame::CGame()
    : m_pSceneMgr(0),
    m_pCamera(0),
@@ -49,6 +48,11 @@ CGame::CGame()
 
 CGame* CGame::m_pInstance = NULL;
 
+/** @brief Create and get current instance of game
+ *
+ * @return CGame*
+ *
+ */
 CGame* CGame::getInstance()
 {
     if( !m_pInstance )
@@ -56,7 +60,20 @@ CGame* CGame::getInstance()
     return m_pInstance;
 }
 
-//-------------------------------------------------------------------------------------
+/** @brief Removed main game object
+ *
+ * @return void
+ *
+ */
+void CGame::destroyInstance()
+{
+    if( m_pInstance )
+        delete m_pInstance;
+};
+
+/** @brief Destructor of game
+ *
+ */
 CGame::~CGame()
 {
     if( m_pTrayMgr )
@@ -76,20 +93,22 @@ CGame::~CGame()
         delete (*o_currentUser);
 }
 
-//-------------------------------------------------------------------------------------
-void CGame::updateWorlds(const Ogre::FrameEvent& evt)
-{
-    for( o_currentWorld=m_vWorlds.begin() ; o_currentWorld < m_vWorlds.end(); o_currentWorld++ )
-        (*o_currentWorld)->update(evt);
-}
-
-//-------------------------------------------------------------------------------------
-void CGame::updateUsers(const Ogre::FrameEvent& evt)
-{
-    for( o_currentUser = m_vUsers.begin() ; o_currentUser < m_vUsers.end(); o_currentUser++ )
-        (*o_currentUser)->update(evt);
-}
-
+/** @brief Preparation to game start
+ *
+ * @return bool
+ *
+ * Loading config
+ * Create root object of Ogre
+ * Load config of resources
+ * Initialise root object of Ogre
+ * Create render window
+ * Choising screen manager
+ * Creating main camera
+ * Creating viewport
+ * Load resources
+ * Create frame listener
+ * Create worlds
+ */
 bool CGame::initialise()
 {
     loadConfig();
@@ -173,7 +192,7 @@ bool CGame::initialise()
     //-------- createCamera -----------
     Ogre::LogManager::getSingletonPtr()->logMessage("Creating camera");
     // Create the camera
-    m_pCamera = m_pSceneMgr->createCamera("PlayerCam");
+    m_pCamera = m_pSceneMgr->createCamera("MainGameCamera");
 
     // Position it at 500 in Z direction
     m_pCamera->setPosition(Ogre::Vector3(30,60,30));
@@ -213,6 +232,14 @@ bool CGame::initialise()
     return true;
 };
 
+/** @brief Preparing and load game configuration files
+ *
+ * @return bool
+ *
+ * Prepare env variables
+ * Create user config dir
+ * Load configs from user config dir
+ */
 bool CGame::loadConfig()
 {
     pugi::xml_node data_env = m_pData.append_child("env");
@@ -239,7 +266,12 @@ bool CGame::loadConfig()
     return true;
 };
 
-//-------------------------------------------------------------------------------------
+
+/** @brief Starting game render and playing
+ *
+ * @return void
+ *
+ */
 void CGame::start()
 {
     Ogre::LogManager::getSingletonPtr()->logMessage("Starting game");
@@ -269,19 +301,31 @@ void CGame::start()
     }
 }
 
-//-------------------------------------------------------------------------------------
+/** @brief Save screenshot
+ *
+ * @return void
+ *
+ */
 void CGame::getScreenshot()
 {
     m_pWindow->writeContentsToTimestampedFile("screenshot", ".jpg");
 }
 
-//-------------------------------------------------------------------------------------
+/** @brief Shutting down of game
+ *
+ * @return void
+ *
+ */
 void CGame::exit()
 {
     m_ShutDown = true;
 }
 
-//-------------------------------------------------------------------------------------
+/** @brief Frame listener of user input
+ *
+ * @return void
+ *
+ */
 void CGame::createFrameListener()
 {
     size_t windowHnd = 0;
@@ -322,7 +366,13 @@ void CGame::createFrameListener()
 
     m_pRoot->addFrameListener(this);
 }
-//-------------------------------------------------------------------------------------
+
+/** @brief Main event on update frame
+ *
+ * @param evt const Ogre::FrameEvent&
+ * @return bool
+ *
+ */
 bool CGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
 //    kernelObj->update();
@@ -359,13 +409,47 @@ bool CGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
     return true;
 }
 
-//-------------------------------------------------------------------------------------
+/** @brief Updating worlds actions on every frame event
+ *
+ * @param evt const Ogre::FrameEvent&
+ * @return void
+ *
+ */
+void CGame::updateWorlds(const Ogre::FrameEvent& evt)
+{
+    for( o_currentWorld=m_vWorlds.begin() ; o_currentWorld < m_vWorlds.end(); o_currentWorld++ )
+        (*o_currentWorld)->update(evt);
+}
+
+/** @brief Updating users state on every frame event
+ *
+ * @param evt const Ogre::FrameEvent&
+ * @return void
+ *
+ */
+void CGame::updateUsers(const Ogre::FrameEvent& evt)
+{
+    for( o_currentUser = m_vUsers.begin() ; o_currentUser < m_vUsers.end(); o_currentUser++ )
+        (*o_currentUser)->update(evt);
+}
+
+/** @brief Event on start frame
+ *
+ * @param evt const Ogre::FrameEvent&
+ * @return bool
+ *
+ */
 bool CGame::frameStarted(const Ogre::FrameEvent &evt)
 {
     return true;
 }
 
-//Adjust mouse clipping area
+/** @brief Adjust mouse clipping area
+ *
+ * @param rw Ogre::RenderWindow*
+ * @return void
+ *
+ */
 void CGame::windowResized(Ogre::RenderWindow* rw)
 {
     unsigned int width, height, depth;
@@ -377,7 +461,13 @@ void CGame::windowResized(Ogre::RenderWindow* rw)
     ms.height = height;
 }
 
-//Unattach OIS before window shutdown (very important under Linux)
+/** @brief Unattach OIS
+ *
+ * @param rw Ogre::RenderWindow*
+ * @return void
+ *
+ * Unattach OIS before window shutdown (very important under Linux)
+ */
 void CGame::windowClosed(Ogre::RenderWindow* rw)
 {
     //Only close for window that created OIS (the main window in these demos)

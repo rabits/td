@@ -71,12 +71,14 @@
 		<Unit filename="lib/pugixml/pugiconfig.hpp" />
 		<Unit filename="lib/pugixml/pugixml.cpp" />
 		<Unit filename="lib/pugixml/pugixml.hpp" />
-		<Unit filename="src/CControl.cpp" />
-		<Unit filename="src/CControl.h" />
+		<Unit filename="src/CAction.cpp" />
+		<Unit filename="src/CAction.h" />
 		<Unit filename="src/CControlled.cpp" />
 		<Unit filename="src/CControlled.h" />
 		<Unit filename="src/CData.cpp" />
 		<Unit filename="src/CData.h" />
+		<Unit filename="src/CEye.cpp" />
+		<Unit filename="src/CEye.h" />
 		<Unit filename="src/CGame.cpp" />
 		<Unit filename="src/CGame.h" />
 		<Unit filename="src/CGravityField.cpp" />
@@ -85,8 +87,6 @@
 		<Unit filename="src/CInputEvent.h" />
 		<Unit filename="src/CInputHandler.cpp" />
 		<Unit filename="src/CInputHandler.h" />
-		<Unit filename="src/CMove.cpp" />
-		<Unit filename="src/CMove.h" />
 		<Unit filename="src/CObject.cpp" />
 		<Unit filename="src/CObject.h" />
 		<Unit filename="src/CObjectCube.cpp" />

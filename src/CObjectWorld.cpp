@@ -3,15 +3,14 @@
  * @date    2010-10-06T12:18:13+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   World object
  *
  *
  */
-
 
 #include "CObjectWorld.h"
 #include "CGame.h"
@@ -30,17 +29,17 @@ CObjectWorld::CObjectWorld(CGame &pGame, const Ogre::Vector3 &pos)
         m_pNode = m_pGame->m_pSceneMgr->getRootSceneNode()->createChildSceneNode(m_position);
 
         // Bullet initialisation.
-        mBroadphase = new btAxisSweep3(btVector3(-10000,-10000,-10000), btVector3(10000,10000,10000), 1024);
-        mCollisionConfig = new btDefaultCollisionConfiguration();
-        mDispatcher = new btCollisionDispatcher(mCollisionConfig);
-        mSolver = new btSequentialImpulseConstraintSolver();
+        m_pBroadphase = new btAxisSweep3(btVector3(-10000,-10000,-10000), btVector3(10000,10000,10000), 1024);
+        m_pCollisionConfig = new btDefaultCollisionConfiguration();
+        m_pDispatcher = new btCollisionDispatcher(m_pCollisionConfig);
+        m_pSolver = new btSequentialImpulseConstraintSolver();
 
-        phyWorld = new btDiscreteDynamicsWorld(mDispatcher, mBroadphase, mSolver, mCollisionConfig);
-        phyWorld->setGravity(btVector3(0,0,0));
-        dbgdraw = new BtOgre::DebugDrawer(m_pGame->m_pSceneMgr->getRootSceneNode(), phyWorld);
+        m_pPhyWorld = new btDiscreteDynamicsWorld(m_pDispatcher, m_pBroadphase, m_pSolver, m_pCollisionConfig);
+        m_pPhyWorld->setGravity(btVector3(0,0,0));
+        m_pDbgDraw = new BtOgre::DebugDrawer(m_pGame->m_pSceneMgr->getRootSceneNode(), m_pPhyWorld);
 
-        dbgdraw->setDebugMode(true);
-        phyWorld->setDebugDrawer(dbgdraw);
+        m_pDbgDraw->setDebugMode(true);
+        m_pPhyWorld->setDebugDrawer(m_pDbgDraw);
 
         m_pGravityField= new CGravityField(this, 20.0f);
 
@@ -57,10 +56,10 @@ void CObjectWorld::init()
 CObjectWorld::~CObjectWorld()
 {
     //Free Bullet stuff.
-    delete mSolver;
-    delete mDispatcher;
-    delete mCollisionConfig;
-    delete mBroadphase;
+    delete m_pSolver;
+    delete m_pDispatcher;
+    delete m_pCollisionConfig;
+    delete m_pBroadphase;
 }
 
 void CObjectWorld::update(const Ogre::FrameEvent& evt)
@@ -69,17 +68,17 @@ void CObjectWorld::update(const Ogre::FrameEvent& evt)
     m_pGravityField->catchFieldContact();
 
     //Update Bullet world. Don't forget the debugDrawWorld() part!
-    phyWorld->stepSimulation(evt.timeSinceLastFrame, 10);
-    phyWorld->debugDrawWorld();
+    m_pPhyWorld->stepSimulation(evt.timeSinceLastFrame, 10);
+    m_pPhyWorld->debugDrawWorld();
 
-    dbgdraw->step();
+    m_pDbgDraw->step();
 
     // Update childrens
     for( m_itChildrenList = m_ChildrenList.begin() ; m_itChildrenList < m_ChildrenList.end(); m_itChildrenList++ )
         (*m_itChildrenList)->update();
 
     // Clear object in gravity fields map
-    m_pGravityField->clearObjectInGravityField();
+    m_pGravityField->clearObjectsInGravityField();
 }
 
 void CObjectWorld::setObjectState(int iState)

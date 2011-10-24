@@ -3,9 +3,9 @@
  * @date    2010-10-07T15:55:38+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Controlled element
  *
@@ -23,4 +23,14 @@ CControlled::CControlled()
 CControlled::~CControlled()
 {
     //dtor
+}
+
+/** @brief Returning list of can be controlled actions
+ *
+ * @return std::vector<CAction>
+ *
+ */
+std::vector<CAction> CControlled::getAvailableActions()
+{
+    return m_vActions;
 }

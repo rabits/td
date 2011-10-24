@@ -3,15 +3,14 @@
  * @date    2010-09-26T13:44:21+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Gravity field
  *
  *
  */
-
 
 #ifndef CGRAVITYFIELD_H_INCLUDED
 #define CGRAVITYFIELD_H_INCLUDED
@@ -23,65 +22,169 @@
 #include <map>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 
+/** @brief Invisible box with gravity vector
+ */
 class CGravityElement
 {
 public:
+    /** @brief Constructor of gravity element
+     *
+     * @param box btVector3*
+     * @param position btVector3*
+     * @param force btVector3*
+     *
+     */
     CGravityElement(btVector3* box, btVector3* position, btVector3* force);
+
+    /** @brief Destructor, cleaner of element
+    */
     ~CGravityElement();
 
-    btCollisionObject            *m_pGravityObj;
-    btVector3                    *m_pForce;
+    btCollisionObject            *m_pGravityObj; ///< Bullet collision object
+    btVector3                    *m_pForce; ///< Vector of gravity force
 
-    int                            m_uid;
+    int                           m_uid; ///< Unique id of element
 
+    /** @brief Enumiration of status of element
+     */
     enum ElementStatus
     {
-        ES_ENABLED = 1,
-        ES_DISABLED = 2
+        ES_ENABLED  = 1, ///< Element is enabled
+        ES_DISABLED = 2  ///< Element is disabled
     };
 
 private:
-    ElementStatus                m_status;
+    ElementStatus                 m_status; ///< Current element status
 };
 
+    /** @brief Global collection of invisible boxes with gravity vector
+     */
 class CGravityField
 {
-private:
-    struct                                        SForceFieldCallback;
-
 public:
+    /** @brief Construct of gravity field
+     *
+     * @param world CObjectWorld*
+     * @param gravityValue float
+     *
+     */
     CGravityField(CObjectWorld *world, float gravityValue);
+
+    /** @brief Destructor of field
+     */
     ~CGravityField();
 
+
     // For world
+    /** @brief Set gravity force of field
+     *
+     * @param newGravity float
+     * @return void
+     *
+     */
     void setGravityValue(float newGravity);
+
+    /** @brief Get current gravity value
+     *
+     * @return float
+     *
+     */
     float getGravityValue();
+
+    /** @brief Testing fields to contact with objects
+     *
+     * @return void
+     *
+     */
     void catchFieldContact();
-    inline void clearObjectInGravityField() { m_objectInGravityField.clear(); }
+
+    /** @brief Clearing all objects in field
+     *
+     * @return void clearObjectsInGravityField(){
+     *
+     */
+    inline void clearObjectsInGravityField() { m_objectInGravityField.clear(); }
+
 
     // For elements
-    int add(CGravityElement *el);
-    void remove(int elId);
+    /** @brief Add new gravity element to field
+     *
+     * @param el CGravityElement*
+     * @return int
+     *
+     */
+    int        add(CGravityElement *el);
+
+    /** @brief Remove gravity element from field by id
+     *
+     * @param elId int
+     * @return void
+     *
+     */
+    void       remove(int elId);
+
+    /** @brief Get gravity element object by id
+     *
+     * @param elId int
+     * @return btVector3*
+     *
+     */
     btVector3* get(int elId);
-    void enable(int elId);
-    void disable(int elId);
+
+    /** @brief Enabling gravity element by id
+     *
+     * @param elId int
+     * @return void
+     *
+     */
+    void       enable(int elId);
+
+    /** @brief Disable gravity element by id
+     *
+     * @param elId int
+     * @return void
+     *
+     */
+    void       disable(int elId);
 
     // For objects
-    void zeroObjectGravity(int objectId, btVector3* gravity);
-    void setObjectGravity(int objectId, btVector3* gravity);
+    /** @brief Zeroing of object gravity
+     *
+     * @param objectId int
+     * @param gravity btVector3*
+     * @return void
+     *
+     */
+    void      zeroObjectGravity(int objectId, btVector3* gravity);
+
+    /** @brief Set gravity to object
+     *
+     * @param objectId int
+     * @param gravity btVector3*
+     * @return void
+     *
+     */
+    void      setObjectGravity(int objectId, btVector3* gravity);
+
+    /** @brief Get object gravity
+     *
+     * @param objectId int
+     * @return btVector3
+     *
+     */
     btVector3 getObjectGravity(int objectId);
 
-    // Callback
-    static CGravityField::SForceFieldCallback    m_callbackResult;
+    struct SForceFieldCallback; ///< Callback structure
+    static SForceFieldCallback   m_callbackResult; ///< Result of callback
 
 private:
-    std::map<int, bool>                            m_objectInGravityField;
-    std::map<int, btVector3>                    m_objectGravityMap;
-    std::map<int, CGravityElement*>                m_gravityFieldMap;
-    std::map<int, CGravityElement*>::iterator    m_itGravityFieldMap;
-    CObjectWorld                                *m_pWorld;
+    std::map<int, bool>                         m_objectInGravityField; ///< Map causes object is in gravity field
+    std::map<int, btVector3>                    m_objectGravityMap; ///< Objects gravity vector
+    std::map<int, CGravityElement*>             m_gravityFieldMap; ///< Elements in field
+    std::map<int, CGravityElement*>::iterator   m_itGravityFieldMap; ///< Current processing gravity element
+    CObjectWorld                               *m_pWorld; ///< Linked world object
 
-    float                                        m_gravityValue;
+    float                                       m_gravityValue; ///< Force of gravity in field
 };
 
 #endif // CGRAVITYFIELD_H_INCLUDED

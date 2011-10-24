@@ -3,15 +3,14 @@
  * @date    2010-10-06T12:18:13+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Cube object
  *
  *
  */
-
 
 #include "CObjectCube.h"
 #include "CGravityField.h"
@@ -57,7 +56,7 @@ void CObjectCube::init()
 
         //Create the Body.
         m_pBody = new btRigidBody(m_mass, m_pState, m_pShape, inertia);
-        m_pWorld->phyWorld->addRigidBody(m_pBody, CObject::STATIC_OBJECT, CObject::DYNAMIC_OBJECT);
+        m_pWorld->m_pPhyWorld->addRigidBody(m_pBody, CObject::STATIC_OBJECT, CObject::DYNAMIC_OBJECT);
 
         // Get size of cube
         Ogre::Vector3 size = converter.getSize()*m_cubeSize;

@@ -3,9 +3,9 @@
  * @date    2010-10-07T15:55:38+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
- * @url     http://www.rabits.ru/td
- *
  * @copyright GNU General Public License, version 3 <http://www.gnu.org/licenses/>
+ *
+ * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Controlled object
  *
@@ -19,15 +19,19 @@
 #include <vector>
 #include <string>
 
+#include "CAction.h"
+
+/** @brief Object with this class can be controlled by actions
+ */
 class CControlled
 {
 public:
     CControlled();
     ~CControlled();
 
-    std::vector<std::string>        getAvailableActions();
+    std::vector<CAction>        getAvailableActions();
 protected:
-    std::vector<std::string>        m_vActions;
+    std::vector<CAction>        m_vActions; ///< Actions of object to be controlled
 
 private:
 };
