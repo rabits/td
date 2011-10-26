@@ -12,11 +12,10 @@
  *
  */
 
-
 #ifndef COBJECTKERNEL_H_INCLUDED
 #define COBJECTKERNEL_H_INCLUDED
 
-#include "config.h"
+#include "Common.h"
 
 #include "CControlled.h"
 #include "CObject.h"

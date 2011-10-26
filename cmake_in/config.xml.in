@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<td version="0.1.0">
+  <Game>
+    <env />
+    <path>
+      <ogre_plugins>${CONFIG_OGRE_PLUGINS_PATH}</ogre_plugins><!-- Full path to directory with Ogre plugins -->
+      <root_data>${CONFIG_PATH_DATA}/</root_data><!-- Global data directory relative from prefix -->
+      <home_data>.config/${CONFIG_TD_NAME}/</user_data><!-- Home config.xml and data directory from HOME env -->
+      <data>data/</data><!-- Data directory in $root_data or $user_data -->
+      <users>users/</users><!-- Users directory in $root_data or $user_data -->
+    </path>
+    <config>
+      <ogre>
+        <plugins>
+          <plugin>RenderSystem_GL</plugin>
+          <plugin>Plugin_ParticleFX</plugin>
+          <plugin>Plugin_BSPSceneManager</plugin>
+          <plugin>Plugin_CgProgramManager</plugin>
+          <plugin>Plugin_PCZSceneManager</plugin>
+          <plugin>Plugin_OctreeZone</plugin>
+          <plugin>Plugin_OctreeSceneManager</plugin>
+        </plugins>
+        <video choice="OpenGL">
+          <driver name="OpenGL" plugin="RenderSystem_GL">
+            <display>
+              <!-- Display configuration -->
+              <x>800</x>
+              <y>600</y>
+              <frequency>60</frequency>
+            </display>
+            <full_screen>
+              <!-- Run in fullscreen? -->
+              <enabled>false</enabled>
+            </full_screen>
+            <fsaa>
+              <!-- FSAA -->
+              <enabled>false</enabled>
+            </fsaa>
+            <vsync>
+              <!-- Vertical Sinchronisation -->
+              <enabled>true</enabled>
+            </vsync>
+            <rtt>
+              <!-- RTT Preferred Mode -->
+              <enabled>true</enabled>
+              <mode>FBO</mode>
+            </rtt>
+            <srgb>
+              <!-- sRGB Gamma Conversion -->
+              <enabled>false</enabled>
+            </srgb>
+          </driver>
+        </video>
+        <resources><!-- Path to ogre resources (from $root_data/$data or $home_data/$data) -->
+          <Bootstrap>
+            <Zip>graphic/OgreCore.zip</Zip>
+            <Zip>graphic/SdkTrays.zip</Zip>
+          </Bootstrap>
+          <General>
+              <FileSystem>graphic</FileSystem>
+              <FileSystem>graphic/meshes</FileSystem>
+              <FileSystem>graphic/textures</FileSystem>
+          </General>
+        </resources>
+      </ogre>
+    </config>
+  </Game>
+</td>

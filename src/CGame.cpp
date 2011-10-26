@@ -9,14 +9,6 @@
  *
  * @brief   Game master object
  *
- *
- */
-
-
-#include "CGame.h"
-#include "CInputHandler.h"
-
-/**
  * Controls:
  *
  * F - toggle visibility of advanced frame stats
@@ -32,48 +24,32 @@
  * Esc - Quit
  */
 
+#include "CGame.h"
+#include "CInputHandler.h"
+
 CGame::CGame()
-   : m_pSceneMgr(0),
-   m_pCamera(0),
-   m_pWindow(0),
-   m_pInputHandler(0),
-   m_pTrayMgr(0),
-   m_pDetailsPanel(0),
-   m_pRoot(0),
-   m_pTimer(0),
-   m_NextFrameTime(0),
-   m_ShutDown(false)
+   : CData("Game")
+   , m_pSceneMgr(NULL)
+   , m_pCamera(NULL)
+   , m_pWindow(NULL)
+   , m_pInputHandler(NULL)
+   , m_pTrayMgr(NULL)
+   , m_pDetailsPanel(NULL)
+   , m_vUsers({})
+   , o_currentUser(NULL)
+   , o_currentWorld(NULL)
+   , m_vWorlds({})
+   , m_pRoot(NULL)
+   , m_pTimer(new Ogre::Timer())
+   , m_NextFrameTime(0)
+   , m_ShutDown(false)
 {
+    m_pTimer->reset();
 }
 
 CGame* CGame::m_pInstance = NULL;
+fs::path* CGame::m_pPrefix = NULL;
 
-/** @brief Create and get current instance of game
- *
- * @return CGame*
- *
- */
-CGame* CGame::getInstance()
-{
-    if( !m_pInstance )
-        m_pInstance = new CGame();
-    return m_pInstance;
-}
-
-/** @brief Removed main game object
- *
- * @return void
- *
- */
-void CGame::destroyInstance()
-{
-    if( m_pInstance )
-        delete m_pInstance;
-};
-
-/** @brief Destructor of game
- *
- */
 CGame::~CGame()
 {
     if( m_pTrayMgr )
@@ -93,56 +69,59 @@ CGame::~CGame()
         delete (*o_currentUser);
 }
 
-/** @brief Preparation to game start
- *
- * @return bool
- *
- * Loading config
- * Create root object of Ogre
- * Load config of resources
- * Initialise root object of Ogre
- * Create render window
- * Choising screen manager
- * Creating main camera
- * Creating viewport
- * Load resources
- * Create frame listener
- * Create worlds
- */
+CGame* CGame::getInstance()
+{
+    if( m_pInstance == NULL )
+        m_pInstance = new CGame();
+
+    return m_pInstance;
+}
+
+void CGame::destroyInstance()
+{
+    if( m_pInstance )
+        delete m_pInstance;
+};
+
+unsigned int CGame::getTime()
+{
+    return m_pTimer->getMilliseconds();
+}
+
+const char* CGame::getPrefix(const char *append)
+{
+    if( m_pPrefix == NULL )
+    {
+        // Set prefix path
+        m_pPrefix = new fs::path(Common::getPrefixPath());
+        log_info("Prefix path: %s", m_pPrefix->c_str());
+    }
+
+    if( append == NULL )
+        return m_pPrefix->c_str();
+    else
+    {
+        fs::path out(*m_pPrefix);
+        out /= append;
+        return out.c_str();
+    }
+}
+
 bool CGame::initialise()
 {
-    loadConfig();
-    m_pRoot = new Ogre::Root(CONFIG_PATH_CONFIG "plugins.cfg", CONFIG_PATH_CONFIG "main.cfg", CONFIG_PATH_CONFIG "logfile.log");
+    log_info("Starting configuration");
+    m_pRoot = new Ogre::Root();
 
-    Ogre::LogManager::getSingletonPtr()->logMessage("Starting configuration");
+    // Loading global config
+    loadConfig(CGame::getPrefix(CONFIG_PATH_GLOBAL_CONFIG "/config.xml"));
 
-    //-------- setupResources ----------
-    Ogre::LogManager::getSingletonPtr()->logMessage("Setup resources");
-    // Load resource paths from config file
-    Ogre::ConfigFile cf;
-    cf.load(CONFIG_PATH_CONFIG "resources.cfg");
+    // Loading user config
+    //loadConfig(m_pPrefix);
 
-    // Go through all sections & settings in the file
-    Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
-
-    Ogre::String secName, typeName, archName;
-    while (seci.hasMoreElements())
-    {
-        secName = seci.peekNextKey();
-        Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
-        Ogre::ConfigFile::SettingsMultiMap::iterator i;
-        for (i = settings->begin(); i != settings->end(); ++i)
-        {
-            typeName = i->first;
-            archName = i->second;
-            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-            archName, typeName, secName);
-        }
-    }
-    //-------- !setupResources! ----------
+    //m_pRoot = new Ogre::Root(CONFIG_PATH_CONFIG "plugins.cfg", CONFIG_PATH_CONFIG "main.cfg", CONFIG_PATH_CONFIG "logfile.log");
 
     //-------- configure ---------------
-    Ogre::LogManager::getSingletonPtr()->logMessage("Creating main configuration");
+    log_info("Creating main configuration");
     if( !(m_pRoot->restoreConfig() || m_pRoot->showConfigDialog()) )
         return false;
 
@@ -181,30 +160,29 @@ bool CGame::initialise()
 
     m_pWindow = m_pRoot->createRenderWindow(CONFIG_TD_FULLNAME, w, h, fullscreen, &miscParams);
 
-    m_pTimer = new Ogre::Timer();
     //-------- !configure! ---------------
 
     //-------- chooseSceneManager-------
-    Ogre::LogManager::getSingletonPtr()->logMessage("Creating root scene");
+    log_info("Creating root scene");
     m_pSceneMgr = m_pRoot->createSceneManager(Ogre::ST_GENERIC);
     //-------- !chooseSceneManager!-------
 
     //-------- createCamera -----------
-    Ogre::LogManager::getSingletonPtr()->logMessage("Creating camera");
+    log_info("Creating camera");
     // Create the camera
     m_pCamera = m_pSceneMgr->createCamera("MainGameCamera");
 
     // Position it at 500 in Z direction
-    m_pCamera->setPosition(Ogre::Vector3(30,60,30));
+    m_pCamera->setPosition(Ogre::Vector3(30.0,60.0,30.0));
     // Look back along -Z
-    m_pCamera->lookAt(Ogre::Vector3(0,50,0));
-    m_pCamera->setNearClipDistance(0.01);
+    m_pCamera->lookAt(Ogre::Vector3(0.0,50.0,0.0));
+    m_pCamera->setNearClipDistance(0.01f);
 
-    m_vUsers.push_back(new CUser(m_pCamera));   // create a default camera controller
+    //m_vUsers.push_back(new CUser(m_pCamera));   // create a default camera controller
     //-------- !createCamera! -----------
 
     //-------- createViewports --------
-    Ogre::LogManager::getSingletonPtr()->logMessage("Creating viewport");
+    log_info("Creating viewport");
     // Create one viewport, entire window
     Ogre::Viewport* vp = m_pWindow->addViewport(m_pCamera);
     vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
@@ -216,70 +194,90 @@ bool CGame::initialise()
     // Set default mipmap level (NB some APIs ignore this)
     Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
+    //-------- setupResources ----------
+    log_info("Setup resources");
+    // Load resource paths from config file
+    Ogre::ConfigFile cf;
+    cf.load("resources.cfg");
+
+    // Go through all sections & settings in the file
+    Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
+
+    Ogre::String secName, typeName, archName;
+    while (seci.hasMoreElements())
+    {
+        secName = seci.peekNextKey();
+        Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
+        Ogre::ConfigFile::SettingsMultiMap::iterator i;
+        for (i = settings->begin(); i != settings->end(); ++i)
+        {
+            typeName = i->first;
+            archName = i->second;
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            archName, typeName, secName);
+        }
+    }
+    //-------- !setupResources! ----------
+
     //------- loadResources -----------
-    Ogre::LogManager::getSingletonPtr()->logMessage("Loading resources");
+    log_info("Loading resources");
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
     //------- !loadResources! -----------
 
     createFrameListener();
 
     // Create worlds
-    Ogre::LogManager::getSingletonPtr()->logMessage("Creating worlds");
+    log_info("Creating worlds");
     m_vWorlds.push_back(new CObjectWorld(*this));
 
-    Ogre::LogManager::getSingletonPtr()->logMessage("Complete configuration");
+    log_info("Complete configuration");
 
     return true;
 };
 
-/** @brief Preparing and load game configuration files
- *
- * @return bool
- *
- * Prepare env variables
- * Create user config dir
- * Load configs from user config dir
- */
-bool CGame::loadConfig()
+bool CGame::loadEnv()
 {
-    pugi::xml_node data_env = m_pData.append_child("env");
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-    data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("USERPROFILE"));
-#else
+    pugi::xml_node data_env = m_data.append_child("env");
+
+    // Home of user
     data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("HOME"));
-#endif
 
-    pugi::xml_node data_current_path = m_pData.append_child("current_path");
+    return true;
+}
 
-    fs::path path_root_share(CONFIG_PATH_ROOT_SHARE);
-    data_current_path.append_child("path_root_share").append_child(pugi::node_pcdata).set_value(path_root_share.c_str());
+bool CGame::loadConfig(const char *configfile)
+{
+    log_info("Loading game configuration file: \"%s\"", configfile);
+    pugi::xml_node data_path = m_data.append_child("path");
 
-    fs::path path_home_share(data_env.child_value("HOME"));
-    path_home_share /= CONFIG_PATH_HOME_SHARE;
-    data_current_path.append_child("path_home_share").append_child(pugi::node_pcdata).set_value(path_home_share.c_str());
+    /*fs::path path_root_share(CONFIG_PATH_ROOT_SHARE);
+    data_path.append_child("path_root_share").append_child(pugi::node_pcdata).set_value(path_root_share.c_str());
 
     if( ! fs::is_directory(path_home_share) )
     {
-        m_pDataRoot.save(std::cout);
+        log_info("Creating user home config directory");
+        boost::filesystem3::create_directories(path_home_share);
+
+        // Creating default configuration of game
+        loadConfig();
+        pugi::xml_node data_config = m_data.append_child("config");
+        saveData(std::cout);
     }
+    else
+    {
+
+    }*/
 
     return true;
 };
 
-
-/** @brief Starting game render and playing
- *
- * @return void
- *
- */
 void CGame::start()
 {
-    Ogre::LogManager::getSingletonPtr()->logMessage("Starting game");
+    log_notice("Starting game");
     //m_pRoot->startRendering();
 
     // Prepare to rendering
     unsigned long now;
-    m_pTimer->reset();
 
     // Main game loop
     while( !m_ShutDown )
@@ -301,31 +299,16 @@ void CGame::start()
     }
 }
 
-/** @brief Save screenshot
- *
- * @return void
- *
- */
-void CGame::getScreenshot()
-{
-    m_pWindow->writeContentsToTimestampedFile("screenshot", ".jpg");
-}
-
-/** @brief Shutting down of game
- *
- * @return void
- *
- */
 void CGame::exit()
 {
     m_ShutDown = true;
 }
 
-/** @brief Frame listener of user input
- *
- * @return void
- *
- */
+void CGame::getScreenshot()
+{
+    m_pWindow->writeContentsToTimestampedFile("screenshot", ".jpg");
+}
+
 void CGame::createFrameListener()
 {
     size_t windowHnd = 0;
@@ -367,12 +350,6 @@ void CGame::createFrameListener()
     m_pRoot->addFrameListener(this);
 }
 
-/** @brief Main event on update frame
- *
- * @param evt const Ogre::FrameEvent&
- * @return bool
- *
- */
 bool CGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
 //    kernelObj->update();
@@ -409,47 +386,23 @@ bool CGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
     return true;
 }
 
-/** @brief Updating worlds actions on every frame event
- *
- * @param evt const Ogre::FrameEvent&
- * @return void
- *
- */
 void CGame::updateWorlds(const Ogre::FrameEvent& evt)
 {
     for( o_currentWorld=m_vWorlds.begin() ; o_currentWorld < m_vWorlds.end(); o_currentWorld++ )
         (*o_currentWorld)->update(evt);
 }
 
-/** @brief Updating users state on every frame event
- *
- * @param evt const Ogre::FrameEvent&
- * @return void
- *
- */
 void CGame::updateUsers(const Ogre::FrameEvent& evt)
 {
     for( o_currentUser = m_vUsers.begin() ; o_currentUser < m_vUsers.end(); o_currentUser++ )
         (*o_currentUser)->update(evt);
 }
 
-/** @brief Event on start frame
- *
- * @param evt const Ogre::FrameEvent&
- * @return bool
- *
- */
 bool CGame::frameStarted(const Ogre::FrameEvent &evt)
 {
     return true;
 }
 
-/** @brief Adjust mouse clipping area
- *
- * @param rw Ogre::RenderWindow*
- * @return void
- *
- */
 void CGame::windowResized(Ogre::RenderWindow* rw)
 {
     unsigned int width, height, depth;
@@ -457,17 +410,10 @@ void CGame::windowResized(Ogre::RenderWindow* rw)
     rw->getMetrics(width, height, depth, left, top);
 
     const OIS::MouseState &ms = m_pInputHandler->getMouse()->getMouseState();
-    ms.width = width;
-    ms.height = height;
+    ms.width = static_cast<int>(width);
+    ms.height = static_cast<int>(height);
 }
 
-/** @brief Unattach OIS
- *
- * @param rw Ogre::RenderWindow*
- * @return void
- *
- * Unattach OIS before window shutdown (very important under Linux)
- */
 void CGame::windowClosed(Ogre::RenderWindow* rw)
 {
     //Only close for window that created OIS (the main window in these demos)

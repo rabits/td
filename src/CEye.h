@@ -14,6 +14,7 @@
 #ifndef CEYE_H
 #define CEYE_H
 
+#include <OGRE/Ogre.h>
 #include "CControlled.h"
 
 /** @brief It is invisible camera controller
@@ -28,9 +29,16 @@ public:
      */
     CEye(Ogre::Camera *camera);
 
+    /** @brief Copy constructor
+     *
+     * @param obj const CEye&
+     *
+     */
+    CEye(const CEye &obj);
+
     /** @brief Destructor
      */
-    ~CEye();
+    virtual ~CEye();
 
     /** @brief Update eye state
      *

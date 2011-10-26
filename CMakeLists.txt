@@ -78,11 +78,16 @@ if(NOT CONFIG_PATH_BIN)
         "Target path to install binary (CMAKE_INSTALL_PREFIX/games)"
         FORCE)
 endif(NOT CONFIG_PATH_BIN)
-if(NOT CONFIG_PATH_SHARE)
-    set(CONFIG_PATH_SHARE "share/${CONFIG_TD_NAME}" CACHE PATH
-        "Target path to install data (CMAKE_INSTALL_PREFIX/share/${CONFIG_TD_NAME})"
+if(NOT CONFIG_PATH_DATA)
+    set(CONFIG_PATH_DATA "share/${CONFIG_TD_NAME}" CACHE PATH
+        "Target path to install global data (CMAKE_INSTALL_PREFIX/share/${CONFIG_TD_NAME})"
         FORCE)
-endif(NOT CONFIG_PATH_SHARE)
+endif(NOT CONFIG_PATH_DATA)
+if(NOT CONFIG_PATH_ETC)
+    set(CONFIG_PATH_ETC "etc/${CONFIG_TD_NAME}" CACHE PATH
+        "Target path to install global config (CMAKE_INSTALL_PREFIX/etc/${CONFIG_TD_NAME})"
+        FORCE)
+endif(NOT CONFIG_PATH_ETC)
 
 # Options
 
@@ -117,7 +122,7 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
 set(CPACK_PACKAGE_VERSION_MAJOR ${TARGET_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${TARGET_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${TARGET_VERSION_PATCH})
-set(CPACK_SOURCE_IGNORE_FILES /build/;/.hg/;/.hgignore)
+set(CPACK_SOURCE_IGNORE_FILES /build/;/.git/;/.gitignore)
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "TD ${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}")
 set(CPACK_GENERATOR TBZ2)
 set(CPACK_SOURCE_GENERATOR TBZ2)
@@ -179,11 +184,9 @@ endif()
 # Writing config files
 #
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config/config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config/config.h)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config/main.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/config/main.cfg)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config/plugins.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/config/plugins.cfg)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config/resources.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/config/resources.cfg)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config.xml.in ${CMAKE_CURRENT_BINARY_DIR}/config/config.xml)
 
 #
 # Adding Make targets
@@ -191,11 +194,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config/resources.cfg.in ${CM
 
 # install
 install(TARGETS ${CONFIG_TD_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_BIN})
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/data DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE})
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/users DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config/main.cfg
-        ${CMAKE_CURRENT_BINARY_DIR}/config/resources.cfg
-        ${CMAKE_CURRENT_BINARY_DIR}/config/plugins.cfg DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/config)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/data DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_DATA})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/users DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_DATA})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config/config.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_ETC})
 
 # Cppcheck execute if found and Debug mode
 if(CPPCHECK_EXEC AND CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -211,7 +212,7 @@ find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-    add_custom_target(doc ALL ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating API documentation with Doxygen" VERBATIM)
 endif()

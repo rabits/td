@@ -15,6 +15,9 @@
 #include "CUser.h"
 
 CUser::CUser()
+    : CData("User")
+    , m_name("")
+    , m_pControlledObject(NULL)
 {
 }
 

@@ -14,17 +14,7 @@
 
 #include "main.h"
 
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-/** @brief Main started function
- *
- * @param hInst HINSTANCE
- * @param strCmdLine LPSTR
- * @return INT WINAPI
- *
- */
-INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
-#else
+#if OGRE_PLATFORM != OGRE_PLATFORM_WIN32
 /** @brief Main started function
  *
  * @param argc int
@@ -33,20 +23,32 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
  *
  */
 int main(int argc, char *argv[])
+#else
+/** @brief Main started function
+ *
+ * @param hInst HINSTANCE - Handle to current instance
+ * @param strCmdLine LPSTR - Pointer to the command file
+ * @return INT WINAPI
+ *
+ */
+INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
 #endif
 {
-    printf("Starting program\n");
+    log_notice("Starting %s v%s", CONFIG_TD_FULLNAME, CONFIG_TD_VERSION);
+
     try {
         if( CGame::getInstance()->initialise() )
             CGame::getInstance()->start();
-    } catch( Ogre::Exception& e ) {
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-        MessageBox( NULL, e.getFullDescription().c_str(), "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
-#else
-        std::cerr << "An exception has occured: " << e.getFullDescription().c_str() << std::endl;
-#endif
     }
-    // Destroy game on end
+    catch( Ogre::Exception& e ) {
+        log_error("An exception has occured: %s", e.getFullDescription().c_str());
+    }
+    catch(...) {
+        log_error("An unknown exception has occured!");
+    }
+
+    // Destroy game in the end
     CGame::destroyInstance();
+
     return 0;
 }

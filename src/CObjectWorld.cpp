@@ -15,11 +15,14 @@
 #include "CObjectWorld.h"
 #include "CGame.h"
 
-CObjectWorld::CObjectWorld()
-{
-}
-
 CObjectWorld::CObjectWorld(CGame &pGame, const Ogre::Vector3 &pos)
+    : m_pPhyWorld(NULL)
+    , m_pGravityField(NULL)
+    , m_pDbgDraw(NULL)
+    , m_pBroadphase(NULL)
+    , m_pCollisionConfig(NULL)
+    , m_pDispatcher(NULL)
+    , m_pSolver(NULL)
 {
     if( &pGame != NULL )
     {

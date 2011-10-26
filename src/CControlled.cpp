@@ -16,6 +16,7 @@
 #include "CControlled.h"
 
 CControlled::CControlled()
+    : m_vActions()
 {
     //ctor
 }

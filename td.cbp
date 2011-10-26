@@ -97,6 +97,8 @@
 		<Unit filename="src/CObjectWorld.h" />
 		<Unit filename="src/CUser.cpp" />
 		<Unit filename="src/CUser.h" />
+		<Unit filename="src/Common.cpp" />
+		<Unit filename="src/Common.h" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/main.h" />
 		<Extensions>

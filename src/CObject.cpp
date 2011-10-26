@@ -17,12 +17,23 @@
 #include "CGame.h"
 
 CObject::CObject()
-    : m_pParent(NULL),
-    m_pWorld(NULL)
+    : m_bHasChild(false)
+    , m_sObjectName({})
+    , m_pParent(NULL)
+    , m_pWorld(NULL)
+    , m_pNode(NULL)
+    , m_ChildrenList({})
+    , m_itChildrenList(NULL)
+    , m_pGame(NULL)
+    , m_position()
+    , m_pEntity(NULL)
+    , m_pBody(NULL)
+    , m_pShape(NULL)
+    , m_mass(0.0)
+    , m_pState(NULL)
 {
     m_ChildrenList.clear();
     m_sObjectName.clear();
-    m_bHasChild = false;
 }
 
 CObject::~CObject()

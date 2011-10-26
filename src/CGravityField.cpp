@@ -18,12 +18,14 @@
 #include "CGame.h"
 
 CGravityElement::CGravityElement(btVector3* box, btVector3* position, btVector3* force)
+    : m_pGravityObj(NULL)
+    , m_pForce(force)
+    , m_uid(0)
+    , m_status(ES_ENABLED)
 {
     m_pGravityObj = new btCollisionObject();
     m_pGravityObj->setCollisionShape(new btBoxShape(*box));
     m_pGravityObj->getWorldTransform().setOrigin(*position);
-    m_pForce = force;
-    m_status = CGravityElement::ES_ENABLED;
 }
 
 CGravityElement::~CGravityElement()
@@ -59,7 +61,7 @@ struct CGravityField::SForceFieldCallback : public btCollisionWorld::ContactResu
             );
         }
         else
-            Ogre::LogManager::getSingletonPtr()->logMessage("Connected to GravityField object is not regid body: "+Ogre::StringConverter::toString(colObj1->getBroadphaseHandle()->getUid()));
+            log_debug("Connected to GravityField object is not regid body uid#%d", colObj1->getBroadphaseHandle()->getUid());
 
         return 0;
     }
@@ -67,9 +69,13 @@ struct CGravityField::SForceFieldCallback : public btCollisionWorld::ContactResu
 
 
 CGravityField::CGravityField(CObjectWorld *world, float gravityValue)
+    : m_objectInGravityField({})
+    , m_objectGravityMap({})
+    , m_gravityFieldMap({})
+    , m_itGravityFieldMap(NULL)
+    , m_pWorld(world)
+    , m_gravityValue(gravityValue)
 {
-    m_pWorld = world;
-    m_gravityValue = gravityValue;
     m_gravityFieldMap.clear();
     m_objectGravityMap.clear();
 }
@@ -114,7 +120,7 @@ btVector3* CGravityField::get(int elId)
     if( m_gravityFieldMap.find(elId) != m_gravityFieldMap.end() )
         return m_gravityFieldMap[elId]->m_pForce;
 
-    Ogre::LogManager::getSingletonPtr()->logMessage("ERROR: Not found Gravity Field with id#" + Ogre::StringConverter::toString(elId));
+    log_error("Not found Gravity Field with id#%d", elId);
     return NULL;
 }
 

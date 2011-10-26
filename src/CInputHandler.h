@@ -12,11 +12,10 @@
  *
  */
 
-
 #ifndef CINPUTHANDLER_H
 #define CINPUTHANDLER_H
 
-#include "config.h"
+#include "Common.h"
 
 #include <OIS/OISForceFeedback.h>
 
@@ -34,6 +33,13 @@ public:
      *
      */
     CInputHandler(size_t windowHnd);
+
+    /** @brief Copy constructor of global input handler
+     *
+     * @param obj const CInputHandler&
+     *
+     */
+    CInputHandler(const CInputHandler &obj);
 
     /** @brief Destructor
      */
@@ -155,6 +161,7 @@ protected:
     OIS::Mouse        *m_pMouse; ///< Mouse device
     OIS::Keyboard     *m_pKeyboard; ///< Keyboard device
     OIS::JoyStick     *m_pJoyStick[CONFIG_JOYSTICK_MAX_NUMBER]; ///< Joysticks devices
+
     int                m_joysticsNum; ///< Number of preset joystics
 
     CGame             *m_pGame; ///< Link to game

@@ -12,15 +12,18 @@
  *
  */
 
-
 #include "CInputEvent.h"
 
-CInputEvent::CInputEvent()
+CInputEvent::CInputEvent(float value)
+    : m_value(value)
 {
-    //ctor
 }
 
 CInputEvent::~CInputEvent()
 {
-    //dtor
+}
+
+float CInputEvent::getValue()
+{
+    return m_value;
 }

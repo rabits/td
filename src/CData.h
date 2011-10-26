@@ -15,19 +15,35 @@
 #ifndef CDATA_H
 #define CDATA_H
 
-#include "config.h"
+#include "Common.h"
 #include "pugixml/pugixml.hpp"
+
+#include <iostream>
 
 /** @brief XML data for needled objects (for auto-restore or configuration save/load)
  */
 class CData
 {
     public:
-        CData();
+        /** @brief Constructor with container name
+         *
+         * @param name char* - Name of data container
+         *
+         */
+        CData(const char *name);
         virtual ~CData();
+
+        /** @brief Convert object data into string format
+         *
+         * @param stream std::ostream& - Output stream (like std::cout or any file stream)
+         * @return void
+         *
+         */
+        void saveData(std::ostream &stream);
+
     protected:
-        pugi::xml_document m_pDataRoot; ///< XML Root, containing td data
-        pugi::xml_node m_pData; ///< Data of object
+        pugi::xml_document  m_dataRoot; ///< XML Root, containing td data
+        pugi::xml_node      m_data; ///< Data of object
     private:
 };
 

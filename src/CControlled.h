@@ -12,7 +12,6 @@
  *
  */
 
-
 #ifndef CCONTROLLED_H
 #define CCONTROLLED_H
 
@@ -27,7 +26,7 @@ class CControlled
 {
 public:
     CControlled();
-    ~CControlled();
+    virtual ~CControlled();
 
     std::vector<CAction>        getAvailableActions();
 protected:

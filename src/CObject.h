@@ -15,7 +15,7 @@
 #ifndef COBJECT_H_INCLUDED
 #define COBJECT_H_INCLUDED
 
-#include "config.h"
+#include "Common.h"
 
 #include <string>
 #include <vector>
@@ -39,9 +39,16 @@ public:
      */
     CObject();
 
+    /** @brief Copy constructor of object
+     *
+     * @param obj const CObject&
+     *
+     */
+    CObject(const CObject &obj);
+
     /** @brief Destructor of object
      */
-    ~CObject();
+    virtual ~CObject();
 
 
     /** @brief Delete all objects children to aviod memory leaks

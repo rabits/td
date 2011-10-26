@@ -12,11 +12,10 @@
  *
  */
 
-
 #ifndef CINPUTEVENT_H
 #define CINPUTEVENT_H
 
-#include "config.h"
+#include "Common.h"
 
 #include <OIS/OIS.h>
 
@@ -28,13 +27,21 @@
 class CInputEvent
 {
 public:
-    /** @brief Constructor
+    /** @brief Constructor for float
      */
-    CInputEvent();
+    CInputEvent(float value);
 
     /** @brief Destructor
      */
     ~CInputEvent();
+
+    /** @brief Get value of event in float
+     *
+     * @return float
+     *
+     */
+    float getValue();
+
 protected:
     float  m_value; ///< Value of event
 private:

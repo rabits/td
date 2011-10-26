@@ -9,15 +9,20 @@
  *
  * @brief   Main header
  *
+ * @mainpage Developer reference manual
  *
+ * @section description Description
+ *
+ * This is class-reference manual for developers
+ *
+ * @section readme README
+ * @include README
  */
-
 
 #ifndef MAIN_H_INCLUDED
 #define MAIN_H_INCLUDED
 
-#include "config.h"
-
+#include "Common.h"
 #include "CGame.h"
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32

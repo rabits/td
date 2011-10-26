@@ -16,10 +16,6 @@
 #include "CGravityField.h"
 #include "CGame.h"
 
-CObjectCube::CObjectCube()
-{
-}
-
 CObjectCube::CObjectCube(CGame &pGame, CObjectWorld &pWorld, CObjectCube::Cube_Size size, const Ogre::Vector3 &pos)
     : m_cubeSize(size)
 {

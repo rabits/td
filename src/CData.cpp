@@ -11,17 +11,22 @@
  *
  *
  */
+
 #include "CData.h"
 
-CData::CData()
-    : m_pDataRoot()
-    , m_pData()
+CData::CData(const char *name)
+    : m_dataRoot()
+    , m_data()
 {
-    m_pData = m_pDataRoot.append_child("td");
-    m_pData.append_attribute("version").set_value(CONFIG_TD_VERSION);
+    m_data = m_dataRoot.append_child(CONFIG_TD_NAME).append_child(name);
+    m_dataRoot.child(CONFIG_TD_NAME).append_attribute("version").set_value(CONFIG_TD_VERSION);
 }
 
 CData::~CData()
 {
-    //dtor
+}
+
+void CData::saveData(std::ostream &stream)
+{
+    m_dataRoot.save(stream, "  ", pugi::format_default, pugi::xml_encoding::encoding_utf8);
 }

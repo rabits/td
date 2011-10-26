@@ -15,7 +15,7 @@
 #ifndef CGRAVITYFIELD_H_INCLUDED
 #define CGRAVITYFIELD_H_INCLUDED
 
-#include "config.h"
+#include "Common.h"
 
 #include "OGRE/Ogre.h"
 #include "CObject.h"
@@ -35,6 +35,13 @@ public:
      *
      */
     CGravityElement(btVector3* box, btVector3* position, btVector3* force);
+
+    /** @brief Copy constructor of gravity element
+     *
+     * @param obj const CGravityElement&
+     *
+     */
+    CGravityElement(const CGravityElement &obj);
 
     /** @brief Destructor, cleaner of element
     */
@@ -62,13 +69,20 @@ private:
 class CGravityField
 {
 public:
-    /** @brief Construct of gravity field
+    /** @brief Constructor of gravity field
      *
      * @param world CObjectWorld*
      * @param gravityValue float
      *
      */
     CGravityField(CObjectWorld *world, float gravityValue);
+
+    /** @brief Copy constructor of gravity field
+     *
+     * @param obj const CGravityField&
+     *
+     */
+    CGravityField(const CGravityField &obj);
 
     /** @brief Destructor of field
      */

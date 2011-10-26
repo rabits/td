@@ -15,22 +15,18 @@
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
 
-
 #cmakedefine CONFIG_DEBUG ///< Debug on
+#define CONFIG_LOG_BUFFER 2048 ///< Buffer for message length
 
 #define CONFIG_TD_VERSION  "${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}" ///< Version
 #define CONFIG_TD_NAME     "${CONFIG_TD_NAME}" ///< Name of application and its some dirs
 #define CONFIG_TD_FULLNAME "${CONFIG_TD_FULLNAME}" ///< FullName of application
 
 #define CONFIG_JOYSTICK_MAX_NUMBER ${CONFIG_JOYSTICK_MAX_NUMBER} ///< Maximum number of joysticks
-
 #cmakedefine CONFIG_JOYSTICK_USE_FORCEFEEDBACK ///< Usage forcefeedback for joysticks
 
-// PATHs:
-#define CONFIG_PATH_ROOT_SHARE "${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_SHARE}/" ///< Absolute path to default share directory (with default configs)
-#define CONFIG_PATH_HOME_SHARE ".config/${CONFIG_TD_NAME}/" ///< Relative path to default data directory
-#define CONFIG_PATH_DATA       "data/" ///< Relative path to data directory
-#define CONFIG_PATH_CONFIG     "config/" ///< Relative path to config directory
-#define CONFIG_PATH_USERS      "users/" ///< Relative path to users directory
+// Master path:
+#define CONFIG_PATH_GLOBAL_CONFIG "${CONFIG_PATH_ETC}" ///< Path from prefix to directory with global config.xml
+#define CONFIG_PATH_PREFIX_BIN "${CONFIG_PATH_BIN}" ///< Path from prefix to directory with binary
 
 #endif //CONFIG_H_INCLUDED

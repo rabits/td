@@ -15,14 +15,14 @@
 #ifndef COBJECTWORLD_H_INCLUDED
 #define COBJECTWORLD_H_INCLUDED
 
+#include "Common.h"
+
 #include "CObject.h"
 #include "CGravityField.h"
 
 #include "btogre/BtOgrePG.h"
 #include "btogre/BtOgreGP.h"
 #include "btogre/BtOgreExtras.h"
-
-#include "config.h"
 
 /** @brief World object
  */
@@ -32,6 +32,13 @@ public:
     /** @brief Constructor
      */
     CObjectWorld();
+
+    /** @brief Copy constructor
+     *
+     * @param obj const CObjectWorld&
+     *
+     */
+    CObjectWorld(const CObjectWorld &obj);
 
     /** @brief Constructor
      *

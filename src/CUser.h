@@ -15,12 +15,12 @@
 #ifndef CUSER_H
 #define CUSER_H
 
-#include "config.h"
+#include "Common.h"
 
 #include <OGRE/Ogre.h>
-#include <OIS/OIS.h>
 
 #include "CControlled.h"
+#include "CData.h"
 #include "CObjectWorld.h"
 
 /** @brief Self user
@@ -28,12 +28,19 @@
  * Can control objects
  */
 class CUser
-    : public CControlled
+    : CData
 {
 public:
     /** @brief Constructor of user
      */
     CUser();
+
+    /** @brief Copy constructor of user
+     *
+     * @param obj const CUser&
+     *
+     */
+    CUser(const CUser &obj);
 
     /** @brief Destructor of user
      */
@@ -54,6 +61,8 @@ public:
      *
      */
     void setWorld(CObjectWorld *world);
+
+    void update(const Ogre::FrameEvent& evt);
 
 protected:
     Ogre::String                 m_name; ///< User name

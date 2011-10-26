@@ -21,8 +21,10 @@ CInputHandler::CInputHandler(size_t windowHnd)
     , m_pMouse(0)
     , m_pKeyboard(0)
     , m_pJoyStick({0,0,0,0})
+    , m_joysticsNum(0)
+    , m_pGame(NULL)
 {
-    Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
+    log_notice("Initializing \"Nerv controlling system\"");
 
     m_pGame = CGame::getInstance();
 
@@ -45,7 +47,7 @@ CInputHandler::CInputHandler(size_t windowHnd)
     Ogre::String deviceType[6] = {"OIS Unknown", "OIS Keyboard", "OIS Mouse", "OIS JoyStick", "OIS Tablet", "OIS Other"};
     OIS::DeviceList dlist = m_pInputManager->listFreeDevices();
     for( OIS::DeviceList::iterator i = dlist.begin(); i != dlist.end(); ++i )
-        Ogre::LogManager::getSingletonPtr()->logMessage("\tFound device: "+deviceType[i->first]+"\tVendor: "+i->second);
+        log_info("\tFound device: %s,\tVendor: %s", deviceType[i->first].c_str(), i->second.c_str());
 
     m_pKeyboard = static_cast<OIS::Keyboard*>(m_pInputManager->createInputObject( OIS::OISKeyboard, true ));
     m_pKeyboard->setEventCallback(this);
@@ -57,17 +59,17 @@ CInputHandler::CInputHandler(size_t windowHnd)
         m_joysticsNum = std::min(m_pInputManager->getNumberOfDevices(OIS::OISJoyStick), CONFIG_JOYSTICK_MAX_NUMBER);
         if( m_joysticsNum > 0 )
         {
-            Ogre::LogManager::getSingletonPtr()->logMessage("\tInit joysticks ("+Ogre::StringConverter::toString(m_joysticsNum)+"):");
+            log_info("\tInit %d joysticks:", m_joysticsNum);
             for( int i = 0; i < m_joysticsNum; i++ )
             {
                 m_pJoyStick[i] = static_cast<OIS::JoyStick*>(m_pInputManager->createInputObject( OIS::OISJoyStick, true ));
                 m_pJoyStick[i]->setEventCallback(this);
-                Ogre::LogManager::getSingletonPtr()->logMessage("\tCreating Joystick #"+Ogre::StringConverter::toString(i));
-                Ogre::LogManager::getSingletonPtr()->logMessage("\t\tPOV/HATs: "+Ogre::StringConverter::toString(m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_POV)));
-                Ogre::LogManager::getSingletonPtr()->logMessage("\t\tButtons: "+Ogre::StringConverter::toString(m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_Button)));
-                Ogre::LogManager::getSingletonPtr()->logMessage("\t\tAxes: "+Ogre::StringConverter::toString(m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_Axis)));
-                Ogre::LogManager::getSingletonPtr()->logMessage("\t\tSliders (Not Used): "+Ogre::StringConverter::toString(m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_Slider)));
-                Ogre::LogManager::getSingletonPtr()->logMessage("\t\tVector3 (Not Used): "+Ogre::StringConverter::toString(m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_Vector3)));
+                log_info("\t\tCreating Joystick #%d", i);
+                log_info("\t\t\tPOV/HATs: %d", m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_POV));
+                log_info("\t\t\tButtons:  %d", m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_Button));
+                log_info("\t\t\tAxes:     %d", m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_Axis));
+                log_info("\t\t\tSliders (Not Used): %d", m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_Slider));
+                log_info("\t\t\tVector3 (Not Used): %d", m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_Vector3));
 
 #ifdef CONFIG_JOYSTICK_USE_FORCEFEEDBACK
                 // TODO: Use feedback code
@@ -77,10 +79,10 @@ CInputHandler::CInputHandler(size_t windowHnd)
     }
     catch(OIS::Exception &ex)
     {
-        Ogre::LogManager::getSingletonPtr()->logMessage("\nException raised on joystick creation: "+Ogre::StringConverter::toString(ex.eText));
+        log_warn("Exception raised on joystick creation: %s", ex.eText);
     }
 
-    Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS Complete ***");
+    log_info("\tInitializing complete");
 }
 
 CInputHandler::~CInputHandler()
@@ -123,18 +125,17 @@ OIS::JoyStick* CInputHandler::getJoyStick(int joyId)
     if( joyId >= 0 && joyId < m_joysticsNum )
         return m_pJoyStick[joyId];
     else
-        Ogre::LogManager::getSingletonPtr()->logMessage("Joystick with id#"+Ogre::StringConverter::toString(joyId)+" not preset", Ogre::LML_NORMAL);
+        log_warn("Joystick with id#%d not present", joyId);
 
     return NULL;            // WARNING! May return NULL if joystick not present!
 }
 
 bool CInputHandler::keyPressed( const OIS::KeyEvent &arg )
 {
-    // Log
-    Ogre::LogManager::getSingletonPtr()->logMessage(((OIS::Keyboard*)(arg.device))->getAsString(arg.key));
+    log_debug("Key pressed: %s (%d)", (static_cast<OIS::Keyboard*>(const_cast<OIS::Object*>(arg.device)))->getAsString(arg.key).c_str(), arg.key);
 
-    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-        (*m_pGame->o_currentUser)->keyPressed(arg);
+//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
+//        (*m_pGame->o_currentUser)->keyPressed(arg);
 
     if( m_pGame->m_pTrayMgr->isDialogVisible() ) return true;   // don't process any more keys if dialog is up
 
@@ -229,43 +230,37 @@ bool CInputHandler::keyPressed( const OIS::KeyEvent &arg )
 
 bool CInputHandler::keyReleased( const OIS::KeyEvent &arg )
 {
-    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-        (*m_pGame->o_currentUser)->keyReleased(arg);
+//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
+//        (*m_pGame->o_currentUser)->keyReleased(arg);
 
     return true;
 }
 
 bool CInputHandler::mouseMoved( const OIS::MouseEvent &arg )
 {
-    // Log
-    Ogre::LogManager::getSingletonPtr()->logMessage("MouseMoved: Abs("+Ogre::StringConverter::toString(arg.state.X.abs)
-                                                    +", "+Ogre::StringConverter::toString(arg.state.Y.abs)
-                                                    +", "+Ogre::StringConverter::toString(arg.state.Z.abs)
-                                                    +") Rel("+Ogre::StringConverter::toString(arg.state.X.rel)
-                                                    +", "+Ogre::StringConverter::toString(arg.state.Y.rel)
-                                                    +", "+Ogre::StringConverter::toString(arg.state.Z.rel)+")");
+    log_debug("MouseMoved: Abs(%d,%d,%d) Rel(%d,%d,%d)", arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs
+              , arg.state.X.rel, arg.state.Y.rel, arg.state.Z.rel);
 
-    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-        (*m_pGame->o_currentUser)->mouseMoved(arg);
+//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
+//        (*m_pGame->o_currentUser)->mouseMoved(arg);
 
     return true;
 }
 
 bool CInputHandler::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    // Log
-    Ogre::LogManager::getSingletonPtr()->logMessage("Mouse button #"+Ogre::StringConverter::toString(id)+" pressed.");
+    log_debug("Mouse pressed #%d", id);
 
-    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-        (*m_pGame->o_currentUser)->mousePressed(arg, id);
+//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
+//        (*m_pGame->o_currentUser)->mousePressed(arg, id);
 
     return true;
 }
 
 bool CInputHandler::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-        (*m_pGame->o_currentUser)->mouseReleased(arg, id);
+//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
+//        (*m_pGame->o_currentUser)->mouseReleased(arg, id);
 
     return true;
 }
@@ -273,7 +268,7 @@ bool CInputHandler::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonI
 bool CInputHandler::povMoved( const OIS::JoyStickEvent &arg, int pov )
 {
     // Log
-    Ogre::String out = arg.device->vendor()+". POV"+Ogre::StringConverter::toString(pov)+" ";
+    std::string out = "";
     if( arg.state.mPOV[pov].direction & OIS::Pov::North ) //Going up
         out += "North";
     else if( arg.state.mPOV[pov].direction & OIS::Pov::South ) //Going down
@@ -284,43 +279,38 @@ bool CInputHandler::povMoved( const OIS::JoyStickEvent &arg, int pov )
         out += "West";
     if( arg.state.mPOV[pov].direction == OIS::Pov::Centered ) //stopped/centered out
         out += "Centered";
-    Ogre::LogManager::getSingletonPtr()->logMessage(out);
+    log_debug("Joystick \"%s\" POV #%d moved: %s", arg.device->vendor().c_str(), pov, out.c_str());
 
-    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-        (*m_pGame->o_currentUser)->povMoved(arg, pov);
+//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
+//        (*m_pGame->o_currentUser)->povMoved(arg, pov);
 
     return true;
 }
 
 bool CInputHandler::buttonPressed( const OIS::JoyStickEvent &arg, int button )
 {
-    // Log
-    Ogre::LogManager::getSingletonPtr()->logMessage("'"+arg.device->vendor()+"' Button Pressed #"+
-                                                    Ogre::StringConverter::toString(button));
+    log_debug("Joystick \"%s\" button #%d pressed", arg.device->vendor().c_str(), button);
 
-    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-        (*m_pGame->o_currentUser)->buttonPressed(arg, button);
+//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
+//        (*m_pGame->o_currentUser)->buttonPressed(arg, button);
 
     return true;
 }
 
 bool CInputHandler::buttonReleased( const OIS::JoyStickEvent &arg, int button )
 {
-    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-        (*m_pGame->o_currentUser)->buttonReleased(arg, button);
+//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
+//        (*m_pGame->o_currentUser)->buttonReleased(arg, button);
 
     return true;
 }
 
 bool CInputHandler::axisMoved( const OIS::JoyStickEvent &arg, int axis )
 {
-    // Log
-    Ogre::LogManager::getSingletonPtr()->logMessage("'"+arg.device->vendor()
-                                                    +"'. Axis # "+Ogre::StringConverter::toString(axis)
-                                                    +" Value: "+Ogre::StringConverter::toString(arg.state.mAxes[axis].abs));
+    log_debug("Joystick \"%s\" Axis #%d moved, Value: %d", arg.device->vendor().c_str(), axis, arg.state.mAxes[axis].abs);
 
-    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-        (*m_pGame->o_currentUser)->axisMoved(arg, axis);
+//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
+//        (*m_pGame->o_currentUser)->axisMoved(arg, axis);
 
     return true;
 }

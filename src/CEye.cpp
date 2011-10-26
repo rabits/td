@@ -15,6 +15,8 @@
 
 CEye::CEye(Ogre::Camera *camera = NULL)
     : m_pCamera(camera)
+    , m_cameraPositionLimits()
+    , m_style(EYE_CS_FREELOOK)
     , m_pTarget(0)
     , m_orbiting(false)
     , m_zooming(false)
@@ -28,9 +30,8 @@ CEye::CEye(Ogre::Camera *camera = NULL)
     , m_goingDown(false)
     , m_fastMove(false)
 {
-    if( camera == NULL )
-        newCamera();
-    setStyle(EYE_CS_FREELOOK);
+//    if( camera == NULL )
+//        newCamera();
 }
 
 CEye::~CEye()
@@ -38,7 +39,7 @@ CEye::~CEye()
     //dtor
 }
 
-CEye::update()
+void CEye::update(const Ogre::FrameEvent& evt)
 {
     if( m_style == EYE_CS_FREELOOK )
     {
