@@ -1,18 +1,21 @@
 <?xml version="1.0"?>
 <td version="0.1.0">
   <Game>
-    <env />
     <path>
-      <ogre_plugins>${CONFIG_OGRE_PLUGINS_PATH}</ogre_plugins><!-- Full path to directory with Ogre plugins -->
-      <root_data>${CONFIG_PATH_DATA}/</root_data><!-- Global data directory relative from prefix -->
-      <home_data>.config/${CONFIG_TD_NAME}/</user_data><!-- Home config.xml and data directory from HOME env -->
-      <data>data/</data><!-- Data directory in $root_data or $user_data -->
-      <users>users/</users><!-- Users directory in $root_data or $user_data -->
+      <!-- Full path to directory with Ogre plugins -->
+      <ogre_plugins>${CONFIG_OGRE_PLUGINS_PATH}</ogre_plugins>
+      <!-- Global data directory relative from prefix -->
+      <root_data>${CONFIG_PATH_DATA}/</root_data>
+      <!-- User config.xml and data directory from HOME env -->
+      <user_data>.config/${CONFIG_TD_NAME}/</user_data>
+      <!-- Data directory in $root_data or $user_data -->
+      <data>data/</data>
+      <!-- Users directory in $root_data or $user_data -->
+      <users>users/</users>
     </path>
     <config>
       <ogre>
         <plugins>
-          <plugin>RenderSystem_GL</plugin>
           <plugin>Plugin_ParticleFX</plugin>
           <plugin>Plugin_BSPSceneManager</plugin>
           <plugin>Plugin_CgProgramManager</plugin>
@@ -51,15 +54,16 @@
             </srgb>
           </driver>
         </video>
-        <resources><!-- Path to ogre resources (from $root_data/$data or $home_data/$data) -->
+        <resources>
+          <!-- Path to ogre resources (from $root_data/$data or $home_data/$data) -->
           <Bootstrap>
             <Zip>graphic/OgreCore.zip</Zip>
             <Zip>graphic/SdkTrays.zip</Zip>
           </Bootstrap>
           <General>
-              <FileSystem>graphic</FileSystem>
-              <FileSystem>graphic/meshes</FileSystem>
-              <FileSystem>graphic/textures</FileSystem>
+            <FileSystem>graphic</FileSystem>
+            <FileSystem>graphic/meshes</FileSystem>
+            <FileSystem>graphic/textures</FileSystem>
           </General>
         </resources>
       </ogre>

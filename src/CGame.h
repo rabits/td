@@ -66,11 +66,10 @@ public:
 
     /** @brief Get current prefix of game
      *
-     * @param append const char*
-     * @return const char* - Full path to game prefix with appended append
+     * @return const char* - Full path to game prefix
      *
      */
-    static const char* getPrefix(const char *append = NULL);
+    static const char* getPrefix();
 
 
     /** @brief Preparation to game start

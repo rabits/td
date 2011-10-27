@@ -43,6 +43,9 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
     catch( Ogre::Exception& e ) {
         log_emerg("An exception has occured: %s", e.getFullDescription().c_str());
     }
+    catch( std::exception& e ) {
+        log_emerg("An standart exception has occured: %s", e.what());
+    }
     catch(...) {
         log_emerg("An unknown exception has occured!");
     }

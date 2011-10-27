@@ -62,10 +62,10 @@ namespace Common
          *
          * @param level LogLevel - Level of message
          * @param ... - Message or printf format + parameters
-         * @return void
+         * @return bool - false, if level > 4
          *
          */
-        static void log(int level, const char* format, ...);
+        static bool log(LogLevel level, const char* format, ...);
 
         /** @brief Get or set current displaying log level
          *
@@ -73,7 +73,7 @@ namespace Common
          * @return LogLevel - Current displaying log level
          *
          */
-        static int displayLogLevel(int level = LOG_NONE);
+        static LogLevel displayLogLevel(LogLevel level = LOG_NONE);
 
     protected:
         static int           m_displayLevel; ///< Display messages with >= this level

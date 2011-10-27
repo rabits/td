@@ -88,7 +88,7 @@ unsigned int CGame::getTime()
     return m_pTimer->getMilliseconds();
 }
 
-const char* CGame::getPrefix(const char *append)
+const char* CGame::getPrefix()
 {
     if( m_pPrefix == NULL )
     {
@@ -97,28 +97,27 @@ const char* CGame::getPrefix(const char *append)
         log_info("Prefix path: %s", m_pPrefix->c_str());
     }
 
-    if( append == NULL )
-        return m_pPrefix->c_str();
-    else
-    {
-        fs::path out(*m_pPrefix);
-        out /= append;
-        return out.c_str();
-    }
+    return m_pPrefix->c_str();
 }
 
 bool CGame::initialise()
 {
-    log_info("Starting configuration");
-    m_pRoot = new Ogre::Root();
+    log_info("Start initialisation");
+
+    // Loading environment
+    loadEnv();
 
     // Loading global config
-    loadConfig(CGame::getPrefix(CONFIG_PATH_GLOBAL_CONFIG "/config.xml"));
+    fs::path config_path(CGame::getPrefix());
+    config_path /= CONFIG_PATH_GLOBAL_CONFIG;
+    config_path /= "config.xml";
+    loadConfig(config_path.c_str());
 
     // Loading user config
     //loadConfig(m_pPrefix);
 
     //m_pRoot = new Ogre::Root(CONFIG_PATH_CONFIG "plugins.cfg", CONFIG_PATH_CONFIG "main.cfg", CONFIG_PATH_CONFIG "logfile.log");
+    m_pRoot = new Ogre::Root();
 
     //-------- configure ---------------
     log_info("Creating main configuration");
@@ -248,7 +247,32 @@ bool CGame::loadEnv()
 bool CGame::loadConfig(const char *configfile)
 {
     log_info("Loading game configuration file: \"%s\"", configfile);
-    pugi::xml_node data_path = m_data.append_child("path");
+
+    pugi::xml_document new_data;
+    pugi::xml_parse_result result = new_data.load_file(configfile, pugi::parse_full);
+
+#ifdef CONFIG_DEBUG
+    log_debug("New data for merge:");
+    new_data.save(std::cout, "  ");
+#endif
+
+    if( !result )
+        return log_error("\tLoading failed: %s#%d", result.description(), result.offset);
+
+    // Verify config
+    if( ! verifyData(new_data) )
+        return log_error("Ferifying of data failed");
+
+    // Starting merge
+    pugi::xml_node new_child = new_data.child(CONFIG_TD_NAME).child(m_dataName);
+    mergeData(new_child);
+
+#ifdef CONFIG_DEBUG
+    log_debug("Data before merge:");
+    m_dataBefore.save(std::cout, "  ");
+    log_debug("Data After merge:");
+    m_dataRoot.save(std::cout, "  ");
+#endif
 
     /*fs::path path_root_share(CONFIG_PATH_ROOT_SHARE);
     data_path.append_child("path_root_share").append_child(pugi::node_pcdata).set_value(path_root_share.c_str());

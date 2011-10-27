@@ -30,8 +30,11 @@
 int Common::CLog::m_displayLevel = 0;
 unsigned long Common::CLog::m_logTime = 0;
 
-void Common::CLog::log(int level, const char* format, ...)
+bool Common::CLog::log(Common::CLog::LogLevel level, const char* format, ...)
 {
+    if( level < m_displayLevel )
+        return level < 5;
+
     // Message time
     m_logTime = CGame::getInstance()->getTime();
 
@@ -76,13 +79,16 @@ void Common::CLog::log(int level, const char* format, ...)
         case 8:
             strcpy(msglevel, "FATAL");
             break;
+        case 0:
+            return true;
     }
 
-    if( level > 0 )
-        std::fprintf(output, "[%06d.%03d] %6s: %s\n", m_logTime/1000, m_logTime%1000, msglevel, msgbuffer);
+    std::fprintf(output, "[%06d.%03d] %6s: %s\n", m_logTime/1000, m_logTime%1000, msglevel, msgbuffer);
+
+    return level < 5;
 }
 
-int Common::CLog::displayLogLevel(int level)
+Common::CLog::LogLevel Common::CLog::displayLogLevel(Common::CLog::LogLevel level)
 {
 
 }

@@ -41,9 +41,26 @@ class CData
          */
         void saveData(std::ostream &stream);
 
+        /** @brief Verifying of xml document to consistent (good root td_name, root version, container name, ...)
+         *
+         * @param document pugi::xml_document& - Document to verify
+         * @return bool - consistent data
+         */
+        bool verifyData(pugi::xml_document &document) const;
+
+        /** @brief Merging current data and new data. Current data root will be copied to m_dataBefore
+         *
+         * @param new_node pugi::xml_node& - Merge with it container node
+         * @param cur_node pugi::xml_node* - For recurse
+         * @return bool
+         */
+        bool mergeData(pugi::xml_node &new_node, pugi::xml_node *cur_node = NULL);
+
     protected:
         pugi::xml_document  m_dataRoot; ///< XML Root, containing td data
+        pugi::xml_document  m_dataBefore; ///< Before merge dataRoot
         pugi::xml_node      m_data; ///< Data of object
+        const char         *m_dataName; ///< Data container name
     private:
 };
 
