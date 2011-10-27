@@ -65,7 +65,7 @@ public:
      * @return void
      *
      */
-    void update(){};
+    void update(){}
 
     /** @brief Initialize object
      *

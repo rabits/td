@@ -35,10 +35,10 @@ CGame::CGame()
    , m_pInputHandler(NULL)
    , m_pTrayMgr(NULL)
    , m_pDetailsPanel(NULL)
-   , m_vUsers({})
+   , m_vUsers()
    , o_currentUser(NULL)
    , o_currentWorld(NULL)
-   , m_vWorlds({})
+   , m_vWorlds()
    , m_pRoot(NULL)
    , m_pTimer(new Ogre::Timer())
    , m_NextFrameTime(0)
@@ -233,7 +233,7 @@ bool CGame::initialise()
     log_info("Complete configuration");
 
     return true;
-};
+}
 
 bool CGame::loadEnv()
 {
@@ -269,7 +269,7 @@ bool CGame::loadConfig(const char *configfile)
     }*/
 
     return true;
-};
+}
 
 void CGame::start()
 {

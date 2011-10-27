@@ -18,11 +18,11 @@
 
 CObject::CObject()
     : m_bHasChild(false)
-    , m_sObjectName({})
+    , m_sObjectName()
     , m_pParent(NULL)
     , m_pWorld(NULL)
     , m_pNode(NULL)
-    , m_ChildrenList({})
+    , m_ChildrenList()
     , m_itChildrenList(NULL)
     , m_pGame(NULL)
     , m_position()

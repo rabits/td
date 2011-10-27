@@ -7,4 +7,5 @@ tmp
 
 # Ignore .save files
 *.save
+*.autosave
 *.layout

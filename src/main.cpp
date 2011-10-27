@@ -41,10 +41,10 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
             CGame::getInstance()->start();
     }
     catch( Ogre::Exception& e ) {
-        log_error("An exception has occured: %s", e.getFullDescription().c_str());
+        log_emerg("An exception has occured: %s", e.getFullDescription().c_str());
     }
     catch(...) {
-        log_error("An unknown exception has occured!");
+        log_emerg("An unknown exception has occured!");
     }
 
     // Destroy game in the end

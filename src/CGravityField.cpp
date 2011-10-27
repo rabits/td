@@ -69,9 +69,9 @@ struct CGravityField::SForceFieldCallback : public btCollisionWorld::ContactResu
 
 
 CGravityField::CGravityField(CObjectWorld *world, float gravityValue)
-    : m_objectInGravityField({})
-    , m_objectGravityMap({})
-    , m_gravityFieldMap({})
+    : m_objectInGravityField()
+    , m_objectGravityMap()
+    , m_gravityFieldMap()
     , m_itGravityFieldMap(NULL)
     , m_pWorld(world)
     , m_gravityValue(gravityValue)
