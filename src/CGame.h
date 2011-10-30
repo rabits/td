@@ -121,14 +121,14 @@ public:
      */
     unsigned int getTime();
 
-    Ogre::SceneManager                      *m_pSceneMgr; ///< Scene Manager object
-    Ogre::Camera                            *m_pCamera; ///< Main camera
-    Ogre::RenderWindow                      *m_pWindow; ///< Main window
+    Ogre::SceneManager                     *m_pSceneMgr; ///< Scene Manager object
+    Ogre::Camera                           *m_pCamera; ///< Main camera
+    Ogre::RenderWindow                     *m_pWindow; ///< Main window
 
-    CInputHandler                           *m_pInputHandler; ///< Input Handler object
+    CInputHandler                          *m_pInputHandler; ///< Input Handler object
 
-    OgreBites::SdkTrayManager               *m_pTrayMgr; ///< Tray Manager object
-    OgreBites::ParamsPanel                  *m_pDetailsPanel; ///< Sample details panel
+    OgreBites::SdkTrayManager              *m_pTrayMgr; ///< Tray Manager object
+    OgreBites::ParamsPanel                 *m_pDetailsPanel; ///< Sample details panel
 
     std::vector<CUser*>                     m_vUsers; ///< Users list
     std::vector<CUser*>::iterator           o_currentUser; ///< Current processing user
@@ -136,8 +136,8 @@ public:
     std::vector<CObjectWorld*>::iterator    o_currentWorld; ///< Current processing world
 
 private:
-    static CGame                            *m_pInstance; ///< Instance of game
-    static fs::path                         *m_pPrefix; ///< Current prefix directory
+    static CGame                           *m_pInstance; ///< Instance of game
+    static fs::path                        *m_pPrefix; ///< Current prefix directory
 
 protected:
     /** @brief Creating one instance of object
@@ -164,6 +164,34 @@ protected:
      * Overwrite previous configuration by loaded. First need to load global, second - local.
      */
     bool loadConfig(const char *configfile);
+
+    /** @brief Init OGRE video engine configuration
+     *
+     * @return bool
+     *
+     */
+    bool initOgre();
+
+    /** @brief Init Bullet physical engine configuration
+     *
+     * @return bool
+     *
+     */
+    bool initBullet();
+
+    /** @brief Init OIS Nerv controlling system configuration
+     *
+     * @return bool
+     *
+     */
+    bool initOIS();
+
+    /** @brief Init Sound engine configuration
+     *
+     * @return bool
+     *
+     */
+    bool initSound();
 
     /** @brief Frame listener of info panel
      *
@@ -222,10 +250,9 @@ protected:
      */
     void windowClosed(Ogre::RenderWindow* rw);
 
-    Ogre::Root                              *m_pRoot; ///< Root Ogre object
-    Ogre::Timer                             *m_pTimer; ///< Game timer for restriction of frame rendering speed
+    Ogre::Root                             *m_pRoot; ///< Root Ogre object
+    Ogre::Timer                            *m_pTimer; ///< Game timer for restriction of frame rendering speed
     unsigned long                           m_NextFrameTime; ///< Render next frame in this time (microseconds)
-    fs::path                                *m_configPathGlobal; ///< Path to global config
 
     bool                                    m_ShutDown; ///< Game need to stop
 

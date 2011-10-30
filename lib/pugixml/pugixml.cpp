@@ -3653,6 +3653,15 @@ namespace pugi
 
 		return xml_node();
 	}
+    xml_node xml_node::child(const xml_node_type type_) const
+    {
+        if (!_root) return xml_node();
+
+        for (xml_node_struct* i = _root->first_child; i; i = i->next_sibling)
+            if (type_ == static_cast<xml_node_type>((i->header & xml_memory_page_type_mask) + 1) ) return xml_node(i);
+
+        return xml_node();
+    }
 
 	xml_attribute xml_node::attribute(const char_t* name_) const
 	{
@@ -4273,6 +4282,15 @@ namespace pugi
 	{
         return _root;
 	}
+
+    int xml_node::num_children(const char* name) const
+    {
+      int num = 0;
+      for (xml_node_struct* i = _root->first_child; i; i = i->next_sibling)
+         if (i->name && !strcmp(name, i->name)) num++;
+
+      return num;
+    }
 
 	void xml_node::print(xml_writer& writer, const char_t* indent, unsigned int flags, xml_encoding encoding, unsigned int depth) const
 	{

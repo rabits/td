@@ -114,13 +114,103 @@ bool CGame::initialise()
     loadConfig(config_path.c_str());
 
     // Loading user config
-    //loadConfig(m_pPrefix);
+    config_path = fs::path(m_data.child("env").child_value("HOME"));
+    config_path /= m_data.child("path").child_value("user_data");
+    if( config_path == fs::path(m_data.child("env").child_value("HOME")) )
+    {
+        log_warn("User data relative directory not setted in config - using default \"$HOME/.config/td\"");
+        m_data.child("path").child("user_data").child(pugi::node_pcdata).set_value(".config/td");
+        config_path /= ".config/td";
+    }
+    if( ! fs::is_directory(config_path) )
+    {
+        log_warn("Not found user directory \"%s\", creating new", config_path.c_str());
+        if( ! fs::create_directories(config_path) )
+            return log_error("Could't create user data directory \"%s\"");
+    }
+    config_path /= "config.xml";
+    if( ! loadConfig(config_path.c_str()) )
+        log_notice("Can't load user configuration \"%s\"", config_path.c_str());
 
-    //m_pRoot = new Ogre::Root(CONFIG_PATH_CONFIG "plugins.cfg", CONFIG_PATH_CONFIG "main.cfg", CONFIG_PATH_CONFIG "logfile.log");
-    m_pRoot = new Ogre::Root();
+    // Initialise OGRE
+    initOgre();
 
-    //-------- configure ---------------
-    log_info("Creating main configuration");
+    // Initialise Bullet
+    initBullet();
+
+    // Initialise OIS
+    initOIS();
+
+    // Initialise Sound
+    initSound();
+
+    createFrameListener();
+
+    // Create worlds
+    log_info("Creating worlds");
+    m_vWorlds.push_back(new CObjectWorld(*this));
+
+    log_info("Complete configuration");
+
+    return true;
+}
+
+bool CGame::loadEnv()
+{
+    log_info("Loading environment");
+    pugi::xml_node data_env = m_data.append_child("env");
+
+    // Home of user
+    data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("HOME"));
+
+    return true;
+}
+
+bool CGame::loadConfig(const char *configfile)
+{
+    log_info("Loading game configuration file: \"%s\"", configfile);
+
+    pugi::xml_document new_data;
+    pugi::xml_parse_result result = new_data.load_file(configfile, pugi::parse_full);
+
+#ifdef CONFIG_DEBUG
+    log_debug("New data for merge:");
+    new_data.save(std::cout, "  ");
+#endif
+
+    if( !result )
+        return log_error("\tLoading failed: %s#%d", result.description(), result.offset);
+
+    // Verify config
+    if( ! verifyData(new_data) )
+        return log_error("\tFerifying of data failed");
+
+    // Starting merge
+    pugi::xml_node new_child = new_data.child(CONFIG_TD_NAME).child(m_dataName);
+    mergeData(new_child);
+
+#ifdef CONFIG_DEBUG
+    log_debug("Data before merge:");
+    m_dataBefore.save(std::cout, "  ");
+    log_debug("Data After merge:");
+    m_dataRoot.save(std::cout, "  ");
+#endif
+
+    log_info("Complete loading game configuration file: \"%s\"", configfile);
+    return true;
+}
+
+bool CGame::initOgre()
+{
+    log_info("Initialising OGRE graphic engine");
+
+    fs::path log_path(m_data.child("env").child_value("HOME"));
+    log_path /= m_data.child("path").child_value("user_data");
+    log_path /= "ogre.log";
+
+    // Loading root object
+    m_pRoot = new Ogre::Root("", "", log_path.c_str());
+
     if( !(m_pRoot->restoreConfig() || m_pRoot->showConfigDialog()) )
         return false;
 
@@ -223,74 +313,26 @@ bool CGame::initialise()
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
     //------- !loadResources! -----------
 
-    createFrameListener();
+    return true;
+}
 
-    // Create worlds
-    log_info("Creating worlds");
-    m_vWorlds.push_back(new CObjectWorld(*this));
-
-    log_info("Complete configuration");
+bool CGame::initBullet()
+{
+    log_info("Initialising Bullet physics engine");
 
     return true;
 }
 
-bool CGame::loadEnv()
+bool CGame::initOIS()
 {
-    pugi::xml_node data_env = m_data.append_child("env");
-
-    // Home of user
-    data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("HOME"));
+    log_info("Initialising OIS Nerv controlling system");
 
     return true;
 }
 
-bool CGame::loadConfig(const char *configfile)
+bool CGame::initSound()
 {
-    log_info("Loading game configuration file: \"%s\"", configfile);
-
-    pugi::xml_document new_data;
-    pugi::xml_parse_result result = new_data.load_file(configfile, pugi::parse_full);
-
-#ifdef CONFIG_DEBUG
-    log_debug("New data for merge:");
-    new_data.save(std::cout, "  ");
-#endif
-
-    if( !result )
-        return log_error("\tLoading failed: %s#%d", result.description(), result.offset);
-
-    // Verify config
-    if( ! verifyData(new_data) )
-        return log_error("Ferifying of data failed");
-
-    // Starting merge
-    pugi::xml_node new_child = new_data.child(CONFIG_TD_NAME).child(m_dataName);
-    mergeData(new_child);
-
-#ifdef CONFIG_DEBUG
-    log_debug("Data before merge:");
-    m_dataBefore.save(std::cout, "  ");
-    log_debug("Data After merge:");
-    m_dataRoot.save(std::cout, "  ");
-#endif
-
-    /*fs::path path_root_share(CONFIG_PATH_ROOT_SHARE);
-    data_path.append_child("path_root_share").append_child(pugi::node_pcdata).set_value(path_root_share.c_str());
-
-    if( ! fs::is_directory(path_home_share) )
-    {
-        log_info("Creating user home config directory");
-        boost::filesystem3::create_directories(path_home_share);
-
-        // Creating default configuration of game
-        loadConfig();
-        pugi::xml_node data_config = m_data.append_child("config");
-        saveData(std::cout);
-    }
-    else
-    {
-
-    }*/
+    log_info("Initialising Sound engine");
 
     return true;
 }

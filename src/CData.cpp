@@ -111,18 +111,21 @@ bool CData::mergeData(pugi::xml_node &new_node, pugi::xml_node *cur_node)
     }
 
     // Processing current level of tree
-    /// @todo Deduplication of elements
     pugi::xml_node cur_child;
 
     for( pugi::xml_node_iterator it = new_node.begin(); it != new_node.end(); ++it )
     {
-        // Append node, if it not set
+        // Append node, if it not set or use exist node
         if( ! it->empty() )
         {
-            if( it->name() != "" )
+            if( ((it->type() == pugi::node_element) && !cur_node->child(it->name())) || it->attribute("value") )
                 cur_child = cur_node->append_child(it->name());
-            else if( it->type() != pugi::node_null )
+            else if( !cur_node->first_child() )
                 cur_child = cur_node->append_child(it->type());
+            else if( it->name() != "" )
+                cur_child = cur_node->child(it->name());
+            else
+                cur_child = cur_node->child(it->type());
         }
 
         // Processing attributes

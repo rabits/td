@@ -2,29 +2,28 @@
 <td version="0.1.0">
   <Game>
     <path>
-      <!-- Full path to directory with Ogre plugins -->
+      <!-- Paths of game -->
       <ogre_plugins>${CONFIG_OGRE_PLUGINS_PATH}</ogre_plugins>
-      <!-- Global data directory relative from prefix -->
       <root_data>${CONFIG_PATH_DATA}/</root_data>
-      <!-- User config.xml and data directory from HOME env -->
       <user_data>.config/${CONFIG_TD_NAME}/</user_data>
-      <!-- Data directory in $root_data or $user_data -->
       <data>data/</data>
-      <!-- Users directory in $root_data or $user_data -->
       <users>users/</users>
     </path>
     <config>
       <ogre>
         <plugins>
-          <plugin>Plugin_ParticleFX</plugin>
-          <plugin>Plugin_BSPSceneManager</plugin>
-          <plugin>Plugin_CgProgramManager</plugin>
-          <plugin>Plugin_PCZSceneManager</plugin>
-          <plugin>Plugin_OctreeZone</plugin>
-          <plugin>Plugin_OctreeSceneManager</plugin>
+          <!-- Plugins for Ogre -->
+          <plugin value="Plugin_ParticleFX" />
+          <plugin value="Plugin_BSPSceneManager" />
+          <plugin value="Plugin_CgProgramManager" />
+          <plugin value="Plugin_PCZSceneManager" />
+          <plugin value="Plugin_OctreeZone" />
+          <plugin value="Plugin_OctreeSceneManager" />
         </plugins>
         <video choice="OpenGL">
-          <driver name="OpenGL" plugin="RenderSystem_GL">
+          <!-- Video render engines -->
+          <engine name="OpenGL" plugin="RenderSystem_GL">
+            <!-- Default video engine -->
             <display>
               <!-- Display configuration -->
               <x>800</x>
@@ -40,7 +39,7 @@
               <enabled>false</enabled>
             </fsaa>
             <vsync>
-              <!-- Vertical Sinchronisation -->
+              <!-- Vertical Synchronization -->
               <enabled>true</enabled>
             </vsync>
             <rtt>
@@ -52,18 +51,18 @@
               <!-- sRGB Gamma Conversion -->
               <enabled>false</enabled>
             </srgb>
-          </driver>
+          </engine>
         </video>
         <resources>
           <!-- Path to ogre resources (from $root_data/$data or $home_data/$data) -->
           <Bootstrap>
-            <Zip>graphic/OgreCore.zip</Zip>
-            <Zip>graphic/SdkTrays.zip</Zip>
+            <Zip value="graphic/OgreCore.zip" />
+            <Zip value="graphic/SdkTrays.zip" />
           </Bootstrap>
           <General>
-            <FileSystem>graphic</FileSystem>
-            <FileSystem>graphic/meshes</FileSystem>
-            <FileSystem>graphic/textures</FileSystem>
+            <FileSystem value="graphic" />
+            <FileSystem value="graphic/meshes" />
+            <FileSystem value="graphic/textures" />
           </General>
         </resources>
       </ogre>

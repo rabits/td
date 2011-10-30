@@ -14,7 +14,7 @@ if(NOT CMAKE_BUILD_TYPE)
         FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
-message("Making ${CMAKE_BUILD_TYPE} configuration. Version: ${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}")
+message("Making ${CMAKE_BUILD_TYPE} configuration. Version ${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}")
 
 #
 # Adding sources
@@ -199,10 +199,10 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/users DESTINATION ${CMAKE_IN
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config/config.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_ETC})
 
 # Cppcheck execute if found and Debug mode
-if(CPPCHECK_EXEC AND CMAKE_BUILD_TYPE STREQUAL "Release")
+if(CPPCHECK_EXEC)
     set(CPPCHECK_SRC ${td_SRCS})
     string(REPLACE ";" ";-I;" CPPCHECK_INCLUDE_PARAMS "${TARGET_INCLUDE_DIRS};${SYSTEM_INCLUDE_DIRS}")
-    add_custom_target(cppcheck ALL ${CPPCHECK_EXEC} -f --enable=style --enable=all --verbose --template gcc -I ${CPPCHECK_INCLUDE_PARAMS} ${CMAKE_CURRENT_SOURCE_DIR}/src
+    add_custom_target(cppcheck ${CPPCHECK_EXEC} -f --enable=style --enable=all --verbose --template gcc -I ${CPPCHECK_INCLUDE_PARAMS} ${CMAKE_CURRENT_SOURCE_DIR}/src
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Analyzing source code by cppcheck" VERBATIM)
 endif()

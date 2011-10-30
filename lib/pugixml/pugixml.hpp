@@ -408,6 +408,7 @@ namespace pugi
 
 		// Get child, attribute or next/previous sibling with the specified name
 		xml_node child(const char_t* name) const;
+        xml_node child(const xml_node_type type) const;
 		xml_attribute attribute(const char_t* name) const;
 		xml_node next_sibling(const char_t* name) const;
 		xml_node previous_sibling(const char_t* name) const;
@@ -562,6 +563,9 @@ namespace pugi
 
 		// Get internal pointer
 		xml_node_struct* internal_object() const;
+
+        // Get number of childrens with same name
+        int num_children(const char* name) const;
 	};
 
 #ifdef __BORLANDC__
