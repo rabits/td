@@ -203,6 +203,7 @@ bool CGame::loadConfig(const char *configfile)
 bool CGame::initOgre()
 {
     log_info("Initialising OGRE graphic engine");
+    pugi::xml_node ogre_config = m_data.child("config").child("ogre");
 
     fs::path log_path(m_data.child("env").child_value("HOME"));
     log_path /= m_data.child("path").child_value("user_data");
@@ -211,11 +212,57 @@ bool CGame::initOgre()
     // Loading root object
     m_pRoot = new Ogre::Root("", "", log_path.c_str());
 
-    if( !(m_pRoot->restoreConfig() || m_pRoot->showConfigDialog()) )
-        return false;
+    // Get plugin directory
+    fs::path ogre_video_plugin(m_data.child("path").child_value("ogre_plugins"));
+    if( ogre_video_plugin.empty() )
+    {
+        ogre_video_plugin = *m_pPrefix;
+        ogre_video_plugin /= CONFIG_PATH_PREFIX_BIN;
+        log_warn("Not found ogre_plugins path. Trying binary folder \"%s\" for find OGRE plugins", ogre_video_plugin.c_str());
+    }
+
+    log_info("Loading OGRE configuration");
+    pugi::xml_node ogre_engine;
+    if( ogre_config.child("video").attribute("choice").value() != "" )
+    {
+        log_notice("Choiced engine: %s", ogre_config.child("video").attribute("choice").value());
+        ogre_engine = ogre_config.child("video").find_child_by_attribute("name", ogre_config.child("video").attribute("choice").value());
+    }
+
+    if( ! ogre_engine )
+    {
+        log_warn("Not found choiced video engine (\"%s\"). Will be used first in video tree.", ogre_engine.name());
+        ogre_engine = ogre_config.child("video").child("engine");
+    }
+
+    if( ogre_engine )
+    {
+        log_info("Found engine %s (from %d engines)", ogre_engine.attribute("name").value(), ogre_config.child("video").num_children("engine"));
+        if( ogre_engine.attribute("plugin").value() == "" )
+            ogre_engine = pugi::xml_node();
+        else
+        {
+            ogre_video_plugin /= ogre_engine.attribute("plugin").value();
+            log_info("Loading engine plugin %s", ogre_video_plugin.c_str());
+            m_pRoot->loadPlugin(ogre_video_plugin.c_str());
+        }
+    }
+
+    if( ! ogre_engine )
+    {
+        log_error("No one video plugins in engine config, using default settings");
+        // @todo Create default configuration in xml
+        ogre_video_plugin /= "RenderSystem_GL";
+        m_pRoot->loadPlugin(ogre_video_plugin.c_str());
+    }
+
+    log_info("Loading render engine and init video");
+    Ogre::RenderSystemList::const_iterator render_system = m_pRoot->getAvailableRenderers().begin();
+    m_pRoot->setRenderSystem(*render_system);
 
     m_pRoot->initialise(false);
 
+    log_info("Configuring video output");
     Ogre::ConfigOptionMap options = m_pRoot->getRenderSystem()->getConfigOptions();
     Ogre::ConfigOptionMap::iterator opt;
     Ogre::ConfigOptionMap::iterator end = options.end();
@@ -248,6 +295,19 @@ bool CGame::initOgre()
     miscParams["border"] = "fixed";
 
     m_pWindow = m_pRoot->createRenderWindow(CONFIG_TD_FULLNAME, w, h, fullscreen, &miscParams);
+
+    log_info("Loading OGRE misk plugins");
+    if( m_data.child("config").child("ogre").child("plugins").child("plugin") )
+    {
+        pugi::xml_node plugins = m_data.child("config").child("ogre").child("plugins").child("plugin");
+        for (pugi::xml_node plugin = plugins.child("plugin"); plugin; plugin = plugins.next_sibling("plugin"))
+        {
+            if( plugin.attribute("value").value() == "" )
+                log_warn("Found empty value plugin in config of OGRE plugins");
+            else
+                m_pRoot->loadPlugin(plugin.attribute("value").value());
+        }
+    }
 
     //-------- !configure! ---------------
 
