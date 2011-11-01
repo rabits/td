@@ -251,6 +251,7 @@ protected:
     void windowClosed(Ogre::RenderWindow* rw);
 
     Ogre::Root                             *m_pRoot; ///< Root Ogre object
+    Ogre::LogManager                       *m_pLogManager; ///< Log manager for replacement OGRE default logger
     Ogre::Timer                            *m_pTimer; ///< Game timer for restriction of frame rendering speed
     unsigned long                           m_NextFrameTime; ///< Render next frame in this time (microseconds)
 

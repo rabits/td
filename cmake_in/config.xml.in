@@ -28,29 +28,16 @@
               <!-- Display configuration -->
               <x>800</x>
               <y>600</y>
-              <frequency>60</frequency>
+              <full_screen>No</full_screen>
             </display>
-            <full_screen>
-              <!-- Run in fullscreen? -->
-              <enabled>false</enabled>
-            </full_screen>
-            <fsaa>
-              <!-- FSAA -->
-              <enabled>false</enabled>
-            </fsaa>
-            <vsync>
-              <!-- Vertical Synchronization -->
-              <enabled>true</enabled>
-            </vsync>
-            <rtt>
-              <!-- RTT Preferred Mode -->
-              <enabled>true</enabled>
-              <mode>FBO</mode>
-            </rtt>
-            <srgb>
-              <!-- sRGB Gamma Conversion -->
-              <enabled>false</enabled>
-            </srgb>
+            <misc>
+              <!-- Misc parameters -->
+              <DisplayFrequency>50 MHz</DisplayFrequency>
+              <FSAA>0</FSAA>
+              <RTTPreferredMode>FBO</RTTPreferredMode>
+              <VSync>Yes</VSync>
+              <sRGBGammaConversion>No</sRGBGammaConversion>
+            </misc>
           </engine>
         </video>
         <resources>

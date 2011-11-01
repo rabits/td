@@ -27,6 +27,8 @@
 #include "CGame.h"
 #include "CInputHandler.h"
 
+#include <algorithm>
+
 CGame::CGame()
    : CData("Game")
    , m_pSceneMgr(NULL)
@@ -40,6 +42,7 @@ CGame::CGame()
    , o_currentWorld(NULL)
    , m_vWorlds()
    , m_pRoot(NULL)
+   , m_pLogManager(NULL)
    , m_pTimer(new Ogre::Timer())
    , m_NextFrameTime(0)
    , m_ShutDown(false)
@@ -52,6 +55,11 @@ fs::path* CGame::m_pPrefix = NULL;
 
 CGame::~CGame()
 {
+    for( o_currentWorld=m_vWorlds.begin() ; o_currentWorld < m_vWorlds.end(); o_currentWorld++ )
+        delete (*o_currentWorld);
+    for( o_currentUser = m_vUsers.begin() ; o_currentUser < m_vUsers.end(); o_currentUser++ )
+        delete (*o_currentUser);
+
     if( m_pTrayMgr )
         delete m_pTrayMgr;
     if( m_pTimer )
@@ -61,12 +69,10 @@ CGame::~CGame()
     Ogre::WindowEventUtilities::removeWindowEventListener(m_pWindow, this);
     windowClosed(m_pWindow);
 
-    delete m_pRoot;
-
-    for( o_currentWorld=m_vWorlds.begin() ; o_currentWorld < m_vWorlds.end(); o_currentWorld++ )
-        delete (*o_currentWorld);
-    for( o_currentUser = m_vUsers.begin() ; o_currentUser < m_vUsers.end(); o_currentUser++ )
-        delete (*o_currentUser);
+    if( m_pRoot )
+        delete m_pRoot;
+    if( m_pLogManager )
+        delete m_pLogManager;
 }
 
 CGame* CGame::getInstance()
@@ -205,12 +211,19 @@ bool CGame::initOgre()
     log_info("Initialising OGRE graphic engine");
     pugi::xml_node ogre_config = m_data.child("config").child("ogre");
 
+    // Creating OGRE log
     fs::path log_path(m_data.child("env").child_value("HOME"));
     log_path /= m_data.child("path").child_value("user_data");
     log_path /= "ogre.log";
+    m_pLogManager = new Ogre::LogManager();
+#ifdef CONFIG_DEBUG
+    m_pLogManager->createLog(log_path.c_str(), true, true, false);
+#else
+    m_pLogManager->createLog(log_path.c_str(), true, false, false);
+#endif
 
     // Loading root object
-    m_pRoot = new Ogre::Root("", "", log_path.c_str());
+    m_pRoot = new Ogre::Root("", "", "");
 
     // Get plugin directory
     fs::path ogre_video_plugin(m_data.child("path").child_value("ogre_plugins"));
@@ -259,42 +272,70 @@ bool CGame::initOgre()
     log_info("Loading render engine and init video");
     Ogre::RenderSystemList::const_iterator render_system = m_pRoot->getAvailableRenderers().begin();
     m_pRoot->setRenderSystem(*render_system);
-
     m_pRoot->initialise(false);
 
+    Ogre::ConfigOptionMap possible_configs = m_pRoot->getRenderSystem()->getConfigOptions();
+
+#ifdef CONFIG_DEBUG
+    log_debug("Available options:");
+    for( Ogre::ConfigOptionMap::const_iterator it = possible_configs.begin(); it != possible_configs.end(); it++ )
+    {
+        Ogre::StringVector::const_iterator itp = it->second.possibleValues.begin();
+        std::string possible_values("'" + *itp++ + "'");
+        for( ; itp != it->second.possibleValues.end(); itp++ )
+            possible_values += ",'" + *itp + "'";
+        log_debug("\t\"%s\" (default: %s) in (%s)", it->first.c_str(), it->second.currentValue.c_str(), possible_values.c_str());
+    }
+#endif
+
     log_info("Configuring video output");
-    Ogre::ConfigOptionMap options = m_pRoot->getRenderSystem()->getConfigOptions();
-    Ogre::ConfigOptionMap::iterator opt;
-    Ogre::ConfigOptionMap::iterator end = options.end();
     Ogre::NameValuePairList miscParams;
 
+    // Hard default params
     bool fullscreen = false;
-    uint w = 800, h = 600;
+    uint x = 800, y = 600;
 
-    if((opt = options.find("Full Screen")) != end)
-        fullscreen = (opt->second.currentValue == "Yes");
-    if((opt = options.find("Display Frequency")) != end)
-        miscParams["displayFrequency"] = opt->second.currentValue;
-    if((opt = options.find("Video Mode")) != end)
+    // Standart parameters:
+    fullscreen = (ogre_engine.child("display").child_value("full_screen") == "Yes");
+    if( (ogre_engine.child("display").child_value("x") != "") && (ogre_engine.child("display").child_value("y") != "") )
     {
-        Ogre::String val = opt->second.currentValue;
-        Ogre::String::size_type pos = val.find('x');
+        x = Ogre::StringConverter::parseUnsignedInt(ogre_engine.child("display").child_value("x"));
+        y = Ogre::StringConverter::parseUnsignedInt(ogre_engine.child("display").child_value("y"));
+    }
+    log_info("\tDisplay: %sx%s, fullscreen: %s", ogre_engine.child("display").child_value("x")
+             , ogre_engine.child("display").child_value("y")
+             , ogre_engine.child("display").child_value("full_screen"));
 
-        if (pos != Ogre::String::npos)
+    // Misc parameters
+    pugi::xml_node ogre_misc = ogre_engine.child("misc");
+    if( ogre_misc )
+    {
+        for( Ogre::ConfigOptionMap::const_iterator it = possible_configs.begin(); it != possible_configs.end(); it++ )
         {
-            w = Ogre::StringConverter::parseUnsignedInt(val.substr(0, pos));
-            h = Ogre::StringConverter::parseUnsignedInt(val.substr(pos + 1));
+            if( (it->first == "Video Mode") || (it->first == "Full Screen") )
+                continue;
+
+            std::string pname(it->first);
+            pname.erase(std::remove_if(pname.begin(), pname.end(), static_cast<int(*)(int)>(std::isspace)), pname.end());
+            if( ogre_misc.child(pname.c_str()) )
+            {
+                std::string pvalue(ogre_misc.child_value(pname.c_str()));
+                if( std::find(it->second.possibleValues.begin(), it->second.possibleValues.end(), pvalue) != it->second.possibleValues.end() )
+                {
+                    log_info("\tMisc set \"%s\" = %s", it->first.c_str(), ogre_misc.child_value(pname.c_str()));
+                    miscParams[it->first] = pvalue;
+                }
+                else
+                    log_warn("\tMisc bad parameter \"%s\", using default value '%s'", pname.c_str(), it->second.currentValue.c_str());
+            }
         }
     }
-    if((opt = options.find("FSAA")) != end)
-        miscParams["FSAA"] = opt->second.currentValue;
-    if((opt = options.find("VSync")) != end)
-        miscParams["vsync"] = opt->second.currentValue;
-    if((opt = options.find("sRGB Gamma Conversion")) != end)
-        miscParams["gamma"] = opt->second.currentValue;
+
+    // Special parameters:
+    //  Fixed borders for window
     miscParams["border"] = "fixed";
 
-    m_pWindow = m_pRoot->createRenderWindow(CONFIG_TD_FULLNAME, w, h, fullscreen, &miscParams);
+    m_pWindow = m_pRoot->createRenderWindow(CONFIG_TD_FULLNAME, x, y, fullscreen, &miscParams);
 
     log_info("Loading OGRE misk plugins");
     if( m_data.child("config").child("ogre").child("plugins").child("plugin") )
