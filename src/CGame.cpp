@@ -161,7 +161,9 @@ bool CGame::initialise()
 bool CGame::loadEnv()
 {
     log_notice("Loading environment");
-    pugi::xml_node data_env = m_data.append_child("env");
+
+    m_data.append_child("env");
+    pugi::xml_node data_env = m_data.child("env");
 
     // Home of user
     data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("HOME"));
@@ -171,7 +173,7 @@ bool CGame::loadEnv()
 
 bool CGame::loadConfig(const char *configfile)
 {
-    log_notice("Loading game configuration file: \"%s\"", configfile);
+    log_info("Loading game configuration file: \"%s\"", configfile);
 
     pugi::xml_document new_data;
     pugi::xml_parse_result result = new_data.load_file(configfile, pugi::parse_full);
@@ -199,7 +201,8 @@ bool CGame::loadConfig(const char *configfile)
     m_dataRoot.save(std::cout, "  ");
 #endif
 
-    return log_info("Complete loading game configuration file: \"%s\"", configfile);
+    log_info("Complete loading game configuration file: \"%s\"", configfile);
+    return true;
 }
 
 bool CGame::initOgre()
@@ -396,6 +399,9 @@ bool CGame::initOgre()
     log_info("Loading all prepared resources");
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
+    // Set default mipmap level (NB some APIs ignore this)
+    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+
     return true;
 }
 
@@ -445,8 +451,8 @@ bool CGame::initGame()
     m_pCamera->lookAt(Ogre::Vector3(0.0,50.0,0.0));
     m_pCamera->setNearClipDistance(0.01f);
 
-    //m_vUsers.push_back(new CUser(m_pCamera));   // create a default camera controller
-
+    // Create a default camera controller
+    //m_vUsers.push_back(new CUser(m_pCamera));
 
     log_info("Creating viewport");
     // Create one viewport, entire window
@@ -456,11 +462,8 @@ bool CGame::initGame()
     // Alter the camera aspect ratio to match the viewport
     m_pCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
 
-    // Set default mipmap level (NB some APIs ignore this)
-    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-
     // Creating simple game info
-    createFrameListener();
+    //createFrameListener();
 
     // Create worlds
     log_info("Creating worlds");
@@ -473,7 +476,7 @@ void CGame::start()
 {
     log_notice("Starting game");
 
-    // Now time
+    // Now time for fixing framerate
     unsigned long now;
 
     // Main game loop

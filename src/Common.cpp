@@ -27,10 +27,12 @@
     #include <windows.h>
 #endif
 
-int Common::CLog::m_displayLevel = 0;
-unsigned long Common::CLog::m_logTime = 0;
+using namespace Common;
 
-bool Common::CLog::log(Common::CLog::LogLevel level, const char* format, ...)
+CLog::LogLevel CLog::m_displayLevel = CLog::LOG_NONE;
+unsigned long CLog::m_logTime = 0;
+
+bool CLog::log(CLog::LogLevel level, const char* format, ...)
 {
     if( level < m_displayLevel )
         return level < 5;
@@ -44,7 +46,7 @@ bool Common::CLog::log(Common::CLog::LogLevel level, const char* format, ...)
 
     // Select output
     FILE *output;
-    if( level < 4 )
+    if( level < CLog::LOG_WARN )
         output = stdout;
     else
         output = stderr;
@@ -56,41 +58,44 @@ bool Common::CLog::log(Common::CLog::LogLevel level, const char* format, ...)
     // Message level
     switch( level ){
         case 1:
-            strcpy(msglevel, "DEBUG");
+            std::strcpy(msglevel, "DEBUG");
             break;
         case 2:
-            strcpy(msglevel, "INFO");
+            std::strcpy(msglevel, "INFO");
             break;
         case 3:
-            strcpy(msglevel, "NOTICE");
+            std::strcpy(msglevel, "NOTICE");
             break;
         case 4:
-            strcpy(msglevel, "WARN");
+            std::strcpy(msglevel, "WARN");
             break;
         case 5:
-            strcpy(msglevel, "ERROR");
+            std::strcpy(msglevel, "ERROR");
             break;
         case 6:
-            strcpy(msglevel, "CRIT");
+            std::strcpy(msglevel, "CRIT");
             break;
         case 7:
-            strcpy(msglevel, "ALERT");
+            std::strcpy(msglevel, "ALERT");
             break;
         case 8:
-            strcpy(msglevel, "FATAL");
+            std::strcpy(msglevel, "FATAL");
             break;
         case 0:
             return true;
     }
 
-    std::fprintf(output, "[%06d.%03d] %6s: %s\n", m_logTime/1000, m_logTime%1000, msglevel, msgbuffer);
+    std::fprintf(output, "[%06lu.%03lu] %6s: %s\n", m_logTime/1000, m_logTime%1000, msglevel, msgbuffer);
 
-    return level < 5;
+    return level < CLog::LOG_ERROR;
 }
 
-Common::CLog::LogLevel Common::CLog::displayLogLevel(Common::CLog::LogLevel level)
+CLog::LogLevel CLog::displayLogLevel(CLog::LogLevel level)
 {
+    if( level != CLog::LOG_NONE )
+        m_displayLevel = level;
 
+    return m_displayLevel;
 }
 
 std::string Common::getPrefixPath()

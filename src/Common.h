@@ -16,23 +16,28 @@
 
 #include "config.h"
 
+#include <execinfo.h>
+#include <signal.h>
+#include <exception>
+#include <iostream>
+
 #include <string>
 
-#ifndef CONFIG_DEBUG
+// @todo Fix strange memory bug with this defines (notice-emerg). If its move from ifdef - will be produced sigfault...
+#ifdef CONFIG_DEBUG
+#   define log_debug(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_DEBUG, format, ##__VA_ARGS__)
+#   define log_info(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_INFO, format, ##__VA_ARGS__)
+#else
 #   define log_debug(format, ...)  /* not logged */
 #   define log_info(format, ...)   /* not logged */
-#else
-#   define log_debug(format, ...)  Common::CLog::log(Common::CLog::LogLevel::LOG_DEBUG, format, ##__VA_ARGS__)
-#   define log_info(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_INFO, format, ##__VA_ARGS__)
 #endif
 
-#define log_notice(format, ...) Common::CLog::log(Common::CLog::LogLevel::LOG_NOTICE, format, ##__VA_ARGS__)
-#define log_warn(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_WARN, format, ##__VA_ARGS__)
-#define log_error(format, ...)  Common::CLog::log(Common::CLog::LogLevel::LOG_ERROR, format, ##__VA_ARGS__)
-#define log_crit(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_CRIT, format, ##__VA_ARGS__)
-#define log_alert(format, ...)  Common::CLog::log(Common::CLog::LogLevel::LOG_ALERT, format, ##__VA_ARGS__)
-#define log_emerg(format, ...)  Common::CLog::log(Common::CLog::LogLevel::LOG_EMERG, format, ##__VA_ARGS__)
-
+#define log_notice(format, ...)  Common::CLog::log(Common::CLog::LogLevel::LOG_NOTICE, format, ##__VA_ARGS__)
+#define log_warn(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_WARN, format, ##__VA_ARGS__)
+#define log_error(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_ERROR, format, ##__VA_ARGS__)
+#define log_crit(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_CRIT, format, ##__VA_ARGS__)
+#define log_alert(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_ALERT, format, ##__VA_ARGS__)
+#define log_emerg(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_EMERG, format, ##__VA_ARGS__)
 
 /** @brief Specialised and non-crossplatform functions
  */
@@ -76,7 +81,7 @@ namespace Common
         static LogLevel displayLogLevel(LogLevel level = LOG_NONE);
 
     protected:
-        static int           m_displayLevel; ///< Display messages with >= this level
+        static LogLevel      m_displayLevel; ///< Display messages with >= this level
         static unsigned long m_logTime; ///< Last log time
     };
 
@@ -87,6 +92,69 @@ namespace Common
      * Thanx Ogre wiki <http://www.ogre3d.org/tikiwiki/GetExecutablePath&structure=Cookbook>
      */
     std::string getPrefixPath();
-};
+
+    /** @brief Stacktrace exception class
+     */
+    class ExceptionTracer
+    {
+    public:
+        ExceptionTracer()
+        {
+            void * array[25];
+            int nSize = backtrace(array, 25);
+            char ** symbols = backtrace_symbols(array, nSize);
+
+            for (int i = 0; i < nSize; i++)
+            {
+                std::cout << symbols[i] << std::endl;
+            }
+
+            free(symbols);
+        }
+    };
+
+    /** @brief Template of SignalExceptions
+     *
+     */
+    template <class SignalExceptionClass> class SignalTranslator
+    {
+    private:
+        class SingleTonTranslator
+        {
+        public:
+            SingleTonTranslator()
+            {
+                signal(SignalExceptionClass::GetSignalNumber(), SignalHandler);
+            }
+
+            static void SignalHandler(int)
+            {
+                throw SignalExceptionClass();
+            }
+        };
+
+    public:
+        SignalTranslator()
+        {
+            static SingleTonTranslator s_objTranslator;
+        }
+    };
+
+    /** @brief SIGSEGV signal catcher
+     */
+    class SegmentationFault : public ExceptionTracer, public std::exception
+    {
+    public:
+        static int GetSignalNumber() {return SIGSEGV;}
+    };
+
+    /** @brief SIGFPE signal catcher
+     */
+    class FloatingPointException : public ExceptionTracer, public std::exception
+    {
+    public:
+        static int GetSignalNumber() {return SIGFPE;}
+    };
+}
 
 #endif // COMMON_H

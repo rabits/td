@@ -15,6 +15,11 @@
 #include "main.h"
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_WIN32
+
+// Catching signals by exceptions
+Common::SignalTranslator<Common::SegmentationFault> g_objSegmentationFaultTranslator;
+Common::SignalTranslator<Common::FloatingPointException> g_objFloatingPointExceptionTranslator;
+
 /** @brief Main started function
  *
  * @param argc int
@@ -49,6 +54,8 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
     catch(...) {
         log_emerg("An unknown exception has occured!");
     }
+
+    log_notice("See you...");
 
     // Destroy game in the end
     CGame::destroyInstance();

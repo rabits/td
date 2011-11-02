@@ -193,7 +193,7 @@ protected:
      */
     bool initSound();
 
-    /** @brief Init Game main configuration
+    /** @brief Init Game misc configuration
      *
      * @return bool
      *
