@@ -193,6 +193,13 @@ protected:
      */
     bool initSound();
 
+    /** @brief Init Game main configuration
+     *
+     * @return bool
+     *
+     */
+    bool initGame();
+
     /** @brief Frame listener of info panel
      *
      * @return void

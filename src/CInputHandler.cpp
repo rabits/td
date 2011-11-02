@@ -24,8 +24,6 @@ CInputHandler::CInputHandler(size_t windowHnd)
     , m_joysticsNum(0)
     , m_pGame(NULL)
 {
-    log_notice("Initializing \"Nerv controlling system\"");
-
     m_pGame = CGame::getInstance();
 
     OIS::ParamList pl;

@@ -87,7 +87,7 @@ void CGame::destroyInstance()
 {
     if( m_pInstance )
         delete m_pInstance;
-};
+}
 
 unsigned int CGame::getTime()
 {
@@ -150,11 +150,8 @@ bool CGame::initialise()
     // Initialise Sound
     initSound();
 
-    createFrameListener();
-
-    // Create worlds
-    log_info("Creating worlds");
-    m_vWorlds.push_back(new CObjectWorld(*this));
+    // Initialise Game
+    initGame();
 
     log_info("Complete configuration");
 
@@ -163,7 +160,7 @@ bool CGame::initialise()
 
 bool CGame::loadEnv()
 {
-    log_info("Loading environment");
+    log_notice("Loading environment");
     pugi::xml_node data_env = m_data.append_child("env");
 
     // Home of user
@@ -174,7 +171,7 @@ bool CGame::loadEnv()
 
 bool CGame::loadConfig(const char *configfile)
 {
-    log_info("Loading game configuration file: \"%s\"", configfile);
+    log_notice("Loading game configuration file: \"%s\"", configfile);
 
     pugi::xml_document new_data;
     pugi::xml_parse_result result = new_data.load_file(configfile, pugi::parse_full);
@@ -202,13 +199,12 @@ bool CGame::loadConfig(const char *configfile)
     m_dataRoot.save(std::cout, "  ");
 #endif
 
-    log_info("Complete loading game configuration file: \"%s\"", configfile);
-    return true;
+    return log_info("Complete loading game configuration file: \"%s\"", configfile);
 }
 
 bool CGame::initOgre()
 {
-    log_info("Initialising OGRE graphic engine");
+    log_notice("Initialising OGRE graphic engine");
     pugi::xml_node ogre_config = m_data.child("config").child("ogre");
 
     // Creating OGRE log
@@ -225,18 +221,19 @@ bool CGame::initOgre()
     // Loading root object
     m_pRoot = new Ogre::Root("", "", "");
 
+
     // Get plugin directory
-    fs::path ogre_video_plugin(m_data.child("path").child_value("ogre_plugins"));
-    if( ogre_video_plugin.empty() )
+    fs::path ogre_plugins_dir(m_data.child("path").child_value("ogre_plugins"));
+    if( ogre_plugins_dir.empty() )
     {
-        ogre_video_plugin = *m_pPrefix;
-        ogre_video_plugin /= CONFIG_PATH_PREFIX_BIN;
-        log_warn("Not found ogre_plugins path. Trying binary folder \"%s\" for find OGRE plugins", ogre_video_plugin.c_str());
+        ogre_plugins_dir = *m_pPrefix;
+        ogre_plugins_dir /= CONFIG_PATH_PREFIX_BIN;
+        log_warn("Not found ogre_plugins path. Trying binary folder \"%s\" for find OGRE plugins", ogre_plugins_dir.c_str());
     }
 
     log_info("Loading OGRE configuration");
     pugi::xml_node ogre_engine;
-    if( ogre_config.child("video").attribute("choice").value() != "" )
+    if( ogre_config.child("video").attribute("choice") )
     {
         log_notice("Choiced engine: %s", ogre_config.child("video").attribute("choice").value());
         ogre_engine = ogre_config.child("video").find_child_by_attribute("name", ogre_config.child("video").attribute("choice").value());
@@ -248,25 +245,26 @@ bool CGame::initOgre()
         ogre_engine = ogre_config.child("video").child("engine");
     }
 
+    fs::path ogre_plugin(ogre_plugins_dir);
     if( ogre_engine )
     {
         log_info("Found engine %s (from %d engines)", ogre_engine.attribute("name").value(), ogre_config.child("video").num_children("engine"));
-        if( ogre_engine.attribute("plugin").value() == "" )
-            ogre_engine = pugi::xml_node();
-        else
+        if( ogre_engine.attribute("plugin") )
         {
-            ogre_video_plugin /= ogre_engine.attribute("plugin").value();
-            log_info("Loading engine plugin %s", ogre_video_plugin.c_str());
-            m_pRoot->loadPlugin(ogre_video_plugin.c_str());
+            ogre_plugin /= ogre_engine.attribute("plugin").value();
+            log_info("Loading engine plugin %s", ogre_plugin.c_str());
+            m_pRoot->loadPlugin(ogre_plugin.c_str());
         }
+        else
+            ogre_engine = pugi::xml_node();
     }
 
     if( ! ogre_engine )
     {
         log_error("No one video plugins in engine config, using default settings");
         // @todo Create default configuration in xml
-        ogre_video_plugin /= "RenderSystem_GL";
-        m_pRoot->loadPlugin(ogre_video_plugin.c_str());
+        ogre_plugin /= "RenderSystem_GL";
+        m_pRoot->loadPlugin(ogre_plugin.c_str());
     }
 
     log_info("Loading render engine and init video");
@@ -296,8 +294,8 @@ bool CGame::initOgre()
     uint x = 800, y = 600;
 
     // Standart parameters:
-    fullscreen = (ogre_engine.child("display").child_value("full_screen") == "Yes");
-    if( (ogre_engine.child("display").child_value("x") != "") && (ogre_engine.child("display").child_value("y") != "") )
+    fullscreen = (std::strcmp(ogre_engine.child("display").child_value("full_screen"), "Yes") == 0);
+    if( ogre_engine.child("display").child("x") && ogre_engine.child("display").child("y") )
     {
         x = Ogre::StringConverter::parseUnsignedInt(ogre_engine.child("display").child_value("x"));
         y = Ogre::StringConverter::parseUnsignedInt(ogre_engine.child("display").child_value("y"));
@@ -312,7 +310,7 @@ bool CGame::initOgre()
     {
         for( Ogre::ConfigOptionMap::const_iterator it = possible_configs.begin(); it != possible_configs.end(); it++ )
         {
-            if( (it->first == "Video Mode") || (it->first == "Full Screen") )
+            if( it->first.compare("Video Mode") || it->first.compare("Full Screen") )
                 continue;
 
             std::string pname(it->first);
@@ -337,28 +335,107 @@ bool CGame::initOgre()
 
     m_pWindow = m_pRoot->createRenderWindow(CONFIG_TD_FULLNAME, x, y, fullscreen, &miscParams);
 
-    log_info("Loading OGRE misk plugins");
-    if( m_data.child("config").child("ogre").child("plugins").child("plugin") )
+
+    log_info("Loading OGRE additional plugins");
+    if( ogre_config.child("plugins").child("plugin") )
     {
-        pugi::xml_node plugins = m_data.child("config").child("ogre").child("plugins").child("plugin");
-        for (pugi::xml_node plugin = plugins.child("plugin"); plugin; plugin = plugins.next_sibling("plugin"))
+        pugi::xml_node plugins = ogre_config.child("plugins");
+        for (pugi::xml_node_iterator plugin = plugins.begin(); plugin != plugins.end(); plugin++)
         {
-            if( plugin.attribute("value").value() == "" )
-                log_warn("Found empty value plugin in config of OGRE plugins");
+            if( plugin->attribute("value") )
+            {
+                ogre_plugin = ogre_plugins_dir / plugin->attribute("value").value();
+                log_info("\tLoading %s \"%s\"", plugin->name(), ogre_plugin.c_str());
+                m_pRoot->loadPlugin(ogre_plugin.c_str());
+            }
             else
-                m_pRoot->loadPlugin(plugin.attribute("value").value());
+                log_warn("\tFound empty value plugin in config of OGRE plugins");
+        }
+    }
+    else
+        log_warn("\tPlugins not found");
+
+
+    log_info("Preparing resources");
+    pugi::xml_node ogre_resources(ogre_config.child("resources"));
+    fs::path ogre_resource_location;
+    if( ogre_resources )
+    {
+        for (pugi::xml_node_iterator rg = ogre_resources.begin(); rg != ogre_resources.end(); rg++)
+        {
+            log_info("\tGroup \"%s\"", rg->name());
+            for (pugi::xml_node_iterator res = rg->begin(); res != rg->end(); res++)
+            {
+                if( res->attribute("value") )
+                {
+                    fs::path full_user_data = fs::path(m_data.child("env").child_value("HOME")) / fs::path(m_data.child("path").child_value("user_data")) / fs::path(m_data.child("path").child_value("data"));
+                    fs::path full_root_data;
+                    ogre_resource_location = full_user_data / fs::path(res->attribute("value").value());
+                    if( !fs::exists(ogre_resource_location) )
+                    {
+                        full_root_data = *m_pPrefix / fs::path(m_data.child("path").child_value("root_data")) / fs::path(m_data.child("path").child_value("data"));
+                        ogre_resource_location = full_root_data / fs::path(res->attribute("value").value());
+                    }
+
+                    if( fs::exists(ogre_resource_location) )
+                    {
+                        log_info("\t%s, location \"%s\"", res->name(), ogre_resource_location.c_str());
+                        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+                                    ogre_resource_location.string(), std::string(res->name()), std::string(rg->name()));
+                    }
+                    else
+                        log_error("\tResource path \"%s\" not exists in user_data (\"%s\") and root_data (\"%s\")"
+                                  , res->attribute("value").value(), full_user_data.c_str(), full_root_data.c_str());
+                }
+                else
+                    log_warn("\tFound bad resource without value: type \"%s\"", rg->name(), res->name());
+            }
         }
     }
 
-    //-------- !configure! ---------------
+    log_info("Loading all prepared resources");
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
-    //-------- chooseSceneManager-------
+    return true;
+}
+
+bool CGame::initBullet()
+{
+    log_notice("Initialising Bullet physics engine");
+
+    return true;
+}
+
+bool CGame::initOIS()
+{
+    log_notice("Initialising OIS Nerv controlling system");
+
+    // Create Input handler
+    size_t windowHnd = 0;
+    m_pWindow->getCustomAttribute("WINDOW", &windowHnd);
+    m_pInputHandler = new CInputHandler(windowHnd);
+
+    //Set initial mouse clipping size
+    windowResized(m_pWindow);
+
+    return true;
+}
+
+bool CGame::initSound()
+{
+    log_notice("Initialising Sound engine");
+
+    return true;
+}
+
+bool CGame::initGame()
+{
+    log_notice("Initialising Game");
+
     log_info("Creating root scene");
     m_pSceneMgr = m_pRoot->createSceneManager(Ogre::ST_GENERIC);
-    //-------- !chooseSceneManager!-------
 
-    //-------- createCamera -----------
-    log_info("Creating camera");
+    log_info("Creating main camera");
     // Create the camera
     m_pCamera = m_pSceneMgr->createCamera("MainGameCamera");
 
@@ -369,9 +446,8 @@ bool CGame::initOgre()
     m_pCamera->setNearClipDistance(0.01f);
 
     //m_vUsers.push_back(new CUser(m_pCamera));   // create a default camera controller
-    //-------- !createCamera! -----------
 
-    //-------- createViewports --------
+
     log_info("Creating viewport");
     // Create one viewport, entire window
     Ogre::Viewport* vp = m_pWindow->addViewport(m_pCamera);
@@ -379,61 +455,16 @@ bool CGame::initOgre()
 
     // Alter the camera aspect ratio to match the viewport
     m_pCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
-    //-------- !createViewports! --------
 
     // Set default mipmap level (NB some APIs ignore this)
     Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
-    //-------- setupResources ----------
-    log_info("Setup resources");
-    // Load resource paths from config file
-    Ogre::ConfigFile cf;
-    cf.load("resources.cfg");
+    // Creating simple game info
+    createFrameListener();
 
-    // Go through all sections & settings in the file
-    Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
-
-    Ogre::String secName, typeName, archName;
-    while (seci.hasMoreElements())
-    {
-        secName = seci.peekNextKey();
-        Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
-        Ogre::ConfigFile::SettingsMultiMap::iterator i;
-        for (i = settings->begin(); i != settings->end(); ++i)
-        {
-            typeName = i->first;
-            archName = i->second;
-            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-            archName, typeName, secName);
-        }
-    }
-    //-------- !setupResources! ----------
-
-    //------- loadResources -----------
-    log_info("Loading resources");
-    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-    //------- !loadResources! -----------
-
-    return true;
-}
-
-bool CGame::initBullet()
-{
-    log_info("Initialising Bullet physics engine");
-
-    return true;
-}
-
-bool CGame::initOIS()
-{
-    log_info("Initialising OIS Nerv controlling system");
-
-    return true;
-}
-
-bool CGame::initSound()
-{
-    log_info("Initialising Sound engine");
+    // Create worlds
+    log_info("Creating worlds");
+    m_vWorlds.push_back(new CObjectWorld(*this));
 
     return true;
 }
@@ -441,9 +472,8 @@ bool CGame::initSound()
 void CGame::start()
 {
     log_notice("Starting game");
-    //m_pRoot->startRendering();
 
-    // Prepare to rendering
+    // Now time
     unsigned long now;
 
     // Main game loop
@@ -478,15 +508,6 @@ void CGame::getScreenshot()
 
 void CGame::createFrameListener()
 {
-    size_t windowHnd = 0;
-    m_pWindow->getCustomAttribute("WINDOW", &windowHnd);
-
-    // Create Input handler
-    m_pInputHandler = new CInputHandler(windowHnd);
-
-    //Set initial mouse clipping size
-    windowResized(m_pWindow);
-
     //Register as a Window listener
     Ogre::WindowEventUtilities::addWindowEventListener(m_pWindow, this);
 
