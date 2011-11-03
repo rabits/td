@@ -41,7 +41,7 @@ bool CLog::log(CLog::LogLevel level, const char* format, ...)
     m_logTime = CGame::getInstance()->getTime();
 
     char msgbuffer[CONFIG_LOG_BUFFER];
-    char msglevel[6];
+    char msglevel[] = "       ";
     std::va_list ap;
 
     // Select output

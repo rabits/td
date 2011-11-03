@@ -463,7 +463,7 @@ bool CGame::initGame()
     m_pCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
 
     // Creating simple game info
-    //createFrameListener();
+    createFrameListener();
 
     // Create worlds
     log_info("Creating worlds");
