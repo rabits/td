@@ -20,15 +20,13 @@ CObjectKernel::CObjectKernel()
 {
 }
 
-CObjectKernel::CObjectKernel(CGame &pGame, CObjectWorld & pWorld, const btScalar mass, const Ogre::Vector3 &pos)
+CObjectKernel::CObjectKernel(CObjectWorld & pWorld, const btScalar mass, const Ogre::Vector3 &pos)
 {
-    if( &pGame != NULL )
-        setGame(&pGame);
     if( &pWorld != NULL )
         setWorld(&pWorld);
 
-    m_position = pos;
-    m_mass = mass;
+    m_Position = pos;
+    m_Mass = mass;
 }
 
 void CObjectKernel::init()
@@ -37,7 +35,7 @@ void CObjectKernel::init()
     {
         //Create Ogre stuff.
         m_pEntity = m_pGame->m_pSceneMgr->createEntity("objectkernel.mesh");
-        m_pNode = m_pParent->m_pNode->createChildSceneNode(m_position);
+        m_pNode = m_pParent->m_pNode->createChildSceneNode(m_Position);
         m_pNode->attachObject(m_pEntity);
 
         //Create shape.
@@ -46,13 +44,13 @@ void CObjectKernel::init()
 
         //Calculate inertia.
         btVector3 inertia;
-        m_pShape->calculateLocalInertia(m_mass, inertia);
+        m_pShape->calculateLocalInertia(m_Mass, inertia);
 
         //Create BtOgre MotionState (connects Ogre and Bullet).
         m_pState = new BtOgre::RigidBodyState(m_pNode);
 
         //Create the Body.
-        m_pBody = new btRigidBody(m_mass, m_pState, m_pShape, inertia);
+        m_pBody = new btRigidBody(m_Mass, m_pState, m_pShape, inertia);
         m_pWorld->m_pPhyWorld->addRigidBody(m_pBody, CObject::DYNAMIC_OBJECT, CObject::DYNAMIC_OBJECT | CObject::STATIC_OBJECT);
         m_pBody->setFriction(6.0f);
 

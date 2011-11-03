@@ -16,15 +16,13 @@
 #include "CGravityField.h"
 #include "CGame.h"
 
-CObjectCube::CObjectCube(CGame &pGame, CObjectWorld &pWorld, CObjectCube::Cube_Size size, const Ogre::Vector3 &pos)
+CObjectCube::CObjectCube(CObjectWorld &pWorld, CObjectCube::Cube_Size size, const Ogre::Vector3 &pos)
     : m_cubeSize(size)
 {
-    if( &pGame != NULL )
-        setGame(&pGame);
     if( &pWorld != NULL )
         setWorld(&pWorld);
 
-    m_position = pos;
+    m_Position = pos;
 }
 
 void CObjectCube::init()
@@ -33,7 +31,7 @@ void CObjectCube::init()
     {
         //Create Ogre stuff.
         m_pEntity = m_pGame->m_pSceneMgr->createEntity("objectcube.mesh");
-        m_pNode = m_pParent->m_pNode->createChildSceneNode(m_position);
+        m_pNode = m_pParent->m_pNode->createChildSceneNode(m_Position);
         m_pNode->attachObject(m_pEntity);
         m_pNode->scale(Ogre::Vector3(m_cubeSize));
 
@@ -43,15 +41,15 @@ void CObjectCube::init()
         m_pShape->setLocalScaling(btVector3(m_cubeSize, m_cubeSize, m_cubeSize));
 
         //Calculate inertia.
-        m_mass = 0;
+        m_Mass = 0;
         btVector3 inertia;
-        m_pShape->calculateLocalInertia(m_mass, inertia);
+        m_pShape->calculateLocalInertia(m_Mass, inertia);
 
         //Create BtOgre MotionState (connects Ogre and Bullet).
         m_pState = new BtOgre::RigidBodyState(m_pNode);
 
         //Create the Body.
-        m_pBody = new btRigidBody(m_mass, m_pState, m_pShape, inertia);
+        m_pBody = new btRigidBody(m_Mass, m_pState, m_pShape, inertia);
         m_pWorld->m_pPhyWorld->addRigidBody(m_pBody, CObject::STATIC_OBJECT, CObject::DYNAMIC_OBJECT);
 
         // Get size of cube
@@ -63,17 +61,17 @@ void CObjectCube::init()
 
         // Create Force Field around cube
         // +Y (Up)
-        m_gravityVolumes[0] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*wc, size.y*hc, size.z*wc), new btVector3(m_position.x, m_position.y+size.y*pc, m_position.z), new btVector3(0.0f, -1.0f, 0.0f)));
+        m_gravityVolumes[0] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*wc, size.y*hc, size.z*wc), new btVector3(m_Position.x, m_Position.y+size.y*pc, m_Position.z), new btVector3(0.0f, -1.0f, 0.0f)));
         // -Y (Down)
-        m_gravityVolumes[1] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*wc, size.y*hc, size.z*wc), new btVector3(m_position.x, m_position.y-size.y*pc, m_position.z), new btVector3(0.0f, 1.0f, 0.0f)));
+        m_gravityVolumes[1] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*wc, size.y*hc, size.z*wc), new btVector3(m_Position.x, m_Position.y-size.y*pc, m_Position.z), new btVector3(0.0f, 1.0f, 0.0f)));
         // +X (Right)
-        m_gravityVolumes[2] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*hc, size.y*wc, size.z*wc), new btVector3(m_position.x+size.x*pc, m_position.y, m_position.z), new btVector3(-1.0f, 0.0f, 0.0f)));
+        m_gravityVolumes[2] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*hc, size.y*wc, size.z*wc), new btVector3(m_Position.x+size.x*pc, m_Position.y, m_Position.z), new btVector3(-1.0f, 0.0f, 0.0f)));
         // -X (Left)
-        m_gravityVolumes[3] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*hc, size.y*wc, size.z*wc), new btVector3(m_position.x-size.x*pc, m_position.y, m_position.z), new btVector3(1.0f, 0.0f, 0.0f)));
+        m_gravityVolumes[3] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*hc, size.y*wc, size.z*wc), new btVector3(m_Position.x-size.x*pc, m_Position.y, m_Position.z), new btVector3(1.0f, 0.0f, 0.0f)));
         // +Z (Front)
-        m_gravityVolumes[4] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*wc, size.y*wc, size.z*hc), new btVector3(m_position.x, m_position.y, m_position.z+size.z*pc), new btVector3(0.0f, 0.0f, -1.0f)));
+        m_gravityVolumes[4] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*wc, size.y*wc, size.z*hc), new btVector3(m_Position.x, m_Position.y, m_Position.z+size.z*pc), new btVector3(0.0f, 0.0f, -1.0f)));
         // -Z (Back)
-        m_gravityVolumes[5] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*wc, size.y*wc, size.z*hc), new btVector3(m_position.x, m_position.y, m_position.z-size.z*pc), new btVector3(0.0f, 0.0f, 1.0f)));
+        m_gravityVolumes[5] = m_pWorld->m_pGravityField->add(new CGravityElement(new btVector3(size.x*wc, size.y*wc, size.z*hc), new btVector3(m_Position.x, m_Position.y, m_Position.z-size.z*pc), new btVector3(0.0f, 0.0f, 1.0f)));
     }
 }
 

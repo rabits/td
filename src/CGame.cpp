@@ -466,7 +466,7 @@ bool CGame::initGame()
 
     // Create worlds
     log_info("Creating worlds");
-    m_vWorlds.push_back(new CObjectWorld(*this));
+    m_vWorlds.push_back(new CObjectWorld());
 
     return true;
 }

@@ -111,6 +111,7 @@ int CGravityField::add(CGravityElement *el)
 
 void CGravityField::remove(int elId)
 {
+    // @todo fix this destruction sigfault
     m_pWorld->m_pPhyWorld->removeCollisionObject(m_gravityFieldMap[elId]->m_pGravityObj);
     m_gravityFieldMap.erase(elId);
 }

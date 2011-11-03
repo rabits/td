@@ -40,7 +40,7 @@ public:
         TCUBE    = 70,  ///< Terra-Cube
         XCUBE    = 80,  ///< Xen-Cube
         YCUBE    = 90,  ///< Yet-Cube
-        ZCUBE    = 100, ///< Zet-Cube
+        ZCUBE    = 100  ///< Zet-Cube
     };
 
     /** @brief Constructor simple cube
@@ -48,12 +48,11 @@ public:
     CObjectCube();
     /** @brief Constructor
      *
-     * @param pGame CGame&
      * @param pWorld CObjectWorld&
      * @param size CObjectCube::Cube_Size (default CObjectCube::ACUBE)
      * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
      */
-    CObjectCube(CGame &pGame, CObjectWorld &pWorld, CObjectCube::Cube_Size size = CObjectCube::ACUBE, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
+    CObjectCube(CObjectWorld &pWorld, CObjectCube::Cube_Size size = CObjectCube::ACUBE, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
     /** @brief Simple destructor
      */
     ~CObjectCube();

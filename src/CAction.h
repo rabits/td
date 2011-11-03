@@ -15,11 +15,15 @@
 #ifndef CACTION_H
 #define CACTION_H
 
-/** @brief Action, registered by object for controlling them
+/** @brief Action, registered by object for controlling self
  */
 class CAction
 {
 public:
+    /** @brief Create action of object
+     *
+     * @param
+     */
     CAction();
     ~CAction();
 protected:

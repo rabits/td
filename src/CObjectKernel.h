@@ -40,12 +40,11 @@ public:
 
     /** @brief Constructor
      *
-     * @param pGame CGame&
      * @param pWorld CObjectWorld&
      * @param mass const btScalar
      * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
      */
-    CObjectKernel(CGame &pGame, CObjectWorld & pWorld, const btScalar mass, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
+    CObjectKernel(CObjectWorld & pWorld, const btScalar mass, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
 
     /** @brief Destructor
      */

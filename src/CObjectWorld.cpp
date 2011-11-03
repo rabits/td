@@ -15,41 +15,37 @@
 #include "CObjectWorld.h"
 #include "CGame.h"
 
-CObjectWorld::CObjectWorld(CGame &pGame, const Ogre::Vector3 &pos)
-    : m_pPhyWorld(NULL)
-    , m_pGravityField(NULL)
-    , m_pDbgDraw(NULL)
-    , m_pBroadphase(NULL)
-    , m_pCollisionConfig(NULL)
-    , m_pDispatcher(NULL)
-    , m_pSolver(NULL)
+CObjectWorld::CObjectWorld(const Ogre::Vector3 &pos)
+    : m_pPhyWorld()
+    , m_pGravityField()
+    , m_pDbgDraw()
+    , m_pBroadphase()
+    , m_pCollisionConfig()
+    , m_pDispatcher()
+    , m_pSolver()
 {
-    if( &pGame != NULL )
-    {
-        setGame(&pGame);
-        m_position = pos;
+    m_Position = pos;
 
-        m_pNode = m_pGame->m_pSceneMgr->getRootSceneNode()->createChildSceneNode(m_position);
+    m_pNode = m_pGame->m_pSceneMgr->getRootSceneNode()->createChildSceneNode(m_Position);
 
-        // Bullet initialisation.
-        m_pBroadphase = new btAxisSweep3(btVector3(-10000,-10000,-10000), btVector3(10000,10000,10000), 1024);
-        m_pCollisionConfig = new btDefaultCollisionConfiguration();
-        m_pDispatcher = new btCollisionDispatcher(m_pCollisionConfig);
-        m_pSolver = new btSequentialImpulseConstraintSolver();
+    // Bullet initialisation.
+    m_pBroadphase = new btAxisSweep3(btVector3(-10000,-10000,-10000), btVector3(10000,10000,10000), 1024);
+    m_pCollisionConfig = new btDefaultCollisionConfiguration();
+    m_pDispatcher = new btCollisionDispatcher(m_pCollisionConfig);
+    m_pSolver = new btSequentialImpulseConstraintSolver();
 
-        m_pPhyWorld = new btDiscreteDynamicsWorld(m_pDispatcher, m_pBroadphase, m_pSolver, m_pCollisionConfig);
-        m_pPhyWorld->setGravity(btVector3(0,0,0));
-        m_pDbgDraw = new BtOgre::DebugDrawer(m_pGame->m_pSceneMgr->getRootSceneNode(), m_pPhyWorld);
+    m_pPhyWorld = new btDiscreteDynamicsWorld(m_pDispatcher, m_pBroadphase, m_pSolver, m_pCollisionConfig);
+    m_pPhyWorld->setGravity(btVector3(0,0,0));
+    m_pDbgDraw = new BtOgre::DebugDrawer(m_pGame->m_pSceneMgr->getRootSceneNode(), m_pPhyWorld);
 
-        m_pDbgDraw->setDebugMode(true);
-        m_pPhyWorld->setDebugDrawer(m_pDbgDraw);
+    m_pDbgDraw->setDebugMode(true);
+    m_pPhyWorld->setDebugDrawer(m_pDbgDraw);
 
-        m_pGravityField= new CGravityField(this, 20.0f);
+    m_pGravityField= new CGravityField(this, 20.0f);
 
-        // Create scene
-        attachChild(new CObjectKernel(*m_pGame, *this, 20, Ogre::Vector3(5.0f, 11.0f, 0.0f)));
-        attachChild(new CObjectCube(*m_pGame, *this, CObjectCube::CUBE, Ogre::Vector3(0.0f, 0.0f, 0.0f)));
-    }
+    // Create scene
+    attachChild(new CObjectKernel(*this, 20, Ogre::Vector3(5.0f, 11.0f, 0.0f)));
+    attachChild(new CObjectCube(*this, CObjectCube::CUBE, Ogre::Vector3(0.0f, 0.0f, 0.0f)));
 }
 
 void CObjectWorld::init()
@@ -77,8 +73,8 @@ void CObjectWorld::update(const Ogre::FrameEvent& evt)
     m_pDbgDraw->step();
 
     // Update childrens
-    for( m_itChildrenList = m_ChildrenList.begin() ; m_itChildrenList < m_ChildrenList.end(); m_itChildrenList++ )
-        (*m_itChildrenList)->update();
+    for( m_itChildrens = m_Childrens.begin() ; m_itChildrens < m_Childrens.end(); m_itChildrens++ )
+        (*m_itChildrens)->update();
 
     // Clear object in gravity fields map
     m_pGravityField->clearObjectsInGravityField();

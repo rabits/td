@@ -24,6 +24,8 @@
 #include "btogre/BtOgreGP.h"
 #include "btogre/BtOgrePG.h"
 
+#include "CAction.h"
+
 class CObjectWorld;
 class CGame;
 
@@ -32,9 +34,6 @@ class CGame;
 class CObject
 {
 public:
-    bool                   m_bHasChild; ///< Object is has any child
-    std::string            m_sObjectName; ///< Object name (for debug purpose and for scripts)
-
     /** @brief Constructor of object
      */
     CObject();
@@ -51,13 +50,6 @@ public:
     virtual ~CObject();
 
 
-    /** @brief Delete all objects children to aviod memory leaks
-     *
-     * @return void
-     *
-     */
-    void clearChildrenList();
-
     /** @brief Setting object parent
      *
      * @param pParent CObject*
@@ -65,14 +57,6 @@ public:
      *
      */
     void setParent(CObject* pParent);
-
-    /** @brief Setting Game pointer
-     *
-     * @param pGame CGame*
-     * @return void
-     *
-     */
-    void setGame(CGame* pGame);
 
     /** @brief Setting object World
      *
@@ -82,6 +66,21 @@ public:
      */
     void setWorld(CObjectWorld* pWorld);
 
+
+    /** @brief Delete all children objects
+     *
+     * @return void
+     *
+     */
+    void clearChildrens();
+
+    /** @brief Delete all actions of object
+     *
+     * @return void
+     *
+     */
+    void clearActions();
+
     /** @brief Add child object
      *
      * @param pChild CObject*
@@ -90,12 +89,27 @@ public:
      */
     void attachChild(CObject* pChild);
 
-    /** @brief Return children list for the recursive scene traversal
+    /** @brief Add object action
+     *
+     * @param pAction CAction*
+     * @return void
+     *
+     */
+    void attachAction(CAction* pAction);
+
+    /** @brief Return childrens list
      *
      * @return std::vector<CObject*>*
      *
      */
-    std::vector<CObject*> *getChildrenList();
+    std::vector<CObject*> *getChildrens();
+
+    /** @brief Return list of actions
+     *
+     * @return std::vector<CAction*>*
+     *
+     */
+    std::vector<CAction*> *getActions();
 
     //--------------------------------------------------------------------------------------
     // Pure virtual functions. Must be overriden in derived objects.
@@ -134,20 +148,25 @@ public:
     };
 
 protected:
-    std::vector<CObject*>                m_ChildrenList; ///< List of child objects
-    std::vector<CObject*>::iterator      m_itChildrenList; ///< Current processing child object
+    bool                                 m_HasChild; ///< Object is has any child
+    std::string                          m_ObjectName; ///< Object name (for debug purpose and for scripts)
+
+    std::vector<CObject*>                m_Childrens; ///< List of child objects
+    std::vector<CObject*>::iterator      m_itChildrens; ///< Current processing child object
+
+    std::vector<CAction*>                m_Actions; ///< List of this object actions
 
     CObject                             *m_pParent; ///< Pointer to parent object
     CGame                               *m_pGame;   ///< Pointer to Game Object
     CObjectWorld                        *m_pWorld;  ///< Pointer to World
 
-    Ogre::Vector3                        m_position; ///< Object position (position may be changed by bullet and user)
+    Ogre::Vector3                        m_Position; ///< Object position (position may be changed by bullet and user)
 
     Ogre::Entity                        *m_pEntity;  ///< Ogre entity
 
     btRigidBody                         *m_pBody;    ///< Physics rigid body
     btCollisionShape                    *m_pShape;   ///< Shape of collision
-    btScalar                             m_mass;     ///< Mass of object
+    btScalar                             m_Mass;     ///< Mass of object
     BtOgre::RigidBodyState              *m_pState;   ///< Rigid body state
 };
 

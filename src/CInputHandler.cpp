@@ -17,15 +17,13 @@
 #include <string>
 
 CInputHandler::CInputHandler(size_t windowHnd)
-    : m_pInputManager(0)
-    , m_pMouse(0)
-    , m_pKeyboard(0)
-    , m_pJoyStick({0,0,0,0})
-    , m_joysticsNum(0)
-    , m_pGame(NULL)
+    : m_pInputManager()
+    , m_pMouse()
+    , m_pKeyboard()
+    , m_pJoyStick()
+    , m_joysticsNum()
+    , m_pGame(CGame::getInstance())
 {
-    m_pGame = CGame::getInstance();
-
     OIS::ParamList pl;
     std::ostringstream windowHndStr;
     windowHndStr << windowHnd;

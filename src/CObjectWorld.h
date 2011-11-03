@@ -29,10 +29,6 @@
 class CObjectWorld : public CObject
 {
 public:
-    /** @brief Constructor
-     */
-    CObjectWorld();
-
     /** @brief Copy constructor
      *
      * @param obj const CObjectWorld&
@@ -42,10 +38,9 @@ public:
 
     /** @brief Constructor
      *
-     * @param pGame CGame&
      * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
      */
-    CObjectWorld(CGame &pGame, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
+    CObjectWorld(const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
 
     /** @brief Destructor
      */

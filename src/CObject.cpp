@@ -17,39 +17,27 @@
 #include "CGame.h"
 
 CObject::CObject()
-    : m_bHasChild(false)
-    , m_sObjectName()
-    , m_pNode(NULL)
-    , m_ChildrenList()
-    , m_itChildrenList(NULL)
-    , m_pParent(NULL)
-    , m_pGame(NULL)
-    , m_pWorld(NULL)
-    , m_position()
-    , m_pEntity(NULL)
-    , m_pBody(NULL)
-    , m_pShape(NULL)
-    , m_mass(0.0)
-    , m_pState(NULL)
+    : m_HasChild(false)
+    , m_ObjectName()
+    , m_pNode()
+    , m_Childrens()
+    , m_itChildrens()
+    , m_pParent()
+    , m_pGame(CGame::getInstance())
+    , m_pWorld()
+    , m_Position()
+    , m_pEntity()
+    , m_pBody()
+    , m_pShape()
+    , m_Mass(0.0)
+    , m_pState()
 {
-    m_ChildrenList.clear();
-    m_sObjectName.clear();
 }
 
 CObject::~CObject()
 {
-    clearChildrenList();
+    clearChildrens();
     m_pParent = NULL;
-    m_sObjectName.clear();
-}
-
-void CObject::clearChildrenList()
-{
-    std::vector<CObject*>::iterator it = m_ChildrenList.begin();
-    for( ; it != m_ChildrenList.end(); it++ )
-        delete *it;
-    m_ChildrenList.clear();
-    m_bHasChild = false;
 }
 
 void CObject::setParent(CObject* pParent)
@@ -62,20 +50,32 @@ void CObject::setWorld(CObjectWorld* pWorld)
     m_pWorld = pWorld;
 }
 
-void CObject::setGame(CGame *pGame)
+void CObject::clearChildrens()
 {
-    m_pGame = pGame;
+    m_itChildrens = m_Childrens.begin();
+    for( ; m_itChildrens != m_Childrens.end(); m_itChildrens++ )
+        delete *m_itChildrens;
+    m_Childrens.clear();
+    m_HasChild = false;
+}
+
+void CObject::clearActions()
+{
+    std::vector<CAction*>::iterator it = m_Actions.begin();
+    for( ; it != m_Actions.end(); it++ )
+        delete *it;
+    m_Actions.clear();
 }
 
 void CObject::attachChild(CObject* pChild)
 {
     pChild->setParent(this);
     pChild->init();
-    m_ChildrenList.push_back(pChild);
-    m_bHasChild = true;
+    m_Childrens.push_back(pChild);
+    m_HasChild = true;
 }
 
-std::vector<CObject*> *CObject::getChildrenList()
+std::vector<CObject*> *CObject::getChildrens()
 {
-    return &m_ChildrenList;
+    return &m_Childrens;
 }
