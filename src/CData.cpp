@@ -9,10 +9,6 @@
  *
  * @brief   XML data container for object
  *
- * @warning I found memory error in pugixml.
- * It occurs when you append_child (etc) and assign a value to a variable. Be carefull.
- *
- * @todo fix bug with pugixml and returning non-consistant copy of object on append_child etc.
  */
 
 #include "CData.h"
@@ -26,9 +22,7 @@ CData::CData(const char *name)
     , m_data()
     , m_dataName(name)
 {
-    m_dataRoot.append_child(CONFIG_TD_NAME);
-    m_dataRoot.child(CONFIG_TD_NAME).append_child(name);
-    m_data = m_dataRoot.child(CONFIG_TD_NAME).child(name);
+    m_data = m_dataRoot.append_child(CONFIG_TD_NAME).append_child(name);
     m_dataRoot.child(CONFIG_TD_NAME).append_attribute("version").set_value(CONFIG_TD_VERSION);
 }
 

@@ -162,8 +162,7 @@ bool CGame::loadEnv()
 {
     log_notice("Loading environment");
 
-    m_data.append_child("env");
-    pugi::xml_node data_env = m_data.child("env");
+    pugi::xml_node data_env = m_data.append_child("env");
 
     // Home of user
     data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("HOME"));
