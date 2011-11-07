@@ -14,8 +14,9 @@
 
 #include "CInputEvent.h"
 
-CInputEvent::CInputEvent(float value)
-    : m_value(value)
+CInputEvent::CInputEvent(int id, float value)
+    : m_Id(id)
+    , m_Value(value)
 {
 }
 
@@ -23,7 +24,17 @@ CInputEvent::~CInputEvent()
 {
 }
 
+int CInputEvent::getId()
+{
+    return m_Id;
+}
+
 float CInputEvent::getValue()
 {
-    return m_value;
+    return m_Value;
+}
+
+void CInputEvent::setSensitivity(float sens)
+{
+    m_Value = std::min(m_Value * sens, 1.0f);
 }

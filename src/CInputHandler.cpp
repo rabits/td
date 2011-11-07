@@ -78,7 +78,11 @@ CInputHandler::CInputHandler(size_t windowHnd)
         log_warn("Exception raised on joystick creation: %s", ex.eText);
     }
 
-    log_info("\tInitializing complete");
+    // Preparing subscribers map
+    std::map<int, CUser*> nullmap;
+    m_subscribedUsers[OIS::OISKeyboard] = nullmap;
+    m_subscribedUsers[OIS::OISMouse] = nullmap;
+    m_subscribedUsers[OIS::OISJoyStick] = nullmap;
 }
 
 CInputHandler::~CInputHandler()
@@ -91,8 +95,13 @@ CInputHandler::~CInputHandler()
             m_pInputManager->destroyInputObject(m_pJoyStick[i]);
     }
 
+    for( std::map<OIS::Type, std::map<int, CUser*> >::iterator it = m_subscribedUsers.begin(); it != m_subscribedUsers.end(); it++ )
+    {
+        for( std::map<int, CUser*>::iterator itu = it->second.begin(); itu != it->second.end(); itu++ )
+            log_notice("Found subscribe id#%d", itu->first);
+    }
+
     OIS::InputManager::destroyInputSystem(m_pInputManager);
-    m_pInputManager = 0;
 }
 
 void CInputHandler::capture()
@@ -130,8 +139,14 @@ bool CInputHandler::keyPressed( const OIS::KeyEvent &arg )
 {
     log_debug("Key pressed: %s (%d)", (static_cast<OIS::Keyboard*>(const_cast<OIS::Object*>(arg.device)))->getAsString(arg.key).c_str(), arg.key);
 
-//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-//        (*m_pGame->o_currentUser)->keyPressed(arg);
+    // Converting keyboard keypress to InputEvent
+    int id = OIS::OISKeyboard * 10000 + arg.key;
+    CInputEvent event(id, 1.0);
+
+//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
+//        (*m_pGame->m_oCurrentUser)->keyPressed(arg);
+
+    // @todo Move control of game to CGame object Actions
 
     if( m_pGame->m_pTrayMgr->isDialogVisible() ) return true;   // don't process any more keys if dialog is up
 
@@ -226,8 +241,8 @@ bool CInputHandler::keyPressed( const OIS::KeyEvent &arg )
 
 bool CInputHandler::keyReleased( const OIS::KeyEvent &arg )
 {
-//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-//        (*m_pGame->o_currentUser)->keyReleased(arg);
+//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
+//        (*m_pGame->m_oCurrentUser)->keyReleased(arg);
 
     return true;
 }
@@ -237,8 +252,8 @@ bool CInputHandler::mouseMoved( const OIS::MouseEvent &arg )
     log_debug("MouseMoved: Abs(%d,%d,%d) Rel(%d,%d,%d)", arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs
               , arg.state.X.rel, arg.state.Y.rel, arg.state.Z.rel);
 
-//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-//        (*m_pGame->o_currentUser)->mouseMoved(arg);
+//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
+//        (*m_pGame->m_oCurrentUser)->mouseMoved(arg);
 
     return true;
 }
@@ -247,16 +262,16 @@ bool CInputHandler::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID
 {
     log_debug("Mouse pressed #%d", id);
 
-//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-//        (*m_pGame->o_currentUser)->mousePressed(arg, id);
+//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
+//        (*m_pGame->m_oCurrentUser)->mousePressed(arg, id);
 
     return true;
 }
 
 bool CInputHandler::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-//        (*m_pGame->o_currentUser)->mouseReleased(arg, id);
+//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
+//        (*m_pGame->m_oCurrentUser)->mouseReleased(arg, id);
 
     return true;
 }
@@ -277,8 +292,8 @@ bool CInputHandler::povMoved( const OIS::JoyStickEvent &arg, int pov )
         out += "Centered";
     log_debug("Joystick \"%s\" POV #%d moved: %s", arg.device->vendor().c_str(), pov, out.c_str());
 
-//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-//        (*m_pGame->o_currentUser)->povMoved(arg, pov);
+//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
+//        (*m_pGame->m_oCurrentUser)->povMoved(arg, pov);
 
     return true;
 }
@@ -287,16 +302,16 @@ bool CInputHandler::buttonPressed( const OIS::JoyStickEvent &arg, int button )
 {
     log_debug("Joystick \"%s\" button #%d pressed", arg.device->vendor().c_str(), button);
 
-//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-//        (*m_pGame->o_currentUser)->buttonPressed(arg, button);
+//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
+//        (*m_pGame->m_oCurrentUser)->buttonPressed(arg, button);
 
     return true;
 }
 
 bool CInputHandler::buttonReleased( const OIS::JoyStickEvent &arg, int button )
 {
-//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-//        (*m_pGame->o_currentUser)->buttonReleased(arg, button);
+//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
+//        (*m_pGame->m_oCurrentUser)->buttonReleased(arg, button);
 
     return true;
 }
@@ -305,8 +320,20 @@ bool CInputHandler::axisMoved( const OIS::JoyStickEvent &arg, int axis )
 {
     log_debug("Joystick \"%s\" Axis #%d moved, Value: %d", arg.device->vendor().c_str(), axis, arg.state.mAxes[axis].abs);
 
-//    for( m_pGame->o_currentUser = m_pGame->m_vUsers.begin() ; m_pGame->o_currentUser < m_pGame->m_vUsers.end(); m_pGame->o_currentUser++ )
-//        (*m_pGame->o_currentUser)->axisMoved(arg, axis);
+//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
+//        (*m_pGame->m_oCurrentUser)->axisMoved(arg, axis);
 
     return true;
+}
+
+bool CInputHandler::addSubscribe(OIS::Type device, int id, CUser* pUser)
+{
+    m_subscribedUsers[device][id] = pUser;
+
+    return true;
+}
+
+bool CInputHandler::delSubscribe(OIS::Type device, int id)
+{
+    m_subscribedUsers[device].erase(id);
 }

@@ -21,7 +21,7 @@
 
 #include "CControlled.h"
 #include "CData.h"
-#include "CObjectWorld.h"
+#include "CWorld.h"
 
 /** @brief Self user
  *
@@ -52,21 +52,21 @@ public:
      * @return void
      *
      */
-    void setControlledObject(CControlled *obj);
+    void setControlledObject(CControlled* obj);
 
     /** @brief Set world parent
      *
-     * @param world CObjectWorld*
+     * @param world CWorld*
      * @return void
      *
      */
-    void setWorld(CObjectWorld *world);
+    void setWorld(CWorld* world);
 
     void update(const Ogre::FrameEvent& evt);
 
 protected:
     Ogre::String                 m_name; ///< User name
-    CControlled                 *m_pControlledObject; ///< Object under control
+    CControlled*                 m_pControlledObject; ///< Object under control
 
 private:
 };

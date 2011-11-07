@@ -1,5 +1,5 @@
 /**
- * @file    CObjectWorld.cpp
+ * @file    CWorld.cpp
  * @date    2010-10-06T12:18:13+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
@@ -12,10 +12,10 @@
  *
  */
 
-#include "CObjectWorld.h"
+#include "CWorld.h"
 #include "CGame.h"
 
-CObjectWorld::CObjectWorld(const Ogre::Vector3 &pos)
+CWorld::CWorld(const Ogre::Vector3 &pos)
     : m_pPhyWorld()
     , m_pGravityField()
     , m_pDbgDraw()
@@ -48,11 +48,11 @@ CObjectWorld::CObjectWorld(const Ogre::Vector3 &pos)
     attachChild(new CObjectCube(*this, CObjectCube::CUBE, Ogre::Vector3(0.0f, 0.0f, 0.0f)));
 }
 
-void CObjectWorld::init()
+void CWorld::init()
 {
 }
 
-CObjectWorld::~CObjectWorld()
+CWorld::~CWorld()
 {
     //Free Bullet stuff.
     delete m_pSolver;
@@ -61,7 +61,7 @@ CObjectWorld::~CObjectWorld()
     delete m_pBroadphase;
 }
 
-void CObjectWorld::update(const Ogre::FrameEvent& evt)
+void CWorld::update(const Ogre::FrameEvent& evt)
 {
     // Check ForceFields
     m_pGravityField->catchFieldContact();
@@ -80,6 +80,6 @@ void CObjectWorld::update(const Ogre::FrameEvent& evt)
     m_pGravityField->clearObjectsInGravityField();
 }
 
-void CObjectWorld::setObjectState(int iState)
+void CWorld::setObjectState(int iState)
 {
 }

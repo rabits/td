@@ -7,7 +7,7 @@
  *
  * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
- * @brief   Kernel object
+ * @brief   Kernel world object
  *
  *
  */
@@ -20,7 +20,7 @@ CObjectKernel::CObjectKernel()
 {
 }
 
-CObjectKernel::CObjectKernel(CObjectWorld & pWorld, const btScalar mass, const Ogre::Vector3 &pos)
+CObjectKernel::CObjectKernel(CWorld & pWorld, const btScalar mass, const Ogre::Vector3 &pos)
 {
     if( &pWorld != NULL )
         setWorld(&pWorld);
@@ -77,4 +77,3 @@ void CObjectKernel::update()
 void CObjectKernel::setObjectState(int iState)
 {
 }
-

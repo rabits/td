@@ -28,9 +28,30 @@ public:
     CControlled();
     virtual ~CControlled();
 
-    std::vector<CAction>        getAvailableActions();
+    /** @brief Add action
+     *
+     * @param pAction CAction*
+     * @return void
+     *
+     */
+    void addAction(CAction* pAction);
+
+    /** @brief Return list of actions
+     *
+     * @return std::vector<CAction*>*
+     *
+     */
+    std::vector<CAction*>* getActions();
+
+    /** @brief Delete all actions
+     *
+     * @return void
+     *
+     */
+    void clearActions();
+
 protected:
-    std::vector<CAction>        m_vActions; ///< Actions of object to be controlled
+    std::vector<CAction*>                m_Actions; ///< List of this object actions
 
 private:
 };

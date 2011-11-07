@@ -45,7 +45,7 @@ bool CLog::log(CLog::LogLevel level, const char* format, ...)
     std::va_list ap;
 
     // Select output
-    FILE *output;
+    FILE* output;
     if( level < CLog::LOG_WARN )
         output = stdout;
     else

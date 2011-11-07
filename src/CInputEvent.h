@@ -29,21 +29,34 @@ class CInputEvent
 public:
     /** @brief Constructor for float
      */
-    CInputEvent(float value);
+    CInputEvent(int id, float value);
 
     /** @brief Destructor
      */
     ~CInputEvent();
 
-    /** @brief Get value of event in float
+    /** @brief Get Id of event
+     *
+     * @return int
+     *
+     */
+    int getId();
+
+    /** @brief Get Value of event
      *
      * @return float
      *
      */
     float getValue();
 
+    /** @brief Set coefficient of sensitivity
+     *
+     */
+    void setSensitivity(float sens);
+
 protected:
-    float  m_value; ///< Value of event
+    float  m_Id; ///< Id of event
+    float  m_Value; ///< Value of event
 private:
 };
 

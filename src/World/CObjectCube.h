@@ -7,7 +7,7 @@
  *
  * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
- * @brief   Cube object
+ * @brief   Cube world object
  *
  *
  */
@@ -23,7 +23,8 @@ class CGame;
  *
  * World consists of cubes. Cubes has gravity and can travel in world.
  */
-class CObjectCube : public CObject
+class CObjectCube
+    : public CObject
 {
 public:
     /** @brief Sizes of cubes
@@ -48,11 +49,11 @@ public:
     CObjectCube();
     /** @brief Constructor
      *
-     * @param pWorld CObjectWorld&
+     * @param pWorld CWorld&
      * @param size CObjectCube::Cube_Size (default CObjectCube::ACUBE)
      * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
      */
-    CObjectCube(CObjectWorld &pWorld, CObjectCube::Cube_Size size = CObjectCube::ACUBE, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
+    CObjectCube(CWorld &pWorld, CObjectCube::Cube_Size size = CObjectCube::ACUBE, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
     /** @brief Simple destructor
      */
     ~CObjectCube();

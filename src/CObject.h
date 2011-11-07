@@ -7,7 +7,7 @@
  *
  * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
- * @brief   Base object
+ * @brief   Base world object
  *
  *
  */
@@ -26,7 +26,7 @@
 
 #include "CAction.h"
 
-class CObjectWorld;
+class CWorld;
 class CGame;
 
 /** @brief Father of all objects in game
@@ -60,11 +60,11 @@ public:
 
     /** @brief Setting object World
      *
-     * @param pWorld CObjectWorld*
+     * @param pWorld CWorld*
      * @return void
      *
      */
-    void setWorld(CObjectWorld* pWorld);
+    void setWorld(CWorld* pWorld);
 
 
     /** @brief Delete all children objects
@@ -74,13 +74,6 @@ public:
      */
     void clearChildrens();
 
-    /** @brief Delete all actions of object
-     *
-     * @return void
-     *
-     */
-    void clearActions();
-
     /** @brief Add child object
      *
      * @param pChild CObject*
@@ -89,27 +82,12 @@ public:
      */
     void attachChild(CObject* pChild);
 
-    /** @brief Add object action
-     *
-     * @param pAction CAction*
-     * @return void
-     *
-     */
-    void attachAction(CAction* pAction);
-
     /** @brief Return childrens list
      *
      * @return std::vector<CObject*>*
      *
      */
-    std::vector<CObject*> *getChildrens();
-
-    /** @brief Return list of actions
-     *
-     * @return std::vector<CAction*>*
-     *
-     */
-    std::vector<CAction*> *getActions();
+    std::vector<CObject*>* getChildrens();
 
     //--------------------------------------------------------------------------------------
     // Pure virtual functions. Must be overriden in derived objects.
@@ -137,7 +115,7 @@ public:
      */
     virtual void setObjectState(int State) = 0;
 
-    Ogre::SceneNode                     *m_pNode; ///< Object scene node
+    Ogre::SceneNode*                     m_pNode; ///< Object scene node
 
     /** @brief Groups for collision detection
      */
@@ -154,20 +132,18 @@ protected:
     std::vector<CObject*>                m_Childrens; ///< List of child objects
     std::vector<CObject*>::iterator      m_itChildrens; ///< Current processing child object
 
-    std::vector<CAction*>                m_Actions; ///< List of this object actions
-
-    CObject                             *m_pParent; ///< Pointer to parent object
-    CGame                               *m_pGame;   ///< Pointer to Game Object
-    CObjectWorld                        *m_pWorld;  ///< Pointer to World
+    CObject*                             m_pParent; ///< Pointer to parent object
+    CGame*                               m_pGame;   ///< Pointer to Game Object
+    CWorld*                              m_pWorld;  ///< Pointer to World
 
     Ogre::Vector3                        m_Position; ///< Object position (position may be changed by bullet and user)
 
-    Ogre::Entity                        *m_pEntity;  ///< Ogre entity
+    Ogre::Entity*                        m_pEntity;  ///< Ogre entity
 
-    btRigidBody                         *m_pBody;    ///< Physics rigid body
-    btCollisionShape                    *m_pShape;   ///< Shape of collision
+    btRigidBody*                         m_pBody;    ///< Physics rigid body
+    btCollisionShape*                    m_pShape;   ///< Shape of collision
     btScalar                             m_Mass;     ///< Mass of object
-    BtOgre::RigidBodyState              *m_pState;   ///< Rigid body state
+    BtOgre::RigidBodyState*              m_pState;   ///< Rigid body state
 };
 
 

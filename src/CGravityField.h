@@ -47,8 +47,8 @@ public:
     */
     ~CGravityElement();
 
-    btCollisionObject            *m_pGravityObj; ///< Bullet collision object
-    btVector3                    *m_pForce; ///< Vector of gravity force
+    btCollisionObject*            m_pGravityObj; ///< Bullet collision object
+    btVector3*                    m_pForce; ///< Vector of gravity force
 
     int                           m_uid; ///< Unique id of element
 
@@ -71,11 +71,11 @@ class CGravityField
 public:
     /** @brief Constructor of gravity field
      *
-     * @param world CObjectWorld*
+     * @param world CWorld*
      * @param gravityValue float
      *
      */
-    CGravityField(CObjectWorld *world, float gravityValue);
+    CGravityField(CWorld* world, float gravityValue);
 
     /** @brief Copy constructor of gravity field
      *
@@ -117,7 +117,7 @@ public:
      * @return void clearObjectsInGravityField(){
      *
      */
-    inline void clearObjectsInGravityField() { m_objectInGravityField.clear(); }
+    inline void clearObjectsInGravityField() { m_ObjectInGravityField.clear(); }
 
 
     // For elements
@@ -127,7 +127,7 @@ public:
      * @return int
      *
      */
-    int        add(CGravityElement *el);
+    int        add(CGravityElement* el);
 
     /** @brief Remove gravity element from field by id
      *
@@ -192,13 +192,13 @@ public:
     static SForceFieldCallback   m_callbackResult; ///< Result of callback
 
 private:
-    std::map<int, bool>                         m_objectInGravityField; ///< Map causes object is in gravity field
-    std::map<int, btVector3>                    m_objectGravityMap; ///< Objects gravity vector
-    std::map<int, CGravityElement*>             m_gravityFieldMap; ///< Elements in field
-    std::map<int, CGravityElement*>::iterator   m_itGravityFieldMap; ///< Current processing gravity element
-    CObjectWorld                               *m_pWorld; ///< Linked world object
+    std::map<int, bool>                         m_ObjectInGravityField; ///< Map causes object is in gravity field
+    std::map<int, btVector3>                    m_ObjectGravityMap; ///< Objects gravity vector
+    std::map<int, CGravityElement*>             m_GravityFieldMap; ///< Elements in field
+    std::map<int, CGravityElement*>::iterator   m_oGravityFieldMap; ///< Current processing gravity element
+    CWorld*                                     m_pWorld; ///< Linked world object
 
-    float                                       m_gravityValue; ///< Force of gravity in field
+    float                                       m_GravityValue; ///< Force of gravity in field
 };
 
 #endif // CGRAVITYFIELD_H_INCLUDED

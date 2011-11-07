@@ -102,7 +102,7 @@ namespace Common
         {
             void * array[25];
             int nSize = backtrace(array, 25);
-            char ** symbols = backtrace_symbols(array, nSize);
+            char** symbols = backtrace_symbols(array, nSize);
 
             for (int i = 0; i < nSize; i++)
             {

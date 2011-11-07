@@ -14,7 +14,7 @@
 
 
 #include "CGravityField.h"
-#include "CObjectWorld.h"
+#include "CWorld.h"
 #include "CGame.h"
 
 CGravityElement::CGravityElement(btVector3* box, btVector3* position, btVector3* force)
@@ -54,7 +54,7 @@ struct CGravityField::SForceFieldCallback : public btCollisionWorld::ContactResu
     {
         if (colObj1->getInternalType() == btCollisionObject::CO_RIGID_BODY)
         {
-            CGravityField* gf = (*CGame::getInstance()->o_currentWorld)->m_pGravityField;
+            CGravityField* gf = (*CGame::getInstance()->m_oCurrentWorld)->m_pGravityField;
             gf->setObjectGravity(
                 colObj1->getBroadphaseHandle()->getUid(),
                 gf->get(colObj0->getBroadphaseHandle()->getUid())
@@ -68,16 +68,14 @@ struct CGravityField::SForceFieldCallback : public btCollisionWorld::ContactResu
 } CGravityField::m_callbackResult; ///< Callback object for Bullet
 
 
-CGravityField::CGravityField(CObjectWorld *world, float gravityValue)
-    : m_objectInGravityField()
-    , m_objectGravityMap()
-    , m_gravityFieldMap()
-    , m_itGravityFieldMap(NULL)
+CGravityField::CGravityField(CWorld* world, float gravityValue)
+    : m_ObjectInGravityField()
+    , m_ObjectGravityMap()
+    , m_GravityFieldMap()
+    , m_oGravityFieldMap(NULL)
     , m_pWorld(world)
-    , m_gravityValue(gravityValue)
+    , m_GravityValue(gravityValue)
 {
-    m_gravityFieldMap.clear();
-    m_objectGravityMap.clear();
 }
 
 CGravityField::~CGravityField()
@@ -86,40 +84,40 @@ CGravityField::~CGravityField()
 
 void CGravityField::setGravityValue(float newGravity)
 {
-    m_gravityValue = newGravity;
+    m_GravityValue = newGravity;
 }
 
 float CGravityField::getGravityValue()
 {
-    return m_gravityValue;
+    return m_GravityValue;
 }
 
 void CGravityField::catchFieldContact()
 {
-    for ( m_itGravityFieldMap = m_gravityFieldMap.begin() ; m_itGravityFieldMap != m_gravityFieldMap.end(); m_itGravityFieldMap++ )
-        m_pWorld->m_pPhyWorld->contactTest((*m_itGravityFieldMap).second->m_pGravityObj, m_callbackResult);
+    for ( m_oGravityFieldMap = m_GravityFieldMap.begin() ; m_oGravityFieldMap != m_GravityFieldMap.end(); m_oGravityFieldMap++ )
+        m_pWorld->m_pPhyWorld->contactTest((*m_oGravityFieldMap).second->m_pGravityObj, m_callbackResult);
 }
 
-int CGravityField::add(CGravityElement *el)
+int CGravityField::add(CGravityElement* el)
 {
     m_pWorld->m_pPhyWorld->addCollisionObject(el->m_pGravityObj, CObject::FIELD_OBJECT, CObject::DYNAMIC_OBJECT);
     el->m_uid = el->m_pGravityObj->getBroadphaseHandle()->getUid();
-    m_gravityFieldMap[el->m_uid] = el;
+    m_GravityFieldMap[el->m_uid] = el;
 
     return el->m_uid;
 }
 
 void CGravityField::remove(int elId)
 {
-    // @todo fix this destruction sigfault
-    m_pWorld->m_pPhyWorld->removeCollisionObject(m_gravityFieldMap[elId]->m_pGravityObj);
-    m_gravityFieldMap.erase(elId);
+    // @todo fix this remove sigfault
+    m_pWorld->m_pPhyWorld->removeCollisionObject(m_GravityFieldMap[elId]->m_pGravityObj);
+    m_GravityFieldMap.erase(elId);
 }
 
 btVector3* CGravityField::get(int elId)
 {
-    if( m_gravityFieldMap.find(elId) != m_gravityFieldMap.end() )
-        return m_gravityFieldMap[elId]->m_pForce;
+    if( m_GravityFieldMap.find(elId) != m_GravityFieldMap.end() )
+        return m_GravityFieldMap[elId]->m_pForce;
 
     log_error("Not found Gravity Field with id#%d", elId);
     return NULL;
@@ -135,26 +133,26 @@ void CGravityField::disable(int elId)
 
 void CGravityField::zeroObjectGravity(int objectId, btVector3* gravity)
 {
-    m_objectGravityMap[objectId] = (*gravity);
+    m_ObjectGravityMap[objectId] = (*gravity);
 }
 
 void CGravityField::setObjectGravity(int objectId, btVector3* gravity)
 {
     // Set the object located in a gravitational field
-    m_objectInGravityField[objectId] = true;
+    m_ObjectInGravityField[objectId] = true;
 
     // Change Gravity Vector
-    m_objectGravityMap[objectId] = m_objectGravityMap[objectId] + (*gravity);
+    m_ObjectGravityMap[objectId] = m_ObjectGravityMap[objectId] + (*gravity);
 }
 
 btVector3 CGravityField::getObjectGravity(int objectId)
 {
     // Zeroficate gravity
-    btVector3 temp = m_objectGravityMap[objectId];
-    m_objectGravityMap[objectId].setZero();
+    btVector3 temp = m_ObjectGravityMap[objectId];
+    m_ObjectGravityMap[objectId].setZero();
 
     if( temp.length() != 0 )
         temp.normalize();
 
-    return temp * m_gravityValue;
+    return temp * m_GravityValue;
 };

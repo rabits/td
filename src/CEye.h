@@ -27,7 +27,7 @@ class CEye
 public:
     /** @brief Constructor
      */
-    CEye(Ogre::Camera *camera);
+    CEye(Ogre::Camera* camera);
 
     /** @brief Copy constructor
      *
@@ -161,7 +161,7 @@ public:
     */
 
 protected:
-    Ogre::Camera                *m_pCamera; ///< Camera object
+    Ogre::Camera*                m_pCamera; ///< Camera object
 
     Ogre::Vector3                m_cameraPositionLimits; ///< Camera limits of posioion
 

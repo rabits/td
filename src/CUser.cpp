@@ -25,12 +25,12 @@ CUser::~CUser()
 {
 }
 
-void CUser::setControlledObject(CControlled *obj)
+void CUser::setControlledObject(CControlled* obj)
 {
     m_pControlledObject = obj;
 }
 
-void CUser::setWorld(CObjectWorld *world)
+void CUser::setWorld(CWorld* world)
 {
 }
 

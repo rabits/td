@@ -1,5 +1,5 @@
 /**
- * @file    CObjectWorld.h
+ * @file    CWorld.h
  * @date    2010-10-06T12:18:13+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
@@ -12,39 +12,43 @@
  *
  */
 
-#ifndef COBJECTWORLD_H_INCLUDED
-#define COBJECTWORLD_H_INCLUDED
+#ifndef CWORLD_H_INCLUDED
+#define CWORLD_H_INCLUDED
 
 #include "Common.h"
-
-#include "CObject.h"
-#include "CGravityField.h"
 
 #include "btogre/BtOgrePG.h"
 #include "btogre/BtOgreGP.h"
 #include "btogre/BtOgreExtras.h"
 
+#include "CObject.h"
+#include "CGravityField.h"
+
+#include "World/CObjectCube.h"
+#include "World/CObjectKernel.h"
+
 /** @brief World object
  */
-class CObjectWorld : public CObject
+class CWorld
+    : CObject
 {
 public:
     /** @brief Copy constructor
      *
-     * @param obj const CObjectWorld&
+     * @param obj const CWorld&
      *
      */
-    CObjectWorld(const CObjectWorld &obj);
+    CWorld(const CWorld &obj);
 
     /** @brief Constructor
      *
      * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
      */
-    CObjectWorld(const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
+    CWorld(const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
 
     /** @brief Destructor
      */
-    ~CObjectWorld();
+    ~CWorld();
 
 
     /** @brief Update object data, it may be animation or just object translation or so on
@@ -77,15 +81,15 @@ public:
      */
     void setObjectState(int State);
 
-    btDiscreteDynamicsWorld              *m_pPhyWorld;     ///< Physical World
-    CGravityField                        *m_pGravityField; ///< World gravity field
-    BtOgre::DebugDrawer                  *m_pDbgDraw;      ///< Debug drawer
+    btDiscreteDynamicsWorld*              m_pPhyWorld;     ///< Physical World
+    CGravityField*                        m_pGravityField; ///< World gravity field
+    BtOgre::DebugDrawer*                  m_pDbgDraw;      ///< Debug drawer
 
 private:
-    btAxisSweep3                         *m_pBroadphase;      ///< Bullet broadphase
-    btDefaultCollisionConfiguration      *m_pCollisionConfig; ///< Bullet collision config
-    btCollisionDispatcher                *m_pDispatcher;      ///< Bullet dispatcher
-    btSequentialImpulseConstraintSolver  *m_pSolver;          ///< Bullet solver
+    btAxisSweep3*                         m_pBroadphase;      ///< Bullet broadphase
+    btDefaultCollisionConfiguration*      m_pCollisionConfig; ///< Bullet collision config
+    btCollisionDispatcher*                m_pDispatcher;      ///< Bullet dispatcher
+    btSequentialImpulseConstraintSolver*  m_pSolver;          ///< Bullet solver
 };
 
-#endif // COBJECTWORLD_H_INCLUDED
+#endif // CWORLD_H_INCLUDED

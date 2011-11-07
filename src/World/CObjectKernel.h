@@ -7,7 +7,7 @@
  *
  * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
- * @brief   Kernel object
+ * @brief   Kernel world object
  *
  *
  */
@@ -31,7 +31,7 @@
  */
 class CObjectKernel
     : public CObject
-    , public CControlled
+    , CControlled
 {
 public:
     /** @brief Simple kernel constructor
@@ -40,11 +40,11 @@ public:
 
     /** @brief Constructor
      *
-     * @param pWorld CObjectWorld&
+     * @param pWorld CWorld&
      * @param mass const btScalar
      * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
      */
-    CObjectKernel(CObjectWorld & pWorld, const btScalar mass, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
+    CObjectKernel(CWorld & pWorld, const btScalar mass, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
 
     /** @brief Destructor
      */

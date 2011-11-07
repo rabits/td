@@ -30,7 +30,7 @@ class CData
          * @param name char* - Name of data container
          *
          */
-        CData(const char *name);
+        CData(const char* name);
         virtual ~CData();
 
         /** @brief Convert object data into string format
@@ -54,13 +54,13 @@ class CData
          * @param cur_node pugi::xml_node* - For recurse
          * @return bool
          */
-        bool mergeData(pugi::xml_node &new_node, pugi::xml_node *cur_node = NULL);
+        bool mergeData(pugi::xml_node &new_node, pugi::xml_node* cur_node = NULL);
 
     protected:
         pugi::xml_document  m_dataRoot; ///< XML Root, containing td data
         pugi::xml_document  m_dataBefore; ///< Before merge dataRoot
         pugi::xml_node      m_data; ///< Data of object
-        const char         *m_dataName; ///< Data container name
+        const char*         m_dataName; ///< Data container name
     private:
 };
 

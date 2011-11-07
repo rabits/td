@@ -16,7 +16,7 @@
 #include "CControlled.h"
 
 CControlled::CControlled()
-    : m_vActions()
+    : m_Actions()
 {
     //ctor
 }
@@ -26,12 +26,20 @@ CControlled::~CControlled()
     //dtor
 }
 
-/** @brief Returning list of can be controlled actions
- *
- * @return std::vector<CAction>
- *
- */
-std::vector<CAction> CControlled::getAvailableActions()
+void CControlled::addAction(CAction* pAction)
 {
-    return m_vActions;
+    m_Actions.push_back(pAction);
+}
+
+std::vector<CAction*>* CControlled::getActions()
+{
+    return &m_Actions;
+}
+
+void CControlled::clearActions()
+{
+    std::vector<CAction*>::iterator it = m_Actions.begin();
+    for( ; it != m_Actions.end(); it++ )
+        delete *it;
+    m_Actions.clear();
 }

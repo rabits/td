@@ -27,7 +27,7 @@ Common::SignalTranslator<Common::FloatingPointException> g_objFloatingPointExcep
  * @return int
  *
  */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 #else
 /** @brief Main started function
  *

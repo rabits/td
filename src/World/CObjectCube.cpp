@@ -7,7 +7,7 @@
  *
  * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
- * @brief   Cube object
+ * @brief   Cube world object
  *
  *
  */
@@ -16,7 +16,7 @@
 #include "CGravityField.h"
 #include "CGame.h"
 
-CObjectCube::CObjectCube(CObjectWorld &pWorld, CObjectCube::Cube_Size size, const Ogre::Vector3 &pos)
+CObjectCube::CObjectCube(CWorld &pWorld, CObjectCube::Cube_Size size, const Ogre::Vector3 &pos)
     : m_cubeSize(size)
 {
     if( &pWorld != NULL )
@@ -77,8 +77,9 @@ void CObjectCube::init()
 
 CObjectCube::~CObjectCube()
 {
-    for(int i=0; i<6; i++)
-        m_pWorld->m_pGravityField->remove(i);
+    // @todo Remove gravity fields
+    //for(int i=0; i<6; i++)
+    //    m_pWorld->m_pGravityField->remove(i);
 }
 
 void CObjectCube::update()

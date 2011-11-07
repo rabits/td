@@ -7,7 +7,7 @@
  *
  * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
- * @brief   Action of object
+ * @brief   Action of Controlled object
  *
  *
  */
@@ -15,15 +15,11 @@
 #ifndef CACTION_H
 #define CACTION_H
 
-/** @brief Action, registered by object for controlling self
+/** @brief Action, registered by Controlled object for controlling self
  */
 class CAction
 {
 public:
-    /** @brief Create action of object
-     *
-     * @param
-     */
     CAction();
     ~CAction();
 protected:

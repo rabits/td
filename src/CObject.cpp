@@ -7,7 +7,7 @@
  *
  * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
- * @brief   Base object
+ * @brief   Base world object
  *
  *
  */
@@ -45,7 +45,7 @@ void CObject::setParent(CObject* pParent)
     m_pParent = pParent;
 }
 
-void CObject::setWorld(CObjectWorld* pWorld)
+void CObject::setWorld(CWorld* pWorld)
 {
     m_pWorld = pWorld;
 }
@@ -59,14 +59,6 @@ void CObject::clearChildrens()
     m_HasChild = false;
 }
 
-void CObject::clearActions()
-{
-    std::vector<CAction*>::iterator it = m_Actions.begin();
-    for( ; it != m_Actions.end(); it++ )
-        delete *it;
-    m_Actions.clear();
-}
-
 void CObject::attachChild(CObject* pChild)
 {
     pChild->setParent(this);
@@ -75,7 +67,7 @@ void CObject::attachChild(CObject* pChild)
     m_HasChild = true;
 }
 
-std::vector<CObject*> *CObject::getChildrens()
+std::vector<CObject*>* CObject::getChildrens()
 {
     return &m_Childrens;
 }

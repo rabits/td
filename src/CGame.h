@@ -29,10 +29,7 @@
 namespace fs = boost::filesystem3;
 
 #include "CData.h"
-#include "CObject.h"
-#include "CObjectCube.h"
-#include "CObjectWorld.h"
-#include "CObjectKernel.h"
+#include "CWorld.h"
 
 #include "CUser.h"
 
@@ -121,23 +118,24 @@ public:
      */
     unsigned int getTime();
 
-    Ogre::SceneManager                     *m_pSceneMgr; ///< Scene Manager object
-    Ogre::Camera                           *m_pCamera; ///< Main camera
-    Ogre::RenderWindow                     *m_pWindow; ///< Main window
+    Ogre::SceneManager*                     m_pSceneMgr; ///< Scene Manager object
+    Ogre::Camera*                           m_pCamera; ///< Main camera
+    Ogre::RenderWindow*                     m_pWindow; ///< Main window
 
-    CInputHandler                          *m_pInputHandler; ///< Input Handler object
+    CInputHandler*                          m_pInputHandler; ///< Input Handler object
 
-    OgreBites::SdkTrayManager              *m_pTrayMgr; ///< Tray Manager object
-    OgreBites::ParamsPanel                 *m_pDetailsPanel; ///< Sample details panel
+    OgreBites::SdkTrayManager*              m_pTrayMgr; ///< Tray Manager object
+    OgreBites::ParamsPanel*                 m_pDetailsPanel; ///< Sample details panel
 
-    std::vector<CUser*>                     m_vUsers; ///< Users list
-    std::vector<CUser*>::iterator           o_currentUser; ///< Current processing user
+    CUser*                                  m_pMainUser; ///< Link to main user
+    std::vector<CUser*>                     m_Users; ///< Users list
+    std::vector<CUser*>::iterator           m_oCurrentUser; ///< Current processing user
 
-    std::vector<CObjectWorld*>::iterator    o_currentWorld; ///< Current processing world
+    std::vector<CWorld*>::iterator          m_oCurrentWorld; ///< Current processing world
 
 private:
-    static CGame                           *m_pInstance; ///< Instance of game
-    static fs::path                        *m_pPrefix; ///< Current prefix directory
+    static CGame*                           m_pInstance; ///< Instance of game
+    static fs::path*                        m_pPrefix; ///< Current prefix directory
 
 protected:
     /** @brief Creating one instance of object
@@ -148,7 +146,7 @@ protected:
      */
     CGame(const CGame &obj);
 
-    std::vector<CObjectWorld*>              m_vWorlds; ///< Worlds list
+    std::vector<CWorld*>                    m_Worlds; ///< Worlds list
 
     /** @brief Preparing env variables
      *
@@ -163,7 +161,7 @@ protected:
      *
      * Overwrite previous configuration by loaded. First need to load global, second - local.
      */
-    bool loadConfig(const char *configfile);
+    bool loadConfig(const char* configfile);
 
     /** @brief Init OGRE video engine configuration
      *
@@ -257,9 +255,9 @@ protected:
      */
     void windowClosed(Ogre::RenderWindow* rw);
 
-    Ogre::Root                             *m_pRoot; ///< Root Ogre object
-    Ogre::LogManager                       *m_pLogManager; ///< Log manager for replacement OGRE default logger
-    Ogre::Timer                            *m_pTimer; ///< Game timer for restriction of frame rendering speed
+    Ogre::Root*                             m_pRoot; ///< Root Ogre object
+    Ogre::LogManager*                       m_pLogManager; ///< Log manager for replacement OGRE default logger
+    Ogre::Timer*                            m_pTimer; ///< Game timer for restriction of frame rendering speed
     unsigned long                           m_NextFrameTime; ///< Render next frame in this time (microseconds)
 
     bool                                    m_ShutDown; ///< Game need to stop

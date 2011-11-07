@@ -17,6 +17,8 @@
 
 #include "Common.h"
 
+#include <map>
+
 #include <OIS/OISForceFeedback.h>
 
 #include "CGame.h"
@@ -75,6 +77,21 @@ public:
      *
      */
     OIS::JoyStick* getJoyStick(int joyId);
+
+    /** @brief Add subscribe on event with special id
+     *
+     * @param device OIS::Type
+     * @param id int
+     * @param user CUser*
+     */
+    bool addSubscribe(OIS::Type device, int id, CUser* pUser);
+
+    /** @brief Delete subscribe on event
+     *
+     * @param device OIS::Type
+     * @param id int
+     */
+    bool delSubscribe(OIS::Type device, int id);
 
 protected:
     /** @brief Function on keyboard key pressed event
@@ -157,14 +174,16 @@ protected:
      */
     bool axisMoved( const OIS::JoyStickEvent &arg, int axis );
 
-    OIS::InputManager *m_pInputManager; ///< OIS input manager
-    OIS::Mouse        *m_pMouse; ///< Mouse device
-    OIS::Keyboard     *m_pKeyboard; ///< Keyboard device
-    OIS::JoyStick     *m_pJoyStick[CONFIG_JOYSTICK_MAX_NUMBER]; ///< Joysticks devices
+    OIS::InputManager* m_pInputManager; ///< OIS input manager
+    OIS::Mouse*        m_pMouse; ///< Mouse device
+    OIS::Keyboard*     m_pKeyboard; ///< Keyboard device
+    OIS::JoyStick*     m_pJoyStick[CONFIG_JOYSTICK_MAX_NUMBER]; ///< Joysticks devices
 
     int                m_joysticsNum; ///< Number of preset joystics
 
-    CGame             *m_pGame; ///< Link to game
+    CGame*             m_pGame; ///< Link to game
+
+    std::map<OIS::Type, std::map<int, CUser*> > m_subscribedUsers; ///< Map of subscribed Users on need events. DeviceType->EventType->UserLink
 private:
 };
 

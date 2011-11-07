@@ -16,7 +16,7 @@
 #include <cstring>
 #include <sstream>
 
-CData::CData(const char *name)
+CData::CData(const char* name)
     : m_dataRoot()
     , m_dataBefore()
     , m_data()
@@ -89,7 +89,7 @@ bool CData::verifyData(pugi::xml_document &document) const
     return true;
 }
 
-bool CData::mergeData(pugi::xml_node &new_node, pugi::xml_node *cur_node)
+bool CData::mergeData(pugi::xml_node &new_node, pugi::xml_node* cur_node)
 {
     // If running in first time
     if( cur_node == NULL )

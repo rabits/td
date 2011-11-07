@@ -37,10 +37,11 @@ CGame::CGame()
    , m_pInputHandler(NULL)
    , m_pTrayMgr(NULL)
    , m_pDetailsPanel(NULL)
-   , m_vUsers()
-   , o_currentUser(NULL)
-   , o_currentWorld(NULL)
-   , m_vWorlds()
+   , m_pMainUser()
+   , m_Users()
+   , m_oCurrentUser(NULL)
+   , m_Worlds()
+   , m_oCurrentWorld(NULL)
    , m_pRoot(NULL)
    , m_pLogManager(NULL)
    , m_pTimer(new Ogre::Timer())
@@ -55,10 +56,10 @@ fs::path* CGame::m_pPrefix = NULL;
 
 CGame::~CGame()
 {
-    for( o_currentWorld=m_vWorlds.begin() ; o_currentWorld < m_vWorlds.end(); o_currentWorld++ )
-        delete (*o_currentWorld);
-    for( o_currentUser = m_vUsers.begin() ; o_currentUser < m_vUsers.end(); o_currentUser++ )
-        delete (*o_currentUser);
+    for( m_oCurrentWorld=m_Worlds.begin() ; m_oCurrentWorld < m_Worlds.end(); m_oCurrentWorld++ )
+        delete (*m_oCurrentWorld);
+    for( m_oCurrentUser = m_Users.begin() ; m_oCurrentUser < m_Users.end(); m_oCurrentUser++ )
+        delete (*m_oCurrentUser);
 
     if( m_pTrayMgr )
         delete m_pTrayMgr;
@@ -170,7 +171,7 @@ bool CGame::loadEnv()
     return true;
 }
 
-bool CGame::loadConfig(const char *configfile)
+bool CGame::loadConfig(const char* configfile)
 {
     log_info("Loading game configuration file: \"%s\"", configfile);
 
@@ -451,7 +452,7 @@ bool CGame::initGame()
     m_pCamera->setNearClipDistance(0.01f);
 
     // Create a default camera controller
-    //m_vUsers.push_back(new CUser(m_pCamera));
+    //m_Users.push_back(new CUser(m_pCamera));
 
     log_info("Creating viewport");
     // Create one viewport, entire window
@@ -466,7 +467,7 @@ bool CGame::initGame()
 
     // Create worlds
     log_info("Creating worlds");
-    m_vWorlds.push_back(new CObjectWorld());
+    m_Worlds.push_back(new CWorld());
 
     return true;
 }
@@ -578,14 +579,14 @@ bool CGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
 
 void CGame::updateWorlds(const Ogre::FrameEvent& evt)
 {
-    for( o_currentWorld=m_vWorlds.begin() ; o_currentWorld < m_vWorlds.end(); o_currentWorld++ )
-        (*o_currentWorld)->update(evt);
+    for( m_oCurrentWorld=m_Worlds.begin() ; m_oCurrentWorld < m_Worlds.end(); m_oCurrentWorld++ )
+        (*m_oCurrentWorld)->update(evt);
 }
 
 void CGame::updateUsers(const Ogre::FrameEvent& evt)
 {
-    for( o_currentUser = m_vUsers.begin() ; o_currentUser < m_vUsers.end(); o_currentUser++ )
-        (*o_currentUser)->update(evt);
+    for( m_oCurrentUser = m_Users.begin() ; m_oCurrentUser < m_Users.end(); m_oCurrentUser++ )
+        (*m_oCurrentUser)->update(evt);
 }
 
 bool CGame::frameStarted(const Ogre::FrameEvent &evt)

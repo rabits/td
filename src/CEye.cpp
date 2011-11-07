@@ -13,7 +13,7 @@
  */
 #include "CEye.h"
 
-CEye::CEye(Ogre::Camera *camera = NULL)
+CEye::CEye(Ogre::Camera* camera = NULL)
     : m_pCamera(camera)
     , m_cameraPositionLimits()
     , m_style(EYE_CS_FREELOOK)
