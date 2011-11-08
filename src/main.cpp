@@ -45,10 +45,13 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
         if( CGame::getInstance()->initialise() )
             CGame::getInstance()->start();
     }
-    catch( Ogre::Exception& e ) {
-        log_emerg("An exception has occured: %s", e.getFullDescription().c_str());
+    catch( Common::Exception const& e ) {
+        log_emerg("An Common exception has occured: %s", e.getFullDescription().c_str());
     }
-    catch( std::exception& e ) {
+    catch( Ogre::Exception const& e ) {
+        log_emerg("An Ogre exception has occured: %s", e.getFullDescription().c_str());
+    }
+    catch( std::exception const& e ) {
         log_emerg("An standart exception has occured: %s", e.what());
     }
     catch(...) {

@@ -41,7 +41,7 @@ CWorld::CWorld(const Ogre::Vector3 &pos)
     m_pDbgDraw->setDebugMode(true);
     m_pPhyWorld->setDebugDrawer(m_pDbgDraw);
 
-    m_pGravityField= new CGravityField(this, 20.0f);
+    m_pGravityField = new CGravityField(this, 20.0f);
 
     // Create scene
     attachChild(new CObjectKernel(*this, 20, Ogre::Vector3(5.0f, 11.0f, 0.0f)));
@@ -54,7 +54,10 @@ void CWorld::init()
 
 CWorld::~CWorld()
 {
-    //Free Bullet stuff.
+    //Free Bullet stuff
+    delete m_pGravityField;
+    delete m_pDbgDraw;
+    delete m_pPhyWorld;
     delete m_pSolver;
     delete m_pDispatcher;
     delete m_pCollisionConfig;

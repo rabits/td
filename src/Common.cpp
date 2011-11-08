@@ -106,7 +106,7 @@ std::string Common::getPrefixPath()
     // Read symbolic link /proc/self/exe
     int len = readlink("/proc/self/exe", bin_path, sizeof(bin_path));
     if( len == -1 )
-        throw new Ogre::Exception(0, "Can't find binary path", "");
+        throw EXCEPTION("Can't find binary path");
 
     bin_path[len] = '\0';
 
@@ -116,7 +116,7 @@ std::string Common::getPrefixPath()
     size_t found = out.rfind(prefix_bin);
 
     if( found == std::string::npos )
-        throw new Ogre::Exception(0, "Can't find binary path", "");
+        throw EXCEPTION("Can't find binary path");
 
     out = out.substr(0, found);
 
@@ -127,15 +127,15 @@ std::string Common::getPrefixPath()
     char path[1024];
     CFBundleRef mainBundle = CFBundleGetMainBundle();
     if(!mainBundle)
-        throw new Ogre::Exception(0, "Can't find binary path", "");
+        throw EXCEPTION("Can't find binary path");
 
     CFURLRef mainBundleURL = CFBundleCopyBundleURL(mainBundle);
     if(!mainBundleURL)
-        throw new Ogre::Exception(0, "Can't find binary path", "");
+        throw EXCEPTION("Can't find binary path");
 
     CFStringRef cfStringRef = CFURLCopyFileSystemPath(mainBundleURL, kCFURLPOSIXPathStyle);
     if(!cfStringRef)
-        throw new Ogre::Exception(0, "Can't find binary path", "");
+        throw EXCEPTION("Can't find binary path");
 
     CFStringGetCString(cfStringRef, path, 1024, kCFStringEncodingASCII);
 
@@ -160,10 +160,45 @@ std::string Common::getPrefixPath()
         }
     }
     if(rootPath.empty())
-        throw new Ogre::Exception(0, "Can't find binary path", "");
+        throw EXCEPTION("Can't find binary path");
 
     return execPath;
     */
 #endif
-    throw new Ogre::Exception(0, "Can't find binary path", "");
+    throw EXCEPTION("Can't find binary path");
+}
+
+Exception::Exception(const std::string& description, const std::string& source)
+    : m_Source(source)
+    , m_File()
+    , m_Description(description)
+    , m_Line(0)
+    , m_FullDescription()
+{
+}
+
+Exception::Exception(const std::string& description, const std::string& source, const char* file, long line)
+    : m_Source(source)
+    , m_File(file)
+    , m_Description(description)
+    , m_Line(line)
+    , m_FullDescription()
+{
+}
+
+const std::string& Exception::getFullDescription() const
+{
+    if( m_FullDescription.empty() )
+    {
+        std::stringstream full;
+
+        full << "Exception: '" << m_Description << "' in " << m_Source;
+
+        if( m_Line > 0 )
+            full << " at " << m_File << "(line " << m_Line << ")";
+
+        m_FullDescription = full.str();
+    }
+
+    return m_FullDescription;
 }

@@ -63,17 +63,23 @@ CGame::~CGame()
 
     if( m_pTrayMgr )
         delete m_pTrayMgr;
-    if( m_pTimer )
-        delete m_pTimer;
+
+    delete m_pTimer;
 
     //Remove ourself as a Window listener
     Ogre::WindowEventUtilities::removeWindowEventListener(m_pWindow, this);
     windowClosed(m_pWindow);
 
+    if( m_pInputHandler )
+        delete m_pInputHandler;
+
     if( m_pRoot )
         delete m_pRoot;
     if( m_pLogManager )
         delete m_pLogManager;
+
+    if( m_pPrefix )
+        delete m_pPrefix;
 }
 
 CGame* CGame::getInstance()

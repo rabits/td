@@ -27,9 +27,11 @@
 #ifdef CONFIG_DEBUG
 #   define log_debug(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_DEBUG, format, ##__VA_ARGS__)
 #   define log_info(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_INFO, format, ##__VA_ARGS__)
+#   define EXCEPTION(message)       Common::Exception(message, __FUNCTION__, __FILE__, __LINE__)
 #else
-#   define log_debug(format, ...)  /* not logged */
-#   define log_info(format, ...)   /* not logged */
+#   define log_debug(format, ...)   /* not logged */
+#   define log_info(format, ...)    /* not logged */
+#   define EXCEPTION(message)       Common::Exception(message, __FUNCTION__)
 #endif
 
 #define log_notice(format, ...)  Common::CLog::log(Common::CLog::LogLevel::LOG_NOTICE, format, ##__VA_ARGS__)
@@ -38,6 +40,7 @@
 #define log_crit(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_CRIT, format, ##__VA_ARGS__)
 #define log_alert(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_ALERT, format, ##__VA_ARGS__)
 #define log_emerg(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_EMERG, format, ##__VA_ARGS__)
+
 
 /** @brief Specialised and non-crossplatform functions
  */
@@ -93,7 +96,82 @@ namespace Common
      */
     std::string getPrefixPath();
 
-    /** @brief Stacktrace exception class
+    /** @brief Common simple Exception
+     *
+     * Usage:
+     * @code
+     * throw EXCEPTION("message"); //replaced to throw Common::Exception(message, __FUNC__ ...) and need constructor by CONFIG_DEBUG
+     * @endcode
+     */
+    class Exception
+        : public std::exception
+    {
+    public:
+        /** @brief Default constructor
+         *
+         * @param description const std::string&
+         * @param source const std::string&
+         */
+        Exception(const std::string& description, const std::string& source);
+
+        /** @brief Extended constructor for CONFIG_DEBUG mode
+         *
+         * @param description const std::string&
+         * @param source const std::string&
+         * @param file const char*
+         * @param line long
+         */
+        Exception(const std::string& description, const std::string& source, const char* file, long line);
+
+        /** @brief Default destructor
+         */
+        ~Exception() throw() {}
+
+
+        /** @brief Get formatted description with line number etc...
+         *
+         */
+        const std::string& getFullDescription() const;
+
+        /** @brief Get function name
+         *
+         * @return const std::string &
+         */
+        const std::string& getSource() const { return m_Source; }
+
+        /** @brief Get file path
+         *
+         * @return const std::string &
+         */
+        const std::string& getFile() const { return m_File; }
+
+        /** @brief Get line number
+         *
+         * @return long
+         */
+        long               getLine() const { return m_Line; }
+
+        /** @brief Get description
+         *
+         * @return const std::string &
+         */
+        const std::string& getDescription() const { return m_Description; }
+
+        /** @brief Override std::exception::what()
+         *
+         * @return const char *
+         */
+        const char*        what() const throw() { return getFullDescription().c_str(); }
+
+    private:
+        std::string          m_Source;          ///< Function name
+        std::string          m_File;            ///< File path
+        std::string          m_Description;     ///< Description message
+        long                 m_Line;            ///< Line number
+        mutable std::string  m_FullDescription; ///< Description message
+    };
+
+    /** @brief Stacktrace exception class for serious errors
      */
     class ExceptionTracer
     {
@@ -142,7 +220,9 @@ namespace Common
 
     /** @brief SIGSEGV signal catcher
      */
-    class SegmentationFault : public ExceptionTracer, public std::exception
+    class SegmentationFault
+        : public ExceptionTracer
+        , public std::exception
     {
     public:
         static int GetSignalNumber() {return SIGSEGV;}
@@ -150,7 +230,9 @@ namespace Common
 
     /** @brief SIGFPE signal catcher
      */
-    class FloatingPointException : public ExceptionTracer, public std::exception
+    class FloatingPointException
+        : public ExceptionTracer
+        , public std::exception
     {
     public:
         static int GetSignalNumber() {return SIGFPE;}

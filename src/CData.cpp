@@ -98,7 +98,7 @@ bool CData::mergeData(pugi::xml_node &new_node, pugi::xml_node* cur_node)
         if( std::strcmp(new_node.name(), m_dataName) )
         {
             log_error("Name not match %s != %s", new_node.name(), m_dataName);
-            throw new std::exception();
+            throw EXCEPTION("Configuration is not valid");
         }
 
         // Copy tree before merge
