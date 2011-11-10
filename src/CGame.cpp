@@ -31,19 +31,19 @@
 
 CGame::CGame()
    : CData("Game")
-   , m_pSceneMgr(NULL)
-   , m_pCamera(NULL)
-   , m_pWindow(NULL)
-   , m_pInputHandler(NULL)
-   , m_pTrayMgr(NULL)
-   , m_pDetailsPanel(NULL)
+   , m_pSceneMgr()
+   , m_pCamera()
+   , m_pWindow()
+   , m_pInputHandler()
+   , m_pTrayMgr()
+   , m_pDetailsPanel()
    , m_pMainUser()
    , m_Users()
-   , m_oCurrentUser(NULL)
+   , m_oCurrentUser()
    , m_Worlds()
-   , m_oCurrentWorld(NULL)
-   , m_pRoot(NULL)
-   , m_pLogManager(NULL)
+   , m_oCurrentWorld()
+   , m_pRoot()
+   , m_pLogManager()
    , m_pTimer(new Ogre::Timer())
    , m_NextFrameTime(0)
    , m_ShutDown(false)
@@ -61,44 +61,19 @@ CGame::~CGame()
     for( m_oCurrentUser = m_Users.begin() ; m_oCurrentUser < m_Users.end(); m_oCurrentUser++ )
         delete (*m_oCurrentUser);
 
-    if( m_pTrayMgr )
-        delete m_pTrayMgr;
-
+    delete m_pTrayMgr;
     delete m_pTimer;
 
     //Remove ourself as a Window listener
     Ogre::WindowEventUtilities::removeWindowEventListener(m_pWindow, this);
     windowClosed(m_pWindow);
 
-    if( m_pInputHandler )
-        delete m_pInputHandler;
+    delete m_pInputHandler;
 
-    if( m_pRoot )
-        delete m_pRoot;
-    if( m_pLogManager )
-        delete m_pLogManager;
+    delete m_pRoot;
+    delete m_pLogManager;
 
-    if( m_pPrefix )
-        delete m_pPrefix;
-}
-
-CGame* CGame::getInstance()
-{
-    if( m_pInstance == NULL )
-        m_pInstance = new CGame();
-
-    return m_pInstance;
-}
-
-void CGame::destroyInstance()
-{
-    if( m_pInstance )
-        delete m_pInstance;
-}
-
-unsigned int CGame::getTime()
-{
-    return m_pTimer->getMilliseconds();
+    delete m_pPrefix;
 }
 
 const char* CGame::getPrefix()
@@ -124,12 +99,12 @@ bool CGame::initialise()
     fs::path config_path(CGame::getPrefix());
     config_path /= CONFIG_PATH_GLOBAL_CONFIG;
     config_path /= "config.xml";
-    loadConfig(config_path.c_str());
+    loadData(config_path.c_str());
 
     // Loading user config
-    config_path = fs::path(m_data.child("env").child_value("HOME"));
-    config_path /= m_data.child("path").child_value("user_data");
-    if( config_path == fs::path(m_data.child("env").child_value("HOME")) )
+    config_path = fs::path(env("HOME"));
+    config_path /= path("user_data");
+    if( config_path == fs::path(env("HOME")) )
     {
         log_warn("User data relative directory not setted in config - using default \"$HOME/.config/td\"");
         m_data.child("path").child("user_data").child(pugi::node_pcdata).set_value(".config/td");
@@ -142,7 +117,7 @@ bool CGame::initialise()
             return log_error("Could't create user data directory \"%s\"");
     }
     config_path /= "config.xml";
-    if( ! loadConfig(config_path.c_str()) )
+    if( ! loadData(config_path.c_str()) )
         log_notice("Can't load user configuration \"%s\"", config_path.c_str());
 
     // Initialise OGRE
@@ -171,43 +146,16 @@ bool CGame::loadEnv()
 
     pugi::xml_node data_env = m_data.append_child("env");
 
+    // User name
+#if OGRE_PLATFORM != OGRE_PLATFORM_WIN32
+    data_env.append_child("USER").append_child(pugi::node_pcdata).set_value(std::getenv("USER"));
+#else
+    data_env.append_child("USER").append_child(pugi::node_pcdata).set_value(std::getenv("USERNAME"));
+#endif
+
     // Home of user
     data_env.append_child("HOME").append_child(pugi::node_pcdata).set_value(std::getenv("HOME"));
 
-    return true;
-}
-
-bool CGame::loadConfig(const char* configfile)
-{
-    log_info("Loading game configuration file: \"%s\"", configfile);
-
-    pugi::xml_document new_data;
-    pugi::xml_parse_result result = new_data.load_file(configfile, pugi::parse_full);
-
-#ifdef CONFIG_DEBUG
-    log_debug("New data for merge:");
-    new_data.save(std::cout, "  ");
-#endif
-
-    if( !result )
-        return log_error("\tLoading failed: %s#%d", result.description(), result.offset);
-
-    // Verify config
-    if( ! verifyData(new_data) )
-        return log_error("\tFerifying of data failed");
-
-    // Starting merge
-    pugi::xml_node new_child = new_data.child(CONFIG_TD_NAME).child(m_dataName);
-    mergeData(new_child);
-
-#ifdef CONFIG_DEBUG
-    log_debug("Data before merge:");
-    m_dataBefore.save(std::cout, "  ");
-    log_debug("Data After merge:");
-    m_dataRoot.save(std::cout, "  ");
-#endif
-
-    log_info("Complete loading game configuration file: \"%s\"", configfile);
     return true;
 }
 
@@ -217,8 +165,8 @@ bool CGame::initOgre()
     pugi::xml_node ogre_config = m_data.child("config").child("ogre");
 
     // Creating OGRE log
-    fs::path log_path(m_data.child("env").child_value("HOME"));
-    log_path /= m_data.child("path").child_value("user_data");
+    fs::path log_path(env("HOME"));
+    log_path /= path("user_data");
     log_path /= "ogre.log";
     m_pLogManager = new Ogre::LogManager();
 #ifdef CONFIG_DEBUG
@@ -232,7 +180,7 @@ bool CGame::initOgre()
 
 
     // Get plugin directory
-    fs::path ogre_plugins_dir(m_data.child("path").child_value("ogre_plugins"));
+    fs::path ogre_plugins_dir(path("ogre_plugins"));
     if( ogre_plugins_dir.empty() )
     {
         ogre_plugins_dir = *m_pPrefix;
@@ -377,12 +325,12 @@ bool CGame::initOgre()
             {
                 if( res->attribute("value") )
                 {
-                    fs::path full_user_data = fs::path(m_data.child("env").child_value("HOME")) / fs::path(m_data.child("path").child_value("user_data")) / fs::path(m_data.child("path").child_value("data"));
+                    fs::path full_user_data = fs::path(env("HOME")) / fs::path(path("user_data")) / fs::path(path("data"));
                     fs::path full_root_data;
                     ogre_resource_location = full_user_data / fs::path(res->attribute("value").value());
                     if( !fs::exists(ogre_resource_location) )
                     {
-                        full_root_data = *m_pPrefix / fs::path(m_data.child("path").child_value("root_data")) / fs::path(m_data.child("path").child_value("data"));
+                        full_root_data = *m_pPrefix / fs::path(path("root_data")) / fs::path(path("data"));
                         ogre_resource_location = full_root_data / fs::path(res->attribute("value").value());
                     }
 
@@ -505,11 +453,6 @@ void CGame::start()
     }
 }
 
-void CGame::exit()
-{
-    m_ShutDown = true;
-}
-
 void CGame::getScreenshot()
 {
     m_pWindow->writeContentsToTimestampedFile("screenshot", ".jpg");
@@ -613,10 +556,7 @@ void CGame::windowResized(Ogre::RenderWindow* rw)
 
 void CGame::windowClosed(Ogre::RenderWindow* rw)
 {
-    //Only close for window that created OIS (the main window in these demos)
+    // Only close for window that created OIS
     if( (rw == m_pWindow) && m_pInputHandler != NULL )
-    {
         delete m_pInputHandler;
-        m_pInputHandler = 0;
-    }
 }

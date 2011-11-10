@@ -30,6 +30,40 @@ CData::~CData()
 {
 }
 
+bool CData::loadData(const char* datafile)
+{
+    log_info("Loading %s data file: \"%s\"", m_dataName, datafile);
+
+    pugi::xml_document new_data;
+    pugi::xml_parse_result result = new_data.load_file(datafile, pugi::parse_full);
+
+#ifdef CONFIG_DEBUG
+    log_debug("New data for merge:");
+    new_data.save(std::cout, "  ");
+#endif
+
+    if( !result )
+        return log_error("\tLoading failed: %s#%d", result.description(), result.offset);
+
+    // Verify config
+    if( ! verifyData(new_data) )
+        return log_error("\tFerifying of data failed");
+
+    // Starting merge
+    pugi::xml_node new_child = new_data.child(CONFIG_TD_NAME).child(m_dataName);
+    mergeData(new_child);
+
+#ifdef CONFIG_DEBUG
+    log_debug("Data before merge:");
+    m_dataBefore.save(std::cout, "  ");
+    log_debug("Data After merge:");
+    m_dataRoot.save(std::cout, "  ");
+#endif
+
+    log_info("\tComplete loading %s data file: \"%s\"", m_dataName, datafile);
+    return true;
+}
+
 void CData::saveData(std::ostream &stream)
 {
     m_dataRoot.save(stream, "  ", pugi::format_default, pugi::xml_encoding::encoding_utf8);

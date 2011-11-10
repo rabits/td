@@ -38,7 +38,7 @@ bool CLog::log(CLog::LogLevel level, const char* format, ...)
         return level < 5;
 
     // Message time
-    m_logTime = CGame::getInstance()->getTime();
+    m_logTime = CGame::getInstance()->time();
 
     char msgbuffer[CONFIG_LOG_BUFFER];
     char msglevel[] = "       ";

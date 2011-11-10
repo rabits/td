@@ -188,6 +188,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config.h.in ${CMAKE_CURRENT_
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config.xml.in ${CMAKE_CURRENT_BINARY_DIR}/config/config.xml)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/user.xml.in ${CMAKE_CURRENT_BINARY_DIR}/config/user.xml)
+
 #
 # Adding Make targets
 #
@@ -195,8 +197,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config.xml.in ${CMAKE_CURREN
 # install
 install(TARGETS ${CONFIG_TD_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_BIN})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/data DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_DATA})
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/users DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_DATA})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config/config.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_ETC})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config/user.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_ETC}/users/skeleton)
 
 # Cppcheck execute if found and Debug mode
 if(CPPCHECK_EXEC)
@@ -214,7 +216,7 @@ if(DOXYGEN_FOUND)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
     add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating API documentation with Doxygen" VERBATIM)
+        COMMENT "Generate API documentation with Doxygen" VERBATIM)
 endif()
 
 # uninstall

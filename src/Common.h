@@ -22,6 +22,11 @@
 #include <iostream>
 
 #include <string>
+#include <vector>
+#include <map>
+
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem3;
 
 // @todo Fix strange memory bug with this defines (notice-emerg). If its move from ifdef - will be produced sigfault...
 #ifdef CONFIG_DEBUG

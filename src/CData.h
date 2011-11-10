@@ -33,6 +33,15 @@ class CData
         CData(const char* name);
         virtual ~CData();
 
+        /** @brief Load data file for object
+         *
+         * @param datafile const char* - Path to xml data file
+         * @return bool
+         *
+         * Merge with previous loaded data.
+         */
+        bool loadData(const char* datafile);
+
         /** @brief Convert object data into string format
          *
          * @param stream std::ostream& - Output stream (like std::cout or any file stream)

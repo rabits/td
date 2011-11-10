@@ -17,8 +17,6 @@
 
 #include "Common.h"
 
-#include <string>
-#include <vector>
 #include <OGRE/Ogre.h>
 
 #include "btogre/BtOgreGP.h"

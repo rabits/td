@@ -17,8 +17,6 @@
 
 #include "Common.h"
 
-#include <map>
-
 #include <OIS/OISForceFeedback.h>
 
 #include "CGame.h"

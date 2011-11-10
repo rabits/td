@@ -15,8 +15,7 @@
 #ifndef CCONTROLLED_H
 #define CCONTROLLED_H
 
-#include <vector>
-#include <string>
+#include "Common.h"
 
 #include "CAction.h"
 

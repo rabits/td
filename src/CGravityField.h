@@ -19,7 +19,6 @@
 
 #include "OGRE/Ogre.h"
 #include "CObject.h"
-#include <map>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 
 /** @brief Invisible box with gravity vector

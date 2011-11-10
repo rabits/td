@@ -40,7 +40,7 @@ CInputHandler::CInputHandler(size_t windowHnd)
 
     m_pInputManager = OIS::InputManager::createInputSystem(pl);
 
-    Ogre::String deviceType[6] = {"OIS Unknown", "OIS Keyboard", "OIS Mouse", "OIS JoyStick", "OIS Tablet", "OIS Other"};
+    std::string deviceType[6] = {"OIS Unknown", "OIS Keyboard", "OIS Mouse", "OIS JoyStick", "OIS Tablet", "OIS Other"};
     OIS::DeviceList dlist = m_pInputManager->listFreeDevices();
     for( OIS::DeviceList::iterator i = dlist.begin(); i != dlist.end(); ++i )
         log_info("\tFound device: %s,\tVendor: %s", deviceType[i->first].c_str(), i->second.c_str());
@@ -169,7 +169,7 @@ bool CInputHandler::keyPressed( const OIS::KeyEvent &arg )
     }
     else if( arg.key == OIS::KC_T )   // cycle polygon rendering mode
     {
-        Ogre::String newVal;
+        std::string newVal;
         Ogre::TextureFilterOptions tfo;
         unsigned int aniso;
 
@@ -202,7 +202,7 @@ bool CInputHandler::keyPressed( const OIS::KeyEvent &arg )
     }
     else if( arg.key == OIS::KC_R )   // cycle polygon rendering mode
     {
-        Ogre::String newVal;
+        std::string newVal;
         Ogre::PolygonMode pm;
 
         switch( m_pGame->m_pCamera->getPolygonMode() )

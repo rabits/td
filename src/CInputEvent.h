@@ -19,10 +19,7 @@
 
 #include <OIS/OIS.h>
 
-/** @brief Event of user from controller (keyboard, mouse)
- *
- * Have 1 parameter:
- * - value (if button: 0.0,1.0; if stick: 0.0...1.0)
+/** @brief Unified event from controller (keyboard, mouse)
  */
 class CInputEvent
 {
@@ -35,28 +32,49 @@ public:
      */
     ~CInputEvent();
 
+    enum Type
+    {
+        EVENT_ABSOLUTE, ///< from min to max (like button)
+        EVENT_RELATIVE  ///< relative state (like mouse)
+    };
+
     /** @brief Get Id of event
      *
      * @return int
      *
      */
-    int getId();
+    int id();
 
     /** @brief Get Value of event
      *
      * @return float
      *
      */
-    float getValue();
+    float value();
 
     /** @brief Set coefficient of sensitivity
      *
+     * @param sens float - coefficient
      */
-    void setSensitivity(float sens);
+    void setSens(float sens);
+
+    /** @brief Get type of value
+     *
+     * @return Type - from CInputEvent::Type
+     */
+    Type type();
+
+    /** @brief Set type of value
+     *
+     * @param type Type - new type
+     */
+    void type(Type type);
 
 protected:
-    float  m_Id; ///< Id of event
-    float  m_Value; ///< Value of event
+    float  m_Id;    ///< Id
+    float  m_Value; ///< Value
+    Type   m_Type;  ///< Type of value
+
 private:
 };
 

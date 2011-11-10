@@ -23,10 +23,6 @@
 #include <OGRE/SdkTrays.h>
 
 #include <cstdlib>
-#include <vector>
-
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem3;
 
 #include "CData.h"
 #include "CWorld.h"
@@ -52,14 +48,14 @@ public:
      * @return CGame*
      *
      */
-    static CGame* getInstance();
+    static CGame* getInstance(){ if( m_pInstance == NULL ) m_pInstance = new CGame(); return m_pInstance; }
 
     /** @brief Remove main game object
      *
      * @return void
      *
      */
-    static void   destroyInstance();
+    static void   destroyInstance(){ delete m_pInstance; }
 
     /** @brief Get current prefix of game
      *
@@ -102,7 +98,7 @@ public:
      * @return void
      *
      */
-    void exit();
+    void exit(){ m_ShutDown = true; }
 
     /** @brief Save screenshot
      *
@@ -116,7 +112,23 @@ public:
      * @return unsigned int - Number of milliseconds since start
      *
      */
-    unsigned int getTime();
+    unsigned int time(){ return m_pTimer->getMilliseconds(); }
+
+
+    /** @brief Return environment variable
+     *
+     * @param name char const*
+     * @return char const*
+     */
+    const char* env(const char* name){ return m_data.child("env").child_value(name); }
+
+    /** @brief Return path variable
+     *
+     * @param name const char*
+     * @return const char*
+     */
+    const char* path(const char* name){ return m_data.child("path").child_value(name); }
+
 
     Ogre::SceneManager*                     m_pSceneMgr; ///< Scene Manager object
     Ogre::Camera*                           m_pCamera; ///< Main camera
@@ -153,15 +165,6 @@ protected:
      * @return bool
      */
     bool loadEnv();
-
-    /** @brief Load game configuration file
-     *
-     * @param configfile const char* - Path to config xml file
-     * @return bool
-     *
-     * Overwrite previous configuration by loaded. First need to load global, second - local.
-     */
-    bool loadConfig(const char* configfile);
 
     /** @brief Init OGRE video engine configuration
      *

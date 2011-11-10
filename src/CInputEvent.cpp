@@ -24,17 +24,27 @@ CInputEvent::~CInputEvent()
 {
 }
 
-int CInputEvent::getId()
+int CInputEvent::id()
 {
     return m_Id;
 }
 
-float CInputEvent::getValue()
+float CInputEvent::value()
 {
     return m_Value;
 }
 
-void CInputEvent::setSensitivity(float sens)
+void CInputEvent::setSens(float sens)
 {
     m_Value = std::min(m_Value * sens, 1.0f);
+}
+
+CInputEvent::Type CInputEvent::type()
+{
+    return m_Type;
+}
+
+void CInputEvent::type(CInputEvent::Type type)
+{
+    m_Type = type;
 }

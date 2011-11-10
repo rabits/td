@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<td version="${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}">
+  <User>
+    <config>
+      <name>skeleton</name>
+      <control>
+        <nervs>
+          <nerv name="Up" id="10200" />
+          <nerv name="Down" id="10208" />
+          <nerv name="Left" id="10203" />
+          <nerv name="Right" id="10205" />
+          <nerv name="Escape" id="10001" />
+          <nerv name="space" id="10057" />
+          <nerv name="Return" id="10028" />
+        </nervs>
+        <mappings>
+          <mapping name="Game">
+            <action name="Up" nerv_id="10200" />
+            <action name="Down" nerv_id="10208" />
+            <action name="Left" nerv_id="10203" />
+            <action name="Right" nerv_id="10205" />
+            <action name="Back" nerv_id="10001" />
+            <action name="Yes" nerv_id="10028" />
+            <action name="No" nerv_id="10001" />
+            <action name="Exit" nerv_id="10001" />
+          </mapping>
+        </mappings>
+      </control>
+    </config>
+  </User>
+</td>
