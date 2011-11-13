@@ -22,7 +22,7 @@
 #include "btogre/BtOgreGP.h"
 #include "btogre/BtOgrePG.h"
 
-#include "CAction.h"
+#include "Nerv/CAction.h"
 
 class CWorld;
 class CGame;

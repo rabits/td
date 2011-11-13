@@ -1,5 +1,5 @@
 /**
- * @file    CInputEvent.h
+ * @file    CSignal.h
  * @date    2010-09-29T22:42:56+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
@@ -12,8 +12,8 @@
  *
  */
 
-#ifndef CINPUTEVENT_H
-#define CINPUTEVENT_H
+#ifndef CSIGNAL_H
+#define CSIGNAL_H
 
 #include "Common.h"
 
@@ -21,21 +21,23 @@
 
 /** @brief Unified event from controller (keyboard, mouse)
  */
-class CInputEvent
+class CSignal
 {
 public:
     /** @brief Constructor for float
      */
-    CInputEvent(int id, float value);
+    CSignal(unsigned int id, float value);
 
     /** @brief Destructor
      */
-    ~CInputEvent();
+    ~CSignal();
 
+    /** Signal type
+     */
     enum Type
     {
-        EVENT_ABSOLUTE, ///< from min to max (like button)
-        EVENT_RELATIVE  ///< relative state (like mouse)
+        SIGNAL_ABSOLUTE, ///< from min to max (like button)
+        SIGNAL_RELATIVE  ///< relative state (like mouse)
     };
 
     /** @brief Get Id of event
@@ -60,7 +62,7 @@ public:
 
     /** @brief Get type of value
      *
-     * @return Type - from CInputEvent::Type
+     * @return Type - from CSignal::Type
      */
     Type type();
 
@@ -71,11 +73,11 @@ public:
     void type(Type type);
 
 protected:
-    float  m_Id;    ///< Id
-    float  m_Value; ///< Value
-    Type   m_Type;  ///< Type of value
+    unsigned int m_Id;    ///< Id
+    float        m_Value; ///< Value
+    Type         m_Type;  ///< Type of value
 
 private:
 };
 
-#endif // CINPUTEVENT_H
+#endif // CSIGNAL_H

@@ -30,21 +30,21 @@ namespace fs = boost::filesystem3;
 
 // @todo Fix strange memory bug with this defines (notice-emerg). If its move from ifdef - will be produced sigfault...
 #ifdef CONFIG_DEBUG
-#   define log_debug(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_DEBUG, format, ##__VA_ARGS__)
-#   define log_info(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_INFO, format, ##__VA_ARGS__)
-#   define EXCEPTION(message)       Common::Exception(message, __FUNCTION__, __FILE__, __LINE__)
+#   define log_debug(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_DEBUG, format, ##__VA_ARGS__) ///< Debug log
+#   define log_info(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_INFO, format, ##__VA_ARGS__)  ///< Info log
+#   define EXCEPTION(message)       Common::Exception(message, __FUNCTION__, __FILE__, __LINE__)                ///< Hard exception
 #else
-#   define log_debug(format, ...)   /* not logged */
-#   define log_info(format, ...)    /* not logged */
-#   define EXCEPTION(message)       Common::Exception(message, __FUNCTION__)
+#   define log_debug(format, ...)   /* not logged */                         ///< Disabled Debug log
+#   define log_info(format, ...)    /* not logged */                         ///< Disabled Info log
+#   define EXCEPTION(message)       Common::Exception(message, __FUNCTION__) ///< Simple exception
 #endif
 
-#define log_notice(format, ...)  Common::CLog::log(Common::CLog::LogLevel::LOG_NOTICE, format, ##__VA_ARGS__)
-#define log_warn(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_WARN, format, ##__VA_ARGS__)
-#define log_error(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_ERROR, format, ##__VA_ARGS__)
-#define log_crit(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_CRIT, format, ##__VA_ARGS__)
-#define log_alert(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_ALERT, format, ##__VA_ARGS__)
-#define log_emerg(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_EMERG, format, ##__VA_ARGS__)
+#define log_notice(format, ...)  Common::CLog::log(Common::CLog::LogLevel::LOG_NOTICE, format, ##__VA_ARGS__) ///< Notice log
+#define log_warn(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_WARN, format, ##__VA_ARGS__)   ///< Warning log
+#define log_error(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_ERROR, format, ##__VA_ARGS__)  ///< Error log
+#define log_crit(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_CRIT, format, ##__VA_ARGS__)   ///< Critical log
+#define log_alert(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_ALERT, format, ##__VA_ARGS__)  ///< Alert log
+#define log_emerg(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_EMERG, format, ##__VA_ARGS__)  ///< Emergency log
 
 
 /** @brief Specialised and non-crossplatform functions
@@ -74,6 +74,7 @@ namespace Common
         /** @brief Log message
          *
          * @param level LogLevel - Level of message
+         * @param format const char* - format of message like prontf
          * @param ... - Message or printf format + parameters
          * @return bool - false, if level > 4
          *

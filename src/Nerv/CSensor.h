@@ -1,5 +1,5 @@
 /**
- * @file    CInputHandler.h
+ * @file    CSensor.h
  * @date    2010-09-29T22:42:56+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
@@ -12,19 +12,22 @@
  *
  */
 
-#ifndef CINPUTHANDLER_H
-#define CINPUTHANDLER_H
+#ifndef CSENSOR_H
+#define CSENSOR_H
 
 #include "Common.h"
 
 #include <OIS/OISForceFeedback.h>
 
 #include "CGame.h"
-#include "CInputEvent.h"
+#include "Nerv/CSignal.h"
+
+typedef std::map<unsigned int, CUser*> SigUser; ///< Signal->User map
+typedef std::map<OIS::Type, SigUser > SubUsers; ///< Device->SigUser map - maybe no-need...
 
 /** @brief Global input handler from user and routed it in need user
  */
-class CInputHandler : public OIS::KeyListener, public OIS::MouseListener, public OIS::JoyStickListener
+class CSensor : public OIS::KeyListener, public OIS::MouseListener, public OIS::JoyStickListener
 {
 public:
     /** @brief Constructor of global input handler
@@ -32,18 +35,18 @@ public:
      * @param windowHnd size_t
      *
      */
-    CInputHandler(size_t windowHnd);
+    CSensor(size_t windowHnd);
 
     /** @brief Copy constructor of global input handler
      *
-     * @param obj const CInputHandler&
+     * @param obj const CSensor&
      *
      */
-    CInputHandler(const CInputHandler &obj);
+    CSensor(const CSensor &obj);
 
     /** @brief Destructor
      */
-    ~CInputHandler();
+    ~CSensor();
 
 
     /** @brief Capture of events in mouse, keyboard or joystics
@@ -78,18 +81,16 @@ public:
 
     /** @brief Add subscribe on event with special id
      *
-     * @param device OIS::Type
-     * @param id int
-     * @param user CUser*
+     * @param id unsigned int
+     * @param pUser CUser*
      */
-    bool addSubscribe(OIS::Type device, int id, CUser* pUser);
+    bool addSubscribe(unsigned int id, CUser* pUser);
 
     /** @brief Delete subscribe on event
      *
-     * @param device OIS::Type
-     * @param id int
+     * @param id unsigned int
      */
-    bool delSubscribe(OIS::Type device, int id);
+    bool delSubscribe(unsigned int id);
 
 protected:
     /** @brief Function on keyboard key pressed event
@@ -181,8 +182,8 @@ protected:
 
     CGame*             m_pGame; ///< Link to game
 
-    std::map<OIS::Type, std::map<int, CUser*> > m_subscribedUsers; ///< Map of subscribed Users on need events. DeviceType->EventType->UserLink
+    SubUsers           m_subscribedUsers; ///< Map of subscribed Users to need signals. DeviceType->EventType->UserLink
 private:
 };
 
-#endif // CINPUTHANDLER_H
+#endif // CSENSOR_H

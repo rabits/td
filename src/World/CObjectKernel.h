@@ -17,7 +17,7 @@
 
 #include "Common.h"
 
-#include "CControlled.h"
+#include "Nerv/CControlled.h"
 #include "CObject.h"
 
 /** @brief Sphere - it is minimal bot and kernel of user
@@ -31,7 +31,6 @@
  */
 class CObjectKernel
     : public CObject
-    , CControlled
 {
 public:
     /** @brief Simple kernel constructor

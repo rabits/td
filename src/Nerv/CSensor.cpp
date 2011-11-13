@@ -1,5 +1,5 @@
 /**
- * @file    CInputHandler.cpp
+ * @file    CSensor.cpp
  * @date    2010-09-29T22:42:56+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
@@ -12,11 +12,11 @@
  *
  */
 
-#include "CInputHandler.h"
+#include "Nerv/CSensor.h"
 
 #include <string>
 
-CInputHandler::CInputHandler(size_t windowHnd)
+CSensor::CSensor(size_t windowHnd)
     : m_pInputManager()
     , m_pMouse()
     , m_pKeyboard()
@@ -42,7 +42,7 @@ CInputHandler::CInputHandler(size_t windowHnd)
 
     std::string deviceType[6] = {"OIS Unknown", "OIS Keyboard", "OIS Mouse", "OIS JoyStick", "OIS Tablet", "OIS Other"};
     OIS::DeviceList dlist = m_pInputManager->listFreeDevices();
-    for( OIS::DeviceList::iterator i = dlist.begin(); i != dlist.end(); ++i )
+    for( auto i = dlist.begin(); i != dlist.end(); ++i )
         log_info("\tFound device: %s,\tVendor: %s", deviceType[i->first].c_str(), i->second.c_str());
 
     m_pKeyboard = static_cast<OIS::Keyboard*>(m_pInputManager->createInputObject( OIS::OISKeyboard, true ));
@@ -68,7 +68,7 @@ CInputHandler::CInputHandler(size_t windowHnd)
                 log_info("\t\t\tVector3 (Not Used): %d", m_pJoyStick[i]->getNumberOfComponents(OIS::OIS_Vector3));
 
 #ifdef CONFIG_JOYSTICK_USE_FORCEFEEDBACK
-                // TODO: Use feedback code
+                // @todo: Use feedback code
 #endif //CONFIG_JOYSTICK_USE_FORCEFEEDBACK
             }
         }
@@ -79,13 +79,13 @@ CInputHandler::CInputHandler(size_t windowHnd)
     }
 
     // Preparing subscribers map
-    std::map<int, CUser*> nullmap;
+    std::map<unsigned int, CUser*> nullmap;
     m_subscribedUsers[OIS::OISKeyboard] = nullmap;
     m_subscribedUsers[OIS::OISMouse] = nullmap;
     m_subscribedUsers[OIS::OISJoyStick] = nullmap;
 }
 
-CInputHandler::~CInputHandler()
+CSensor::~CSensor()
 {
     m_pInputManager->destroyInputObject(m_pMouse);
     m_pInputManager->destroyInputObject(m_pKeyboard);
@@ -95,16 +95,16 @@ CInputHandler::~CInputHandler()
             m_pInputManager->destroyInputObject(m_pJoyStick[i]);
     }
 
-    for( std::map<OIS::Type, std::map<int, CUser*> >::iterator it = m_subscribedUsers.begin(); it != m_subscribedUsers.end(); it++ )
+    for( auto it = m_subscribedUsers.begin(); it != m_subscribedUsers.end(); it++ )
     {
-        for( std::map<int, CUser*>::iterator itu = it->second.begin(); itu != it->second.end(); itu++ )
-            log_notice("Found subscribe id#%d", itu->first);
+        for( auto itu = it->second.begin(); itu != it->second.end(); itu++ )
+            log_debug("Found subscribe id#%d", itu->first);
     }
 
     OIS::InputManager::destroyInputSystem(m_pInputManager);
 }
 
-void CInputHandler::capture()
+void CSensor::capture()
 {
     m_pKeyboard->capture();
     m_pMouse->capture();
@@ -115,36 +115,37 @@ void CInputHandler::capture()
     }
 }
 
-OIS::Mouse* CInputHandler::getMouse()
+OIS::Mouse* CSensor::getMouse()
 {
     return m_pMouse;
 }
 
-OIS::Keyboard* CInputHandler::getKeyboard()
+OIS::Keyboard* CSensor::getKeyboard()
 {
     return m_pKeyboard;
 }
 
-OIS::JoyStick* CInputHandler::getJoyStick(int joyId)
+OIS::JoyStick* CSensor::getJoyStick(int joyId)
 {
     if( joyId >= 0 && joyId < m_joysticsNum )
         return m_pJoyStick[joyId];
     else
         log_warn("Joystick with id#%d not present", joyId);
 
-    return NULL;            // WARNING! May return NULL if joystick not present!
+    return NULL;
 }
 
-bool CInputHandler::keyPressed( const OIS::KeyEvent &arg )
+bool CSensor::keyPressed( const OIS::KeyEvent &arg )
 {
     log_debug("Key pressed: %s (%d)", (static_cast<OIS::Keyboard*>(const_cast<OIS::Object*>(arg.device)))->getAsString(arg.key).c_str(), arg.key);
 
-    // Converting keyboard keypress to InputEvent
-    int id = OIS::OISKeyboard * 10000 + arg.key;
-    CInputEvent event(id, 1.0);
+    // Converting keyboard keypress to nerv Signal
+    unsigned int id = OIS::OISKeyboard * 10000 + arg.key;
+    CSignal sig(id, 1.0);
 
-//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
-//        (*m_pGame->m_oCurrentUser)->keyPressed(arg);
+    SigUser::iterator user = m_subscribedUsers[OIS::OISKeyboard].find(id);
+    if( user != m_subscribedUsers[OIS::OISKeyboard].end() )
+        user->second->nervSignal(sig);
 
     // @todo Move control of game to CGame object Actions
 
@@ -227,11 +228,7 @@ bool CInputHandler::keyPressed( const OIS::KeyEvent &arg )
     {
         Ogre::TextureManager::getSingleton().reloadAll();
     }
-    else if( arg.key == OIS::KC_SYSRQ )   // take a screenshot
-    {
-        m_pGame->getScreenshot();
-    }
-    else if( arg.key == OIS::KC_ESCAPE )
+    else if( arg.key == OIS::KC_Q )
     {
         m_pGame->exit();
     }
@@ -239,44 +236,40 @@ bool CInputHandler::keyPressed( const OIS::KeyEvent &arg )
     return true;
 }
 
-bool CInputHandler::keyReleased( const OIS::KeyEvent &arg )
+bool CSensor::keyReleased( const OIS::KeyEvent &arg )
 {
-//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
-//        (*m_pGame->m_oCurrentUser)->keyReleased(arg);
+    // @todo Realize Signal interface
 
     return true;
 }
 
-bool CInputHandler::mouseMoved( const OIS::MouseEvent &arg )
+bool CSensor::mouseMoved( const OIS::MouseEvent &arg )
 {
     log_debug("MouseMoved: Abs(%d,%d,%d) Rel(%d,%d,%d)", arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs
               , arg.state.X.rel, arg.state.Y.rel, arg.state.Z.rel);
 
-//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
-//        (*m_pGame->m_oCurrentUser)->mouseMoved(arg);
+    // @todo Realize Signal interface
 
     return true;
 }
 
-bool CInputHandler::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool CSensor::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
     log_debug("Mouse pressed #%d", id);
 
-//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
-//        (*m_pGame->m_oCurrentUser)->mousePressed(arg, id);
+    // @todo Realize Signal interface
 
     return true;
 }
 
-bool CInputHandler::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool CSensor::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
-//        (*m_pGame->m_oCurrentUser)->mouseReleased(arg, id);
+    // @todo Realize Signal interface
 
     return true;
 }
 
-bool CInputHandler::povMoved( const OIS::JoyStickEvent &arg, int pov )
+bool CSensor::povMoved( const OIS::JoyStickEvent &arg, int pov )
 {
     // Log
     std::string out = "";
@@ -292,48 +285,48 @@ bool CInputHandler::povMoved( const OIS::JoyStickEvent &arg, int pov )
         out += "Centered";
     log_debug("Joystick \"%s\" POV #%d moved: %s", arg.device->vendor().c_str(), pov, out.c_str());
 
-//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
-//        (*m_pGame->m_oCurrentUser)->povMoved(arg, pov);
+    // @todo Realize Signal interface
 
     return true;
 }
 
-bool CInputHandler::buttonPressed( const OIS::JoyStickEvent &arg, int button )
+bool CSensor::buttonPressed( const OIS::JoyStickEvent &arg, int button )
 {
     log_debug("Joystick \"%s\" button #%d pressed", arg.device->vendor().c_str(), button);
 
-//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
-//        (*m_pGame->m_oCurrentUser)->buttonPressed(arg, button);
+    // @todo Realize Signal interface
 
     return true;
 }
 
-bool CInputHandler::buttonReleased( const OIS::JoyStickEvent &arg, int button )
+bool CSensor::buttonReleased( const OIS::JoyStickEvent &arg, int button )
 {
-//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
-//        (*m_pGame->m_oCurrentUser)->buttonReleased(arg, button);
+    // @todo Realize Signal interface
 
     return true;
 }
 
-bool CInputHandler::axisMoved( const OIS::JoyStickEvent &arg, int axis )
+bool CSensor::axisMoved( const OIS::JoyStickEvent &arg, int axis )
 {
     log_debug("Joystick \"%s\" Axis #%d moved, Value: %d", arg.device->vendor().c_str(), axis, arg.state.mAxes[axis].abs);
 
-//    for( m_pGame->m_oCurrentUser = m_pGame->m_Users.begin() ; m_pGame->m_oCurrentUser < m_pGame->m_Users.end(); m_pGame->m_oCurrentUser++ )
-//        (*m_pGame->m_oCurrentUser)->axisMoved(arg, axis);
+    // @todo Realize Signal interface
 
     return true;
 }
 
-bool CInputHandler::addSubscribe(OIS::Type device, int id, CUser* pUser)
+bool CSensor::addSubscribe(unsigned int id, CUser* pUser)
 {
+    // @todo add recognize type of device by id
+    OIS::Type device = OIS::OISKeyboard;
     m_subscribedUsers[device][id] = pUser;
 
     return true;
 }
 
-bool CInputHandler::delSubscribe(OIS::Type device, int id)
+bool CSensor::delSubscribe(unsigned int id)
 {
+    // @todo add recognize type of device by id
+    OIS::Type device = OIS::OISKeyboard;
     m_subscribedUsers[device].erase(id);
 }

@@ -13,12 +13,12 @@
  */
 
 
-#include "CControlled.h"
+#include "Nerv/CControlled.h"
 
 CControlled::CControlled()
     : m_Actions()
+    , m_Id()
 {
-    //ctor
 }
 
 CControlled::~CControlled()
@@ -26,19 +26,17 @@ CControlled::~CControlled()
     //dtor
 }
 
-void CControlled::addAction(CAction* pAction)
+CAction* CControlled::getAction(const char *name)
 {
-    m_Actions.push_back(pAction);
-}
+    for( auto it = m_Actions.begin(); it != m_Actions.end(); it++ )
+        if( **it == name ) return *it;
 
-std::vector<CAction*>* CControlled::getActions()
-{
-    return &m_Actions;
+    return NULL;
 }
 
 void CControlled::clearActions()
 {
-    std::vector<CAction*>::iterator it = m_Actions.begin();
+    auto it = m_Actions.begin();
     for( ; it != m_Actions.end(); it++ )
         delete *it;
     m_Actions.clear();

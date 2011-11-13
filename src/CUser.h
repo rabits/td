@@ -19,14 +19,14 @@
 
 #include <OGRE/Ogre.h>
 
-#include "CControlled.h"
-#include "CInputEvent.h"
+#include "Nerv/CControlled.h"
+#include "Nerv/CSignal.h"
 #include "CData.h"
 #include "CWorld.h"
 
-typedef std::multimap<int, std::string> NervMap;
-typedef std::map<std::string, NervMap> NervMaps;
-typedef std::multimap<int, std::string> Nervs;
+typedef std::multimap<unsigned int, CAction const*> NervMap; ///< SignalId->Action multimap
+typedef std::map<std::string, NervMap> NervMaps; ///< Name->NervMap map
+typedef std::map<unsigned int, std::string> Nervs; ///< Nervs of current user (for unsubscribe and list)
 
 /** @brief Self user
  *
@@ -89,40 +89,40 @@ public:
      * @param name const char* - name of nerv
      * @param id int - id of need event
      */
-    void addNerv(const char* name, int id);
+    void addNerv(const char* name, unsigned int id);
 
     /** @brief Remove nerv with specified id
      *
      * @param id int - id of nerv
      */
-    void delNerv(int id);
+    void delNerv(unsigned int id);
 
     /** @brief Select current nerv map
      *
-     * @return NervMap*
+     * @return NervMaps::iterator*
      */
-    NervMap* currentNervMap(){ return m_pCurrentNervMap; }
+    NervMap* currentNervMap(){ return &m_NervMaps[m_CurrentNervMap.c_str()]; }
 
     /** @brief Select or create new nerv map with specified name
      *
      * @param name const char* - name of map
-     * @return NervMap*
+     * @return NervMaps::iterator*
      */
-    NervMap* currentNervMap(const char* name);
+    NervMap* currentNervMap(const char* name){ m_CurrentNervMap = name; return &m_NervMaps[name]; }
 
     /** @brief Map nerv to action in selected nerv map
      *
      * @param nerv_id int - nerv identificator
      * @param action CAction* - action of need object
      */
-    void setNervMapping(int nerv_id, CAction* action);
+    void setNervMapping(unsigned int nerv_id, CAction const* action);
 
-    /** @brief Recieve, modify and route to controlled object signal from InputHandler
+    /** @brief Recieve, modify and route to controlled object signal from Sensor
      *
-     * @param event CInputEvent& - input event from human
+     * @param sig CSignal& - input event from human
      * @return bool
      */
-    bool nervSignal(CInputEvent& event);
+    bool nervSignal(CSignal& sig);
 
 
     /** @brief Set object, which will be controlled
@@ -153,13 +153,17 @@ public:
      */
     std::string& name(){ return m_Name; }
 
+    /** @brief Saving user configs and state
+     */
+    void save();
+
 protected:
     std::string                        m_Name; ///< User name
     CWorld*                            m_pWorld; ///< User's world
 
     Nervs                              m_Nervs; ///< Subscribed events
     NervMaps                           m_NervMaps; ///< Lists with mappings of nervs to actions
-    NervMap*                           m_pCurrentNervMap; ///< Current selected map
+    std::string                        m_CurrentNervMap; ///< Current selected map
 
     CControlled*                       m_pControlledObject; ///< Object under control
 

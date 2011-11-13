@@ -29,7 +29,7 @@
 
 #include "CUser.h"
 
-class CInputHandler;
+class CSensor;
 
 /** @brief Provides all game.
  */
@@ -38,13 +38,13 @@ class CGame
     , Ogre::FrameListener
     , Ogre::WindowEventListener
     , OgreBites::SdkTrayListener
+    , public CControlled
 {
 public:
     ~CGame();
 
     /** @brief Create and get current instance of game
      *
-     * @param bindir const wchar_t* - Full path to binary directory (default is NULL)
      * @return CGame*
      *
      */
@@ -69,19 +69,6 @@ public:
      *
      * @return bool
      *
-     * Loading env
-     * Loading global config
-     * Loading user config
-     * Create root object of Ogre
-     * Load config of resources
-     * Initialise root object of Ogre
-     * Create render window
-     * Choising screen manager
-     * Creating main camera
-     * Creating viewport
-     * Load resources
-     * Create frame listener
-     * Create worlds
      */
     bool initialise();
 
@@ -129,27 +116,34 @@ public:
      */
     const char* path(const char* name){ return m_data.child("path").child_value(name); }
 
+    /** @brief Doing need actions
+     *
+     * @see CControlled::doAction()
+     */
+    void doAction(char act, CSignal& sig);
+
+    /** @brief Returns current input handler
+     *
+     * @return CSensor*
+     */
+    CSensor* inputHandler(){ return m_pInputHandler; }
+
 
     Ogre::SceneManager*                     m_pSceneMgr; ///< Scene Manager object
     Ogre::Camera*                           m_pCamera; ///< Main camera
-    Ogre::RenderWindow*                     m_pWindow; ///< Main window
-
-    CInputHandler*                          m_pInputHandler; ///< Input Handler object
 
     OgreBites::SdkTrayManager*              m_pTrayMgr; ///< Tray Manager object
     OgreBites::ParamsPanel*                 m_pDetailsPanel; ///< Sample details panel
 
-    CUser*                                  m_pMainUser; ///< Link to main user
-    std::vector<CUser*>                     m_Users; ///< Users list
-    std::vector<CUser*>::iterator           m_oCurrentUser; ///< Current processing user
-
     std::vector<CWorld*>::iterator          m_oCurrentWorld; ///< Current processing world
 
 private:
-    static CGame*                           m_pInstance; ///< Instance of game
-    static fs::path*                        m_pPrefix; ///< Current prefix directory
+    /** @brief Adding actions of Game
+     *
+     * @see CControlled::registerActions()
+     */
+    void registerActions();
 
-protected:
     /** @brief Creating one instance of object
      */
     CGame();
@@ -157,8 +151,6 @@ protected:
     /** @brief Fake copy constructor
      */
     CGame(const CGame &obj);
-
-    std::vector<CWorld*>                    m_Worlds; ///< Worlds list
 
     /** @brief Preparing env variables
      *
@@ -258,13 +250,26 @@ protected:
      */
     void windowClosed(Ogre::RenderWindow* rw);
 
+    static CGame*                           m_pInstance; ///< Instance of game
+    static fs::path*                        m_pPrefix; ///< Current prefix directory
+
+    CSensor*                                m_pInputHandler; ///< Input Handler object
+    Ogre::RenderWindow*                     m_pWindow; ///< Main window
+
     Ogre::Root*                             m_pRoot; ///< Root Ogre object
     Ogre::LogManager*                       m_pLogManager; ///< Log manager for replacement OGRE default logger
     Ogre::Timer*                            m_pTimer; ///< Game timer for restriction of frame rendering speed
     unsigned long                           m_NextFrameTime; ///< Render next frame in this time (microseconds)
 
+    std::vector<CWorld*>                    m_Worlds; ///< Worlds list
+
+    CUser*                                  m_pMainUser; ///< Link to main user
+    std::vector<CUser*>                     m_Users; ///< Users list
+    std::vector<CUser*>::iterator           m_oCurrentUser; ///< Current processing user
+
     bool                                    m_ShutDown; ///< Game need to stop
 
+protected:
 };
 
 #endif // CGAME_H_INCLUDED

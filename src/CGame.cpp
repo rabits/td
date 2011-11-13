@@ -25,7 +25,7 @@
  */
 
 #include "CGame.h"
-#include "CInputHandler.h"
+#include "Nerv/CSensor.h"
 
 #include <algorithm>
 
@@ -225,7 +225,7 @@ bool CGame::initOgre()
     }
 
     log_info("Loading render engine and init video");
-    Ogre::RenderSystemList::const_iterator render_system = m_pRoot->getAvailableRenderers().begin();
+    auto render_system = m_pRoot->getAvailableRenderers().begin();
     m_pRoot->setRenderSystem(*render_system);
     m_pRoot->initialise(false);
 
@@ -233,9 +233,9 @@ bool CGame::initOgre()
 
 #ifdef CONFIG_DEBUG
     log_debug("Available options:");
-    for( Ogre::ConfigOptionMap::const_iterator it = possible_configs.begin(); it != possible_configs.end(); it++ )
+    for( auto it = possible_configs.begin(); it != possible_configs.end(); it++ )
     {
-        Ogre::StringVector::const_iterator itp = it->second.possibleValues.begin();
+        auto itp = it->second.possibleValues.begin();
         std::string possible_values("'" + *itp++ + "'");
         for( ; itp != it->second.possibleValues.end(); itp++ )
             possible_values += ",'" + *itp + "'";
@@ -265,7 +265,7 @@ bool CGame::initOgre()
     pugi::xml_node ogre_misc = ogre_engine.child("misc");
     if( ogre_misc )
     {
-        for( Ogre::ConfigOptionMap::const_iterator it = possible_configs.begin(); it != possible_configs.end(); it++ )
+        for( auto it = possible_configs.begin(); it != possible_configs.end(); it++ )
         {
             if( it->first.compare("Video Mode") || it->first.compare("Full Screen") )
                 continue;
@@ -297,7 +297,7 @@ bool CGame::initOgre()
     if( ogre_config.child("plugins").child("plugin") )
     {
         pugi::xml_node plugins = ogre_config.child("plugins");
-        for (pugi::xml_node_iterator plugin = plugins.begin(); plugin != plugins.end(); plugin++)
+        for( auto plugin = plugins.begin(); plugin != plugins.end(); plugin++ )
         {
             if( plugin->attribute("value") )
             {
@@ -318,10 +318,10 @@ bool CGame::initOgre()
     fs::path ogre_resource_location;
     if( ogre_resources )
     {
-        for (pugi::xml_node_iterator rg = ogre_resources.begin(); rg != ogre_resources.end(); rg++)
+        for( auto rg = ogre_resources.begin(); rg != ogre_resources.end(); rg++ )
         {
             log_info("\tGroup \"%s\"", rg->name());
-            for (pugi::xml_node_iterator res = rg->begin(); res != rg->end(); res++)
+            for( auto res = rg->begin(); res != rg->end(); res++ )
             {
                 if( res->attribute("value") )
                 {
@@ -373,7 +373,7 @@ bool CGame::initOIS()
     // Create Input handler
     size_t windowHnd = 0;
     m_pWindow->getCustomAttribute("WINDOW", &windowHnd);
-    m_pInputHandler = new CInputHandler(windowHnd);
+    m_pInputHandler = new CSensor(windowHnd);
 
     //Set initial mouse clipping size
     windowResized(m_pWindow);
@@ -405,9 +405,6 @@ bool CGame::initGame()
     m_pCamera->lookAt(Ogre::Vector3(0.0,50.0,0.0));
     m_pCamera->setNearClipDistance(0.01f);
 
-    // Create a default camera controller
-    //m_Users.push_back(new CUser(m_pCamera));
-
     log_info("Creating viewport");
     // Create one viewport, entire window
     Ogre::Viewport* vp = m_pWindow->addViewport(m_pCamera);
@@ -422,6 +419,13 @@ bool CGame::initGame()
     // Create worlds
     log_info("Creating worlds");
     m_Worlds.push_back(new CWorld());
+
+    // Registering actions
+    registerActions();
+
+    // Create users after all game initialised - used game actions
+    m_pMainUser = new CUser();
+    m_Users.push_back(m_pMainUser);
 
     return true;
 }
@@ -559,4 +563,29 @@ void CGame::windowClosed(Ogre::RenderWindow* rw)
     // Only close for window that created OIS
     if( (rw == m_pWindow) && m_pInputHandler != NULL )
         delete m_pInputHandler;
+}
+
+void CGame::registerActions()
+{
+    addAction('e', "Exit");
+    addAction('s', "ScreenShot");
+    //addAction("Up");
+    //addAction("Down");
+    //addAction("Left");
+    //addAction("Right");
+    //addAction("Yes");
+    //addAction("No");
+}
+
+void CGame::doAction(char act, CSignal& sig)
+{
+    switch(act){
+    case 'e':
+        log_debug("Exit action");
+        exit();
+        break;
+    case 's':
+        log_debug("ScreenShot action");
+        getScreenshot();
+    }
 }

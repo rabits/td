@@ -15,14 +15,13 @@
 #define CEYE_H
 
 #include <OGRE/Ogre.h>
-#include "CControlled.h"
+#include "Nerv/CControlled.h"
 
 /** @brief It is invisible camera controller
  *
  * Container for camera for connection to controll set
  */
 class CEye
-    : public CControlled
 {
 public:
     /** @brief Constructor

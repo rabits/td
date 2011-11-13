@@ -1,5 +1,5 @@
 /**
- * @file    CInputEvent.cpp
+ * @file    CSignal.cpp
  * @date    2010-09-29T22:42:56+0400
  *
  * @author  Rabits <home.rabits@gmail.com>
@@ -12,39 +12,39 @@
  *
  */
 
-#include "CInputEvent.h"
+#include "Nerv/CSignal.h"
 
-CInputEvent::CInputEvent(int id, float value)
+CSignal::CSignal(unsigned int id, float value)
     : m_Id(id)
     , m_Value(value)
 {
 }
 
-CInputEvent::~CInputEvent()
+CSignal::~CSignal()
 {
 }
 
-int CInputEvent::id()
+int CSignal::id()
 {
     return m_Id;
 }
 
-float CInputEvent::value()
+float CSignal::value()
 {
     return m_Value;
 }
 
-void CInputEvent::setSens(float sens)
+void CSignal::setSens(float sens)
 {
     m_Value = std::min(m_Value * sens, 1.0f);
 }
 
-CInputEvent::Type CInputEvent::type()
+CSignal::Type CSignal::type()
 {
     return m_Type;
 }
 
-void CInputEvent::type(CInputEvent::Type type)
+void CSignal::type(CSignal::Type type)
 {
     m_Type = type;
 }
