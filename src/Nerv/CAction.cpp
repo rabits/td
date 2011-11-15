@@ -23,11 +23,6 @@ CAction::CAction(CControlled* obj, char act, const char* name)
     //ctor
 }
 
-CAction::CAction(const CAction& obj)
-{
-    *this = obj;
-}
-
 CAction::~CAction()
 {
     //dtor
@@ -37,14 +32,4 @@ void CAction::action(CSignal& sig) const
 {
     log_debug("ACTION %s: doing signal", m_Name.c_str());
     m_pObject->doAction(m_Action, sig);
-}
-
-CAction& CAction::operator=(const CAction &obj)
-{
-    log_warn("ok");
-    m_Name = obj.m_Name;
-    m_pObject = obj.m_pObject;
-    m_Action = obj.m_Action;
-
-    return *this;
 }

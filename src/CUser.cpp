@@ -66,7 +66,7 @@ void CUser::init(const char* data_file)
     if( nervs )
     {
         for( auto nerv = nervs.begin(); nerv != nervs.end(); nerv++ )
-            addNerv(nerv->attribute("name").value(), nerv->attribute("id").as_int());
+            addNerv(nerv->attribute("name").value(), static_cast<unsigned int>(nerv->attribute("id").as_int()));
     }
     else
         log_warn("Not found nervs for user %s", m_Name.c_str());
@@ -86,7 +86,7 @@ void CUser::init(const char* data_file)
                 if( act != NULL )
                 {
                     log_debug("\tmapping %d->%s", action->attribute("id").as_int(), act->name());
-                    setNervMapping(action->attribute("id").as_int(), act);
+                    setNervMapping(static_cast<unsigned int>(action->attribute("id").as_int()), act);
                 }
                 else
                     log_warn("\tnot found action %s", action->attribute("name").value());
@@ -133,4 +133,5 @@ void CUser::setNervMapping(unsigned int nerv_id, CAction const* action)
 
 void CUser::save()
 {
+    // @todo Realize this function
 }

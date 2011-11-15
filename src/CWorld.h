@@ -33,13 +33,6 @@ class CWorld
     : CObject
 {
 public:
-    /** @brief Copy constructor
-     *
-     * @param obj const CWorld&
-     *
-     */
-    CWorld(const CWorld &obj);
-
     /** @brief Constructor
      *
      * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
@@ -90,6 +83,17 @@ private:
     btDefaultCollisionConfiguration*      m_pCollisionConfig; ///< Bullet collision config
     btCollisionDispatcher*                m_pDispatcher;      ///< Bullet dispatcher
     btSequentialImpulseConstraintSolver*  m_pSolver;          ///< Bullet solver
+
+    /** @brief Fake copy constructor
+     *
+     * @param obj
+     */
+    CWorld(const CWorld& obj);
+    /** @brief Fake eq operator
+     *
+     * @param obj
+     */
+    CWorld& operator=(const CWorld& obj);
 };
 
 #endif // CWORLD_H_INCLUDED

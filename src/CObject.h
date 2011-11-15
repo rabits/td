@@ -36,13 +36,6 @@ public:
      */
     CObject();
 
-    /** @brief Copy constructor of object
-     *
-     * @param obj const CObject&
-     *
-     */
-    CObject(const CObject &obj);
-
     /** @brief Destructor of object
      */
     virtual ~CObject();
@@ -142,6 +135,18 @@ protected:
     btCollisionShape*                    m_pShape;   ///< Shape of collision
     btScalar                             m_Mass;     ///< Mass of object
     BtOgre::RigidBodyState*              m_pState;   ///< Rigid body state
+
+private:
+    /** @brief Fake copy constructor
+     *
+     * @param obj
+     */
+    CObject(const CObject& obj);
+    /** @brief Fake eq operator
+     *
+     * @param obj
+     */
+    CObject& operator=(const CObject& obj);
 };
 
 

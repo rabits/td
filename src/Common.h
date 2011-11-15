@@ -74,7 +74,7 @@ namespace Common
         /** @brief Log message
          *
          * @param level LogLevel - Level of message
-         * @param format const char* - format of message like prontf
+         * @param format const char* - format of message like printf
          * @param ... - Message or printf format + parameters
          * @return bool - false, if level > 4
          *
@@ -189,12 +189,11 @@ namespace Common
             char** symbols = backtrace_symbols(array, nSize);
 
             for (int i = 0; i < nSize; i++)
-            {
                 std::cout << symbols[i] << std::endl;
-            }
 
             free(symbols);
         }
+        virtual ~ExceptionTracer() throw() {}
     };
 
     /** @brief Template of SignalExceptions

@@ -42,10 +42,10 @@ public:
 
     /** @brief Get Id of event
      *
-     * @return int
+     * @return unsigned int
      *
      */
-    int id();
+    unsigned int id();
 
     /** @brief Get Value of event
      *

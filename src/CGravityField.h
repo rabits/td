@@ -35,13 +35,6 @@ public:
      */
     CGravityElement(btVector3* box, btVector3* position, btVector3* force);
 
-    /** @brief Copy constructor of gravity element
-     *
-     * @param obj const CGravityElement&
-     *
-     */
-    CGravityElement(const CGravityElement &obj);
-
     /** @brief Destructor, cleaner of element
     */
     ~CGravityElement();
@@ -61,6 +54,17 @@ public:
 
 private:
     ElementStatus                 m_status; ///< Current element status
+
+    /** @brief Fake copy constructor
+     *
+     * @param obj
+     */
+    CGravityElement(const CGravityElement& obj);
+    /** @brief Fake eq operator
+     *
+     * @param obj
+     */
+    CGravityElement& operator=(const CGravityElement& obj);
 };
 
     /** @brief Global collection of invisible boxes with gravity vector
@@ -75,13 +79,6 @@ public:
      *
      */
     CGravityField(CWorld* world, float gravityValue);
-
-    /** @brief Copy constructor of gravity field
-     *
-     * @param obj const CGravityField&
-     *
-     */
-    CGravityField(const CGravityField &obj);
 
     /** @brief Destructor of field
      */
@@ -198,6 +195,17 @@ private:
     CWorld*                                     m_pWorld; ///< Linked world object
 
     float                                       m_GravityValue; ///< Force of gravity in field
+
+    /** @brief Fake copy constructor
+     *
+     * @param obj
+     */
+    CGravityField(const CGravityField& obj);
+    /** @brief Fake eq operator
+     *
+     * @param obj
+     */
+    CGravityField& operator=(const CGravityField& obj);
 };
 
 #endif // CGRAVITYFIELD_H_INCLUDED

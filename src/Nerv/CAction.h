@@ -32,12 +32,6 @@ public:
      * @param name const char* - Readable name of action
      */
     CAction(CControlled* obj, char act, const char* name);
-
-    /** @brief copy constructor
-     *
-     * @param obj
-     */
-    CAction(const CAction& obj);
     ~CAction();
 
     /** @brief Do attached action
@@ -59,6 +53,13 @@ public:
      */
     bool operator==(const char* name){ return m_Name.compare(name) == 0; }
 
+protected:
+private:
+    /** @brief copy constructor
+     *
+     * @param obj
+     */
+    CAction(const CAction& obj);
     /** @brief Copy operator
      *
      * @param obj const CAction&
@@ -66,8 +67,6 @@ public:
      */
     CAction& operator=(const CAction& obj);
 
-protected:
-private:
     std::string        m_Name;     ///< Name of action
     CControlled*       m_pObject;  ///< Controlled object
 

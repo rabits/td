@@ -151,6 +151,11 @@ private:
     /** @brief Fake copy constructor
      */
     CGame(const CGame &obj);
+    /** @brief Fake eq operator
+     *
+     * @param obj
+     */
+    CGame& operator=(const CGame& obj);
 
     /** @brief Preparing env variables
      *

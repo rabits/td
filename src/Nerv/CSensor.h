@@ -37,13 +37,6 @@ public:
      */
     CSensor(size_t windowHnd);
 
-    /** @brief Copy constructor of global input handler
-     *
-     * @param obj const CSensor&
-     *
-     */
-    CSensor(const CSensor &obj);
-
     /** @brief Destructor
      */
     ~CSensor();
@@ -183,7 +176,18 @@ protected:
     CGame*             m_pGame; ///< Link to game
 
     SubUsers           m_subscribedUsers; ///< Map of subscribed Users to need signals. DeviceType->EventType->UserLink
+
 private:
+    /** @brief Fake copy constructor
+     *
+     * @param obj
+     */
+    CSensor(const CSensor& obj);
+    /** @brief Fake eq operator
+     *
+     * @param obj
+     */
+    CSensor& operator=(const CSensor& obj);
 };
 
 #endif // CSENSOR_H

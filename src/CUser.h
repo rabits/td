@@ -44,13 +44,6 @@ public:
      */
     CUser(const char* data_file);
 
-    /** @brief Copy constructor of user
-     *
-     * @param obj const CUser&
-     *
-     */
-    CUser(const CUser &obj);
-
     /** @brief Destructor of user
      */
     ~CUser();
@@ -168,6 +161,16 @@ protected:
     CControlled*                       m_pControlledObject; ///< Object under control
 
 private:
+    /** @brief Fake copy constructor
+     *
+     * @param obj
+     */
+    CUser(const CUser& obj);
+    /** @brief Fake eq operator
+     *
+     * @param obj
+     */
+    CUser& operator=(const CUser& obj);
 };
 
 #endif // CUSER_H

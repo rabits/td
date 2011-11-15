@@ -28,13 +28,6 @@ public:
      */
     CEye(Ogre::Camera* camera);
 
-    /** @brief Copy constructor
-     *
-     * @param obj const CEye&
-     *
-     */
-    CEye(const CEye &obj);
-
     /** @brief Destructor
      */
     virtual ~CEye();
@@ -177,7 +170,19 @@ protected:
     bool m_goingUp;
     bool m_goingDown;
     bool m_fastMove;
+
 private:
+    /** @brief Copy constructor
+     *
+     * @param obj const CEye&
+     *
+     */
+    CEye(const CEye &obj);
+    /** @brief Fake eq operator
+     *
+     * @param obj
+     */
+    CEye& operator=(const CEye& obj);
 };
 
 #endif // CEYE_H

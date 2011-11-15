@@ -17,6 +17,7 @@
 CSignal::CSignal(unsigned int id, float value)
     : m_Id(id)
     , m_Value(value)
+    , m_Type()
 {
 }
 
@@ -24,7 +25,7 @@ CSignal::~CSignal()
 {
 }
 
-int CSignal::id()
+unsigned int CSignal::id()
 {
     return m_Id;
 }

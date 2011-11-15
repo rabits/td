@@ -23,6 +23,7 @@ CSensor::CSensor(size_t windowHnd)
     , m_pJoyStick()
     , m_joysticsNum()
     , m_pGame(CGame::getInstance())
+    , m_subscribedUsers()
 {
     OIS::ParamList pl;
     std::ostringstream windowHndStr;
@@ -329,4 +330,6 @@ bool CSensor::delSubscribe(unsigned int id)
     // @todo add recognize type of device by id
     OIS::Type device = OIS::OISKeyboard;
     m_subscribedUsers[device].erase(id);
+
+    return true;
 }

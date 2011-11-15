@@ -17,9 +17,9 @@
 #include "CGame.h"
 
 CObject::CObject()
-    : m_HasChild(false)
+    : m_pNode()
+    , m_HasChild(false)
     , m_ObjectName()
-    , m_pNode()
     , m_Childrens()
     , m_itChildrens()
     , m_pParent()
