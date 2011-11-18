@@ -86,12 +86,16 @@ private:
 
     /** @brief Fake copy constructor
      *
-     * @param obj
+     * @param obj const CWorld&
+     *
+     * @todo create copy constructor
      */
     CWorld(const CWorld& obj);
     /** @brief Fake eq operator
      *
-     * @param obj
+     * @param obj const CWorld&
+     *
+     * @toto create eq copy operator
      */
     CWorld& operator=(const CWorld& obj);
 };

@@ -150,11 +150,17 @@ private:
     CGame();
 
     /** @brief Fake copy constructor
+     *
+     * @param obj const CGame&
+     *
+     * @todo create copy constructor
      */
-    CGame(const CGame &obj);
+    CGame(const CGame& obj);
     /** @brief Fake eq operator
      *
-     * @param obj
+     * @param obj const CGame&
+     *
+     * @toto create eq copy operator
      */
     CGame& operator=(const CGame& obj);
 

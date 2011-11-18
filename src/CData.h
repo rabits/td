@@ -74,11 +74,15 @@ private:
     /** @brief Fake copy constructor
      *
      * @param obj
+     *
+     * @todo create copy constructor
      */
     CData(const CData& obj);
     /** @brief Fake eq operator
      *
      * @param obj
+     *
+     * @toto create eq copy operator
      */
     CData& operator=(const CData& obj);
 };

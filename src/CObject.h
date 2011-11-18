@@ -139,12 +139,16 @@ protected:
 private:
     /** @brief Fake copy constructor
      *
-     * @param obj
+     * @param obj const CObject&
+     *
+     * @todo create copy constructor
      */
     CObject(const CObject& obj);
     /** @brief Fake eq operator
      *
-     * @param obj
+     * @param obj const CObject&
+     *
+     * @toto create eq copy operator
      */
     CObject& operator=(const CObject& obj);
 };

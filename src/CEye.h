@@ -171,15 +171,19 @@ protected:
     bool m_fastMove;
 
 private:
-    /** @brief Copy constructor
+    /** @brief Fake copy constructor
      *
      * @param obj const CEye&
      *
+     * @todo create copy constructor
+     *
      */
-    CEye(const CEye &obj);
+    CEye(const CEye& obj);
     /** @brief Fake eq operator
      *
-     * @param obj
+     * @param obj const CEye&
+     *
+     * @toto create eq copy operator
      */
     CEye& operator=(const CEye& obj);
 };

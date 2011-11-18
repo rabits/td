@@ -57,12 +57,16 @@ private:
 
     /** @brief Fake copy constructor
      *
-     * @param obj
+     * @param obj const CGravityElement&
+     *
+     * @todo create copy constructor
      */
     CGravityElement(const CGravityElement& obj);
     /** @brief Fake eq operator
      *
-     * @param obj
+     * @param obj const CGravityElement&
+     *
+     * @toto create eq copy operator
      */
     CGravityElement& operator=(const CGravityElement& obj);
 };
@@ -198,12 +202,16 @@ private:
 
     /** @brief Fake copy constructor
      *
-     * @param obj
+     * @param obj const CGravityField&
+     *
+     * @todo create copy constructor
      */
     CGravityField(const CGravityField& obj);
     /** @brief Fake eq operator
      *
-     * @param obj
+     * @param obj const CGravityField&
+     *
+     * @toto create eq copy operator
      */
     CGravityField& operator=(const CGravityField& obj);
 };

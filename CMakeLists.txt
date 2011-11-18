@@ -33,7 +33,7 @@ if(${PKG_CONFIG_FOUND})
     pkg_check_modules(OIS OIS>=1.3.0)
     pkg_check_modules(BULLET bullet>=2.79)
     find_package( Boost 1.46.1 COMPONENTS filesystem system )
-    find_package( Gettext REQUIRED )
+    find_package( Gettext )
 else()
     message(FATAL_ERROR "pkg-config NOT FOUND")
 endif()
@@ -194,10 +194,14 @@ add_custom_target( translate ALL DEPENDS
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
 # Update template
+file( GLOB_RECURSE XGETTEXT_CPP "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" )
+file( GLOB_RECURSE XGETTEXT_H "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h" )
+set( XGETTEXT_SRCS "${XGETTEXT_CPP};${XGETTEXT_H}" )
+
 set(GETTEXT_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/locale/main.pot)
 find_program( XGETTEXT_EXEC "xgettext" )
 if( XGETTEXT_EXEC )
-    string( REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" XGETTEXT_SRCS "${td_SRCS}" )
+    string( REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" XGETTEXT_SRCS "${XGETTEXT_SRCS}" )
     add_custom_command( TARGET translate
         COMMAND ${XGETTEXT_EXEC} --directory ${CMAKE_CURRENT_SOURCE_DIR} --join-existing --omit-header --copyright-holder "2011, ${CONFIG_TD_FULLNAME} project" --add-comments=/// -k_ --from-code=UTF-8 --c++ --default-domain ${CONFIG_TD_NAME} --package-name ${CONFIG_TD_NAME} --package-version ${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH} --output ${GETTEXT_TEMPLATE} ${XGETTEXT_SRCS}
         COMMENT "Generating gettext template based on source" VERBATIM )

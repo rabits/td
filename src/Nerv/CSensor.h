@@ -180,12 +180,16 @@ protected:
 private:
     /** @brief Fake copy constructor
      *
-     * @param obj
+     * @param obj const CSensor&
+     *
+     * @todo create copy constructor
      */
     CSensor(const CSensor& obj);
     /** @brief Fake eq operator
      *
-     * @param obj
+     * @param obj const CSensor&
+     *
+     * @toto create eq copy operator
      */
     CSensor& operator=(const CSensor& obj);
 };
