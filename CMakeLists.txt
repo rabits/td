@@ -33,6 +33,7 @@ if(${PKG_CONFIG_FOUND})
     pkg_check_modules(OIS OIS>=1.3.0)
     pkg_check_modules(BULLET bullet>=2.79)
     find_package( Boost 1.46.1 COMPONENTS filesystem system )
+    find_package( Gettext REQUIRED )
 else()
     message(FATAL_ERROR "pkg-config NOT FOUND")
 endif()
@@ -59,8 +60,12 @@ if(NOT Boost_FILESYSTEM_FOUND)
     message("Boost filesystem NOT FOUND")
 endif()
 
-if(NOT (OGRE_FOUND AND OIS_FOUND AND BULLET_FOUND AND Boost_SYSTEM_FOUND AND Boost_FILESYSTEM_FOUND))
-    message(FATAL_ERROR "Error: some libraries not found")
+if(NOT GETTEXT_FOUND)
+    message("Gettext tools and libs NOT FOUND")
+endif()
+
+if(NOT (OGRE_FOUND AND OIS_FOUND AND BULLET_FOUND AND Boost_SYSTEM_FOUND AND Boost_FILESYSTEM_FOUND AND GETTEXT_FOUND))
+    message(FATAL_ERROR "Error: some need libraries not found")
 endif()
 
 #
@@ -168,27 +173,51 @@ add_executable(${CONFIG_TD_NAME} ${td_SRCS})
 add_definitions( -std=c++0x -Wall )
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions( -Wextra -Weffc++ -Woverloaded-virtual -Wctor-dtor-privacy -Wnon-virtual-dtor -Wold-style-cast -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code -O2 -g )
-    find_program( CPPCHECK_EXEC "cppcheck" )
 else()
     add_definitions( -s -O2 -DNDEBUG )
+    find_program( CPPCHECK_EXEC "cppcheck" )
 endif()
-
-#
-# Adding subdirs
-#
-
-#add_subdirectory(src)
-#add_subdirectory(include)
 
 #
 # Writing config files
 #
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config/config.h)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/config.xml.in ${CMAKE_CURRENT_BINARY_DIR}/config/config.xml)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_in/user.xml.in ${CMAKE_CURRENT_BINARY_DIR}/config/user.xml)
+
+#
+# Locale generating
+#
+
+add_custom_target( translate ALL DEPENDS
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+
+# Update template
+set(GETTEXT_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/locale/main.pot)
+find_program( XGETTEXT_EXEC "xgettext" )
+if( XGETTEXT_EXEC )
+    string( REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" XGETTEXT_SRCS "${td_SRCS}" )
+    add_custom_command( TARGET translate
+        COMMAND ${XGETTEXT_EXEC} --directory ${CMAKE_CURRENT_SOURCE_DIR} --join-existing --omit-header --copyright-holder "2011, ${CONFIG_TD_FULLNAME} project" --add-comments=/// -k_ --from-code=UTF-8 --c++ --default-domain ${CONFIG_TD_NAME} --package-name ${CONFIG_TD_NAME} --package-version ${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH} --output ${GETTEXT_TEMPLATE} ${XGETTEXT_SRCS}
+        COMMENT "Generating gettext template based on source" VERBATIM )
+endif()
+
+# Updating po files from template
+# Generating mo files from po files
+file( MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale )
+file( GLOB_RECURSE GETTEXT_po_files ${CMAKE_CURRENT_SOURCE_DIR}/locale/*.po )
+foreach( po_file ${GETTEXT_po_files} )
+    get_filename_component( lang ${po_file} NAME_WE )
+    set( mo_file ${CMAKE_CURRENT_BINARY_DIR}/locale/${lang}.mo )
+    add_custom_command( TARGET translate
+        COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} --directory ${CMAKE_CURRENT_SOURCE_DIR} --update ${po_file} ${GETTEXT_TEMPLATE}
+        COMMENT "Update po files from gettext template" VERBATIM DEPENDS ${po_file} ${CMAKE_CURRENT_SOURCE_DIR}/locale/td.pot )
+    add_custom_command( TARGET translate
+        COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -c --directory ${CMAKE_CURRENT_SOURCE_DIR} -o ${mo_file} ${po_file}
+        COMMENT "Generating mo files from po files" VERBATIM DEPENDS ${po_file} )
+    install(FILES ${mo_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_DATA}/locale/${lang}/LC_MESSAGES RENAME ${CONFIG_TD_NAME}.mo )
+endforeach()
 
 #
 # Adding Make targets
@@ -200,11 +229,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/data DESTINATION ${CMAKE_INS
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config/user.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_DATA}/users/skeleton)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config/config.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_PATH_ETC})
 
-# Cppcheck execute if found and Debug mode
+# Cppcheck execute if found and Release mode
 if(CPPCHECK_EXEC)
     set(CPPCHECK_SRC ${td_SRCS})
     string(REPLACE ";" ";-I;" CPPCHECK_INCLUDE_PARAMS "${TARGET_INCLUDE_DIRS};${SYSTEM_INCLUDE_DIRS}")
-    add_custom_target(cppcheck ${CPPCHECK_EXEC} -f --enable=style --enable=all --verbose --template gcc -I ${CPPCHECK_INCLUDE_PARAMS} ${CMAKE_CURRENT_SOURCE_DIR}/src
+    add_custom_target(cppcheck ALL ${CPPCHECK_EXEC} -f --enable=style --enable=all --verbose --template gcc -I ${CPPCHECK_INCLUDE_PARAMS} ${CMAKE_CURRENT_SOURCE_DIR}/src
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Analyzing source code by cppcheck" VERBATIM)
 endif()

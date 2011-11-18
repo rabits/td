@@ -15,15 +15,21 @@
 
 #include "Nerv/CControlled.h"
 
+std::map<unsigned int, CControlled*> CControlled::s_ControlledObjects;
+unsigned int CControlled::s_LastId = 0;
+
 CControlled::CControlled()
     : m_Actions()
-    , m_Id()
+    , m_Id(CControlled::s_LastId++)
 {
+    s_ControlledObjects[m_Id] = this;
 }
 
 CControlled::~CControlled()
 {
-    //dtor
+    clearActions();
+    s_ControlledObjects[m_Id] = NULL;
+    s_ControlledObjects.erase(m_Id);
 }
 
 CAction* CControlled::getAction(const char *name)

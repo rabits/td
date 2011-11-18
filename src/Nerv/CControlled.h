@@ -28,6 +28,8 @@ public:
     CControlled();
     virtual ~CControlled();
 
+    static CControlled* getControlledObject(unsigned int id){ return s_ControlledObjects.find(id)->second; }
+
     /** @brief Return list of actions
      *
      * @return std::vector<CAction*>*
@@ -48,9 +50,9 @@ public:
      * @param sig CSignal& - signal from Sensor
      *
      * C++ not provided refs to object member functions.
-     * This is bad implementation of my idea - maybe need to use delegates...
+     * This is bad realization of my idea - maybe need to use delegates...
      *
-     * @todo Try to implement delegates: http://www.rsdn.ru/article/cpp/fastdelegate.xml or boost::function
+     * @todo Try to realize delegates: http://www.rsdn.ru/article/cpp/fastdelegate.xml or boost::function
      */
     virtual void doAction(char act, CSignal& sig) = 0;
 
@@ -81,6 +83,8 @@ protected:
     unsigned int                         m_Id;      ///< Id of controlled object
 
 private:
+    static std::map<unsigned int, CControlled*> s_ControlledObjects; ///< List of all created controlled objects
+    static unsigned int                         s_LastId;            ///< Greatest id
 };
 
 #endif // CCONTROLLED_H

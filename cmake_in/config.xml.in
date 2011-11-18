@@ -8,6 +8,7 @@
       <user_data>.config/${CONFIG_TD_NAME}/</user_data>
       <data>data/</data>
       <users>users/</users>
+      <locale>locale/</locale>
     </path>
     <config>
       <ogre>

@@ -15,7 +15,6 @@
 #define CEYE_H
 
 #include <OGRE/Ogre.h>
-#include "Nerv/CControlled.h"
 
 /** @brief It is invisible camera controller
  *

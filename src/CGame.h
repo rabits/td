@@ -25,6 +25,7 @@
 #include <cstdlib>
 
 #include "CData.h"
+#include "Nerv/CControlled.h"
 #include "CWorld.h"
 
 #include "CUser.h"
@@ -48,14 +49,14 @@ public:
      * @return CGame*
      *
      */
-    static CGame* getInstance(){ if( m_pInstance == NULL ) m_pInstance = new CGame(); return m_pInstance; }
+    static CGame* getInstance(){ if( s_pInstance == NULL ) s_pInstance = new CGame(); return s_pInstance; }
 
     /** @brief Remove main game object
      *
      * @return void
      *
      */
-    static void   destroyInstance(){ delete m_pInstance; }
+    static void   destroyInstance(){ delete s_pInstance; }
 
     /** @brief Get current prefix of game
      *
@@ -255,8 +256,8 @@ private:
      */
     void windowClosed(Ogre::RenderWindow* rw);
 
-    static CGame*                           m_pInstance; ///< Instance of game
-    static fs::path*                        m_pPrefix; ///< Current prefix directory
+    static CGame*                           s_pInstance; ///< Instance of game
+    static fs::path*                        s_pPrefix; ///< Current prefix directory
 
     CSensor*                                m_pInputHandler; ///< Input Handler object
     Ogre::RenderWindow*                     m_pWindow; ///< Main window

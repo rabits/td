@@ -19,10 +19,11 @@
 
 #include <OGRE/Ogre.h>
 
-#include "Nerv/CControlled.h"
 #include "Nerv/CSignal.h"
 #include "CData.h"
 #include "CWorld.h"
+
+class CControlled;
 
 typedef std::multimap<unsigned int, CAction const*> NervMap; ///< SignalId->Action multimap
 typedef std::map<std::string, NervMap> NervMaps; ///< Name->NervMap map

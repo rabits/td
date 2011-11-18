@@ -51,8 +51,8 @@ CGame::CGame()
     m_pTimer->reset();
 }
 
-CGame* CGame::m_pInstance = NULL;
-fs::path* CGame::m_pPrefix = NULL;
+CGame* CGame::s_pInstance = NULL;
+fs::path* CGame::s_pPrefix = NULL;
 
 CGame::~CGame()
 {
@@ -73,19 +73,19 @@ CGame::~CGame()
     delete m_pRoot;
     delete m_pLogManager;
 
-    delete m_pPrefix;
+    delete s_pPrefix;
 }
 
 const char* CGame::getPrefix()
 {
-    if( m_pPrefix == NULL )
+    if( s_pPrefix == NULL )
     {
         // Set prefix path
-        m_pPrefix = new fs::path(Common::getPrefixPath());
-        log_info("Prefix path: %s", m_pPrefix->c_str());
+        s_pPrefix = new fs::path(Common::getPrefixPath());
+        log_info("Prefix path: %s", s_pPrefix->c_str());
     }
 
-    return m_pPrefix->c_str();
+    return s_pPrefix->c_str();
 }
 
 bool CGame::initialise()
@@ -119,6 +119,12 @@ bool CGame::initialise()
     config_path /= "config.xml";
     if( ! loadData(config_path.c_str()) )
         log_notice("Can't load user configuration \"%s\"", config_path.c_str());
+
+    // Loading gettext messages locale
+    config_path = CGame::getPrefix() / fs::path(path("root_data")) / path("locale");
+    setlocale(LC_ALL, "");
+    bindtextdomain(CONFIG_TD_NAME, config_path.c_str());
+    textdomain(CONFIG_TD_NAME);
 
     // Initialise OGRE
     initOgre();
@@ -183,7 +189,7 @@ bool CGame::initOgre()
     fs::path ogre_plugins_dir(path("ogre_plugins"));
     if( ogre_plugins_dir.empty() )
     {
-        ogre_plugins_dir = *m_pPrefix;
+        ogre_plugins_dir = CGame::getPrefix();
         ogre_plugins_dir /= CONFIG_PATH_PREFIX_BIN;
         log_warn("Not found ogre_plugins path. Trying binary folder \"%s\" for find OGRE plugins", ogre_plugins_dir.c_str());
     }
@@ -330,7 +336,7 @@ bool CGame::initOgre()
                     ogre_resource_location = full_user_data / fs::path(res->attribute("value").value());
                     if( !fs::exists(ogre_resource_location) )
                     {
-                        full_root_data = *m_pPrefix / fs::path(path("root_data")) / fs::path(path("data"));
+                        full_root_data = CGame::getPrefix() / fs::path(path("root_data")) / fs::path(path("data"));
                         ogre_resource_location = full_root_data / fs::path(res->attribute("value").value());
                     }
 

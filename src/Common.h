@@ -25,10 +25,14 @@
 #include <vector>
 #include <map>
 
+#include <libintl.h>
+#include <clocale>
+
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem3;
 
-// @todo Fix strange memory bug with this defines (notice-emerg). If its move from ifdef - will be produced sigfault...
+#define _(string) gettext(string) ///< Gettext define
+
 #ifdef CONFIG_DEBUG
 #   define log_debug(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_DEBUG, format, ##__VA_ARGS__) ///< Debug log
 #   define log_info(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_INFO, format, ##__VA_ARGS__)  ///< Info log
