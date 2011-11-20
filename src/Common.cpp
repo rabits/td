@@ -13,7 +13,6 @@
  */
 #include "Common.h"
 
-#include <OGRE/Ogre.h>
 #include <cstdio>
 #include <cstdarg>
 
@@ -29,16 +28,17 @@
 
 using namespace Common;
 
-CLog::LogLevel CLog::m_displayLevel = CLog::LOG_NONE;
-unsigned long CLog::m_logTime = 0;
+CLog::LogLevel CLog::s_displayLevel = CLog::LOG_NONE;
+unsigned long CLog::s_logTime = 0;
+Ogre::Timer CLog::s_Timer;
 
 bool CLog::log(CLog::LogLevel level, const char* format, ...)
 {
-    if( level < m_displayLevel )
+    if( level < s_displayLevel )
         return level < 5;
 
     // Message time
-    m_logTime = CGame::getInstance()->time();
+    s_logTime = s_Timer.getMilliseconds();
 
     char msgbuffer[CONFIG_LOG_BUFFER];
     char msglevel[] = "       ";
@@ -85,7 +85,7 @@ bool CLog::log(CLog::LogLevel level, const char* format, ...)
             return true;
     }
 
-    std::fprintf(output, "[%06lu.%03lu] %6s: %s\n", m_logTime/1000, m_logTime%1000, msglevel, msgbuffer);
+    std::fprintf(output, "[%06lu.%03lu] %6s: %s\n", s_logTime/1000, s_logTime%1000, msglevel, msgbuffer);
 
     return level < CLog::LOG_ERROR;
 }
@@ -93,9 +93,9 @@ bool CLog::log(CLog::LogLevel level, const char* format, ...)
 CLog::LogLevel CLog::displayLogLevel(CLog::LogLevel level)
 {
     if( level != CLog::LOG_NONE )
-        m_displayLevel = level;
+        s_displayLevel = level;
 
-    return m_displayLevel;
+    return s_displayLevel;
 }
 
 std::string Common::getPrefixPath()

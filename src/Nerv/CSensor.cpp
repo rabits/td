@@ -25,6 +25,13 @@ CSensor::CSensor(size_t windowHnd)
     , m_pGame(CGame::getInstance())
     , m_subscribedUsers()
 {
+    m_DeviceType[0] = "Unknown";
+    m_DeviceType[1] = "Keyboard";
+    m_DeviceType[2] = "Mouse";
+    m_DeviceType[3] = "JoyStick";
+    m_DeviceType[4] = "Tablet";
+    m_DeviceType[5] = "Other";
+
     OIS::ParamList pl;
     std::ostringstream windowHndStr;
     windowHndStr << windowHnd;
@@ -41,10 +48,9 @@ CSensor::CSensor(size_t windowHnd)
 
     m_pInputManager = OIS::InputManager::createInputSystem(pl);
 
-    std::string deviceType[6] = {"OIS Unknown", "OIS Keyboard", "OIS Mouse", "OIS JoyStick", "OIS Tablet", "OIS Other"};
     OIS::DeviceList dlist = m_pInputManager->listFreeDevices();
     for( auto i = dlist.begin(); i != dlist.end(); ++i )
-        log_info("\tFound device: %s,\tVendor: %s", deviceType[i->first].c_str(), i->second.c_str());
+        log_info("\tFound device: %s,\tVendor: %s", m_DeviceType[i->first].c_str(), i->second.c_str());
 
     m_pKeyboard = static_cast<OIS::Keyboard*>(m_pInputManager->createInputObject( OIS::OISKeyboard, true ));
     m_pKeyboard->setEventCallback(this);
@@ -74,7 +80,7 @@ CSensor::CSensor(size_t windowHnd)
             }
         }
     }
-    catch(OIS::Exception &ex)
+    catch(OIS::Exception& ex)
     {
         log_warn("Exception raised on joystick creation: %s", ex.eText);
     }
@@ -136,15 +142,14 @@ OIS::JoyStick* CSensor::getJoyStick(int joyId)
     return NULL;
 }
 
-bool CSensor::keyPressed( const OIS::KeyEvent &arg )
+bool CSensor::keyPressed( const OIS::KeyEvent& arg )
 {
     log_debug("Key pressed: %s (%d)", (static_cast<OIS::Keyboard*>(const_cast<OIS::Object*>(arg.device)))->getAsString(arg.key).c_str(), arg.key);
 
     // Converting keyboard keypress to nerv Signal
-    unsigned int id = OIS::OISKeyboard * 10000 + arg.key;
-    CSignal sig(id, 1.0);
+    CSignal sig(genId(OIS::OISKeyboard, 0, arg.key), 1.0);
 
-    SigUser::iterator user = m_subscribedUsers[OIS::OISKeyboard].find(id);
+    SigUser::iterator user = m_subscribedUsers[OIS::OISKeyboard].find(sig.id());
     if( user != m_subscribedUsers[OIS::OISKeyboard].end() )
         user->second->nervSignal(sig);
 
@@ -237,14 +242,21 @@ bool CSensor::keyPressed( const OIS::KeyEvent &arg )
     return true;
 }
 
-bool CSensor::keyReleased( const OIS::KeyEvent &arg )
+bool CSensor::keyReleased( const OIS::KeyEvent& arg )
 {
-    // @todo Realize Signal interface
+    log_debug("Key released: %s (%d)", (static_cast<OIS::Keyboard*>(const_cast<OIS::Object*>(arg.device)))->getAsString(arg.key).c_str(), arg.key);
+
+    // Converting keyboard keyrelease to nerv Signal
+    CSignal sig(genId(OIS::OISKeyboard, 0, arg.key), 0.0);
+
+    SigUser::iterator user = m_subscribedUsers[OIS::OISKeyboard].find(sig.id());
+    if( user != m_subscribedUsers[OIS::OISKeyboard].end() )
+        user->second->nervSignal(sig);
 
     return true;
 }
 
-bool CSensor::mouseMoved( const OIS::MouseEvent &arg )
+bool CSensor::mouseMoved( const OIS::MouseEvent& arg )
 {
     log_debug("MouseMoved: Abs(%d,%d,%d) Rel(%d,%d,%d)", arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs
               , arg.state.X.rel, arg.state.Y.rel, arg.state.Z.rel);
@@ -254,23 +266,35 @@ bool CSensor::mouseMoved( const OIS::MouseEvent &arg )
     return true;
 }
 
-bool CSensor::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool CSensor::mousePressed( const OIS::MouseEvent& arg, OIS::MouseButtonID button )
 {
-    log_debug("Mouse pressed #%d", id);
+    log_debug("Mouse pressed #%d", button);
 
-    // @todo Realize Signal interface
+    // Converting mouse button press to nerv Signal
+    CSignal sig(genId(OIS::OISMouse, 0, button), 1.0);
+
+    SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
+    if( user != m_subscribedUsers[OIS::OISMouse].end() )
+        user->second->nervSignal(sig);
 
     return true;
 }
 
-bool CSensor::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool CSensor::mouseReleased( const OIS::MouseEvent& arg, OIS::MouseButtonID button )
 {
-    // @todo Realize Signal interface
+    log_debug("Mouse released #%d", button);
+
+    // Converting mouse button release to nerv Signal
+    CSignal sig(genId(OIS::OISMouse, 0, button), 0.0);
+
+    SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
+    if( user != m_subscribedUsers[OIS::OISMouse].end() )
+        user->second->nervSignal(sig);
 
     return true;
 }
 
-bool CSensor::povMoved( const OIS::JoyStickEvent &arg, int pov )
+bool CSensor::povMoved( const OIS::JoyStickEvent& arg, int pov )
 {
     // Log
     std::string out = "";
@@ -284,32 +308,44 @@ bool CSensor::povMoved( const OIS::JoyStickEvent &arg, int pov )
         out += "West";
     if( arg.state.mPOV[pov].direction == OIS::Pov::Centered ) //stopped/centered out
         out += "Centered";
-    log_debug("Joystick \"%s\" POV #%d moved: %s", arg.device->vendor().c_str(), pov, out.c_str());
+    log_debug("Joystick \"%s\" POV #%d moved: %s (%d)", arg.device->vendor().c_str(), pov, out.c_str(), arg.state.mPOV[pov].direction);
 
     // @todo Realize Signal interface
 
     return true;
 }
 
-bool CSensor::buttonPressed( const OIS::JoyStickEvent &arg, int button )
+bool CSensor::buttonPressed( const OIS::JoyStickEvent& arg, int button )
 {
     log_debug("Joystick \"%s\" button #%d pressed", arg.device->vendor().c_str(), button);
 
-    // @todo Realize Signal interface
+    // Converting joystick button press to nerv Signal
+    CSignal sig(genId(OIS::OISJoyStick, 0, button), 1.0);
+
+    SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
+    if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
+        user->second->nervSignal(sig);
 
     return true;
 }
 
-bool CSensor::buttonReleased( const OIS::JoyStickEvent &arg, int button )
+bool CSensor::buttonReleased( const OIS::JoyStickEvent& arg, int button )
 {
-    // @todo Realize Signal interface
+    log_debug("Joystick \"%s\" button #%d released", arg.device->vendor().c_str(), button);
+
+    // Converting joystick button release to nerv Signal
+    CSignal sig(genId(OIS::OISJoyStick, 0, button), 0.0);
+
+    SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
+    if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
+        user->second->nervSignal(sig);
 
     return true;
 }
 
-bool CSensor::axisMoved( const OIS::JoyStickEvent &arg, int axis )
+bool CSensor::axisMoved( const OIS::JoyStickEvent& arg, int axis )
 {
-    log_debug("Joystick \"%s\" Axis #%d moved, Value: %d", arg.device->vendor().c_str(), axis, arg.state.mAxes[axis].abs);
+    log_debug("Joystick \"%s\" Axis #%d moved, Value: %d", arg.device->vendor().c_str(), axis, arg.state.mAxes[static_cast<unsigned int>(axis)].abs);
 
     // @todo Realize Signal interface
 
@@ -318,9 +354,11 @@ bool CSensor::axisMoved( const OIS::JoyStickEvent &arg, int axis )
 
 bool CSensor::addSubscribe(unsigned int id, CUser* pUser)
 {
-    // @todo add recognize type of device by id
-    OIS::Type device = OIS::OISKeyboard;
-    m_subscribedUsers[device][id] = pUser;
+    unsigned int device = id / 10000u;
+
+    log_debug("Subscribing user \"%s\" to %s signal id#%u", pUser->name().c_str(), m_DeviceType[device].c_str(), id);
+
+    m_subscribedUsers[static_cast<OIS::Type>(device)][id] = pUser;
 
     return true;
 }

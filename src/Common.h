@@ -31,6 +31,8 @@
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem3;
 
+#include <OGRE/OgreTimer.h>
+
 #define _(string) gettext(string) ///< Gettext define
 
 #ifdef CONFIG_DEBUG
@@ -94,8 +96,9 @@ namespace Common
         static LogLevel displayLogLevel(LogLevel level = LOG_NONE);
 
     protected:
-        static LogLevel      m_displayLevel; ///< Display messages with >= this level
-        static unsigned long m_logTime; ///< Last log time
+        static LogLevel      s_displayLevel; ///< Display messages with >= this level
+        static unsigned long s_logTime;      ///< Last log time
+        static Ogre::Timer   s_Timer;        ///< Logging timer
     };
 
     /** @brief Get prefix path from current binary path
@@ -145,13 +148,13 @@ namespace Common
 
         /** @brief Get function name
          *
-         * @return const std::string &
+         * @return const std::string&
          */
         const std::string& getSource() const { return m_Source; }
 
         /** @brief Get file path
          *
-         * @return const std::string &
+         * @return const std::string&
          */
         const std::string& getFile() const { return m_File; }
 
@@ -163,7 +166,7 @@ namespace Common
 
         /** @brief Get description
          *
-         * @return const std::string &
+         * @return const std::string&
          */
         const std::string& getDescription() const { return m_Description; }
 

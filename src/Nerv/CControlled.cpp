@@ -18,11 +18,13 @@
 std::map<unsigned int, CControlled*> CControlled::s_ControlledObjects;
 unsigned int CControlled::s_LastId = 0;
 
-CControlled::CControlled()
-    : m_Actions()
+CControlled::CControlled(const char* name)
+    : CMaster(name)
+    , m_Actions()
     , m_Id(CControlled::s_LastId++)
 {
     s_ControlledObjects[m_Id] = this;
+    log_debug("Registered new controlled object \"%s\" id#%d", this->name().c_str(), m_Id);
 }
 
 CControlled::~CControlled()
@@ -30,6 +32,7 @@ CControlled::~CControlled()
     clearActions();
     s_ControlledObjects[m_Id] = NULL;
     s_ControlledObjects.erase(m_Id);
+    log_debug("Removed controlled object \"%s\" id#%d", this->name().c_str(), m_Id);
 }
 
 CAction* CControlled::getAction(const char *name)

@@ -22,6 +22,7 @@
 #include "btogre/BtOgreGP.h"
 #include "btogre/BtOgrePG.h"
 
+#include "CMaster.h"
 #include "Nerv/CAction.h"
 
 class CWorld;
@@ -30,11 +31,17 @@ class CGame;
 /** @brief Father of all objects in game
  */
 class CObject
+    : CMaster
 {
 public:
     /** @brief Constructor of object
+     *
+     * @param name const char*
+     * @param pWorld CWorld&
+     * @param pos const Ogre::Vector3&
+     * @param mass const btScalar
      */
-    CObject();
+    CObject(const char* name, CWorld& pWorld, const Ogre::Vector3& pos = Ogre::Vector3(), const btScalar mass = 0.0);
 
     /** @brief Destructor of object
      */
@@ -47,7 +54,7 @@ public:
      * @return void
      *
      */
-    void setParent(CObject* pParent);
+    void setParent(CObject* pParent){ m_pParent = pParent; }
 
     /** @brief Setting object World
      *
@@ -55,7 +62,7 @@ public:
      * @return void
      *
      */
-    void setWorld(CWorld* pWorld);
+    void setWorld(CWorld* pWorld){ m_pWorld = pWorld; }
 
 
     /** @brief Delete all children objects
@@ -79,6 +86,12 @@ public:
      *
      */
     std::vector<CObject*>* getChildrens();
+
+    /** @brief Gets scene node of current object
+     *
+     * @return Ogre::Node*
+     */
+    Ogre::SceneNode* node(){ return m_pNode; }
 
     //--------------------------------------------------------------------------------------
     // Pure virtual functions. Must be overriden in derived objects.
@@ -106,8 +119,6 @@ public:
      */
     virtual void setObjectState(int State) = 0;
 
-    Ogre::SceneNode*                     m_pNode; ///< Object scene node
-
     /** @brief Groups for collision detection
      */
     enum CollisionObjectGroup {
@@ -117,9 +128,9 @@ public:
     };
 
 protected:
-    bool                                 m_HasChild; ///< Object is has any child
-    std::string                          m_ObjectName; ///< Object name (for debug purpose and for scripts)
+    Ogre::SceneNode*                     m_pNode; ///< Object scene node
 
+    bool                                 m_HasChild; ///< Object is has any child
     std::vector<CObject*>                m_Childrens; ///< List of child objects
     std::vector<CObject*>::iterator      m_itChildrens; ///< Current processing child object
 

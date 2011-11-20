@@ -48,14 +48,14 @@ public:
      * @return void
      *
      */
-    void saveData(std::ostream &stream);
+    void saveData(std::ostream& stream);
 
     /** @brief Verifying of xml document to consistent (good root td_name, root version, container name, ...)
      *
      * @param document pugi::xml_document& - Document to verify
      * @return bool - consistent data
      */
-    bool verifyData(pugi::xml_document &document) const;
+    bool verifyData(pugi::xml_document& document) const;
 
     /** @brief Merging current data and new data. Current data root will be copied to m_dataBefore
      *
@@ -63,7 +63,7 @@ public:
      * @param cur_node pugi::xml_node* - For recurse
      * @return bool
      */
-    bool mergeData(pugi::xml_node &new_node, pugi::xml_node* cur_node = NULL);
+    bool mergeData(pugi::xml_node& new_node, pugi::xml_node* cur_node = NULL);
 
 protected:
     pugi::xml_document  m_dataRoot; ///< XML Root, containing td data

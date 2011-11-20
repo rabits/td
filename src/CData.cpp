@@ -64,12 +64,12 @@ bool CData::loadData(const char* datafile)
     return true;
 }
 
-void CData::saveData(std::ostream &stream)
+void CData::saveData(std::ostream& stream)
 {
     m_dataRoot.save(stream, "  ", pugi::format_default, pugi::xml_encoding::encoding_utf8);
 }
 
-bool CData::verifyData(pugi::xml_document &document) const
+bool CData::verifyData(pugi::xml_document& document) const
 {
     // Verify root tag name
     if( ! document.child(CONFIG_TD_NAME) )
@@ -123,8 +123,10 @@ bool CData::verifyData(pugi::xml_document &document) const
     return true;
 }
 
-bool CData::mergeData(pugi::xml_node &new_node, pugi::xml_node* cur_node)
+bool CData::mergeData(pugi::xml_node& new_node, pugi::xml_node* cur_node)
 {
+    // @todo Review this function and create cool debug
+
     // If running in first time
     if( cur_node == NULL )
     {
@@ -142,23 +144,32 @@ bool CData::mergeData(pugi::xml_node &new_node, pugi::xml_node* cur_node)
 
         cur_node = &m_data;
     }
-
     // Processing current level of tree
     pugi::xml_node cur_child;
 
     for( auto it = new_node.begin(); it != new_node.end(); ++it )
     {
+        log_debug("Processing NEW: %s, CUR: %s", it->name(), cur_node->name());
         // Append node, if it not set or use exist node
         if( ! it->empty() )
         {
-            if( ((it->type() == pugi::node_element) && !cur_node->child(it->name())) || it->attribute("value") || it->attribute("id") )
+            if( (it->type() == pugi::node_element) && (!cur_node->child(it->name()) || it->attribute("value") || it->attribute("id")) )
                 cur_child = cur_node->append_child(it->name());
-            else if( !cur_node->first_child() )
-                cur_child = cur_node->append_child(it->type());
-            else if( std::strcmp(it->name(), "") == 0 )
+            else if( (it->type() == pugi::node_element) && cur_node->child(it->name()) )
+            {
                 cur_child = cur_node->child(it->name());
+                log_debug("\tGet bad child by name %s->%s", it->name(), cur_child.name());
+            }
+            else if( !cur_node->first_child() )
+            {
+                cur_child = cur_node->append_child(it->type());
+                log_debug("\tAdd child by type %d->%d", it->type());
+            }
             else
+            {
                 cur_child = cur_node->child(it->type());
+                log_debug("\tGet child by type %d->%d", it->type(), cur_child.type());
+            }
         }
 
         // Processing attributes
@@ -174,7 +185,10 @@ bool CData::mergeData(pugi::xml_node &new_node, pugi::xml_node* cur_node)
 
         // Set value of node
         if( it->value() )
+        {
+            log_debug("\tSet value %s, %d->%d", it->value(), it->type(), cur_child.type());
             cur_child.set_value(it->value());
+        }
 
         mergeData((*it), &cur_child);
     }

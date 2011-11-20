@@ -92,7 +92,7 @@ protected:
      * @return bool
      *
      */
-    bool keyPressed( const OIS::KeyEvent &arg );
+    bool keyPressed( const OIS::KeyEvent& arg );
 
     /** @brief Function on keyboard key released event
      *
@@ -100,7 +100,7 @@ protected:
      * @return bool
      *
      */
-    bool keyReleased( const OIS::KeyEvent &arg );
+    bool keyReleased( const OIS::KeyEvent& arg );
 
 
     /** @brief Function on mouse moved event
@@ -109,7 +109,7 @@ protected:
      * @return bool
      *
      */
-    bool mouseMoved( const OIS::MouseEvent &arg );
+    bool mouseMoved( const OIS::MouseEvent& arg );
 
     /** @brief Function on mouse button pressed
      *
@@ -118,7 +118,7 @@ protected:
      * @return bool
      *
      */
-    bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+    bool mousePressed( const OIS::MouseEvent& arg, OIS::MouseButtonID id );
 
     /** @brief Function on mouse button released
      *
@@ -127,7 +127,7 @@ protected:
      * @return bool
      *
      */
-    bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+    bool mouseReleased( const OIS::MouseEvent& arg, OIS::MouseButtonID id );
 
 
     /** @brief Function on joystick cross pov pressed
@@ -137,7 +137,7 @@ protected:
      * @return bool
      *
      */
-    bool povMoved( const OIS::JoyStickEvent &arg, int pov );
+    bool povMoved( const OIS::JoyStickEvent& arg, int pov );
 
     /** @brief Function on joystick button pressed
      *
@@ -146,7 +146,7 @@ protected:
      * @return bool
      *
      */
-    bool buttonPressed( const OIS::JoyStickEvent &arg, int button );
+    bool buttonPressed( const OIS::JoyStickEvent& arg, int button );
 
     /** @brief Function on joystick button released
      *
@@ -155,7 +155,7 @@ protected:
      * @return bool
      *
      */
-    bool buttonReleased( const OIS::JoyStickEvent &arg, int button );
+    bool buttonReleased( const OIS::JoyStickEvent& arg, int button );
 
     /** @brief Function on joystick stick moved
      *
@@ -164,7 +164,7 @@ protected:
      * @return bool
      *
      */
-    bool axisMoved( const OIS::JoyStickEvent &arg, int axis );
+    bool axisMoved( const OIS::JoyStickEvent& arg, int axis );
 
     OIS::InputManager* m_pInputManager; ///< OIS input manager
     OIS::Mouse*        m_pMouse; ///< Mouse device
@@ -192,6 +192,10 @@ private:
      * @toto create eq copy operator
      */
     CSensor& operator=(const CSensor& obj);
+
+    inline unsigned int genId(OIS::Type dev, int dev_number, int button){ return static_cast<unsigned int>(dev) * 10000u + static_cast<unsigned int>(dev_number) * 1000u + static_cast<unsigned int>(button); }
+
+    std::string        m_DeviceType[6]; ///< Device types
 };
 
 #endif // CSENSOR_H

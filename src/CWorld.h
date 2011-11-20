@@ -37,7 +37,7 @@ public:
      *
      * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
      */
-    CWorld(const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
+    CWorld(const Ogre::Vector3& pos = Ogre::Vector3(0.0f));
 
     /** @brief Destructor
      */

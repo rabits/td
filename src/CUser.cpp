@@ -75,14 +75,21 @@ void CUser::init(const char* data_file)
     pugi::xml_node mapping = user_config.child("control").child("mapping");
     if( mapping )
     {
-        CAction* act;
+        CControlled* obj = NULL;
         for( auto action = mapping.begin(); action != mapping.end(); action++ )
         {
             log_debug("Found %s: %d", action->attribute("object").value(), action->attribute("id").as_int());
 
             if( std::strcmp(action->attribute("object").value(), "Game") == 0 )
+                obj = CGame::getInstance();
+            else if( action->attribute("object").as_int() > 0 )
+                obj = CControlled::getControlledObject(static_cast<unsigned int>(action->attribute("object").as_int()));
+            else
+                log_warn("\tnot found key \"%s\"", action->attribute("object").value());
+
+            if( obj != NULL )
             {
-                act = CGame::getInstance()->getAction(action->attribute("name").value());
+                CAction* act = obj->getAction(action->attribute("name").value());
                 if( act != NULL )
                 {
                     log_debug("\tmapping %d->%s", action->attribute("id").as_int(), act->name());
@@ -92,7 +99,7 @@ void CUser::init(const char* data_file)
                     log_warn("\tnot found action %s", action->attribute("name").value());
             }
             else
-                log_warn("\tnot found key \"%s\"", action->attribute("object").value());
+                log_warn("\tnot found object %s", action->attribute("object").value());
         }
     }
     else
@@ -116,7 +123,7 @@ void CUser::delNerv(unsigned int id)
     m_Nervs.erase(id);
 }
 
-bool CUser::nervSignal(CSignal &sig)
+bool CUser::nervSignal(CSignal& sig)
 {
     log_debug("USER %s: Recieved signal %d: %f", m_Name.c_str(), sig.id(), sig.value());
     std::pair<NervMap::iterator, NervMap::iterator> itp = m_NervMaps[m_CurrentNervMap.c_str()].equal_range(sig.id());

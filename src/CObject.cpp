@@ -16,20 +16,20 @@
 #include "CObject.h"
 #include "CGame.h"
 
-CObject::CObject()
-    : m_pNode()
+CObject::CObject(const char* name, CWorld& pWorld, const Ogre::Vector3& pos, const btScalar mass)
+    : CMaster(name)
+    , m_pNode()
     , m_HasChild(false)
-    , m_ObjectName()
     , m_Childrens()
     , m_itChildrens()
     , m_pParent()
     , m_pGame(CGame::getInstance())
-    , m_pWorld()
-    , m_Position()
+    , m_pWorld(&pWorld)
+    , m_Position(pos)
     , m_pEntity()
     , m_pBody()
     , m_pShape()
-    , m_Mass(0.0)
+    , m_Mass(mass)
     , m_pState()
 {
 }
@@ -38,16 +38,6 @@ CObject::~CObject()
 {
     clearChildrens();
     m_pParent = NULL;
-}
-
-void CObject::setParent(CObject* pParent)
-{
-    m_pParent = pParent;
-}
-
-void CObject::setWorld(CWorld* pWorld)
-{
-    m_pWorld = pWorld;
 }
 
 void CObject::clearChildrens()

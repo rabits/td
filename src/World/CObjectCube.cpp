@@ -16,13 +16,10 @@
 #include "CGravityField.h"
 #include "CGame.h"
 
-CObjectCube::CObjectCube(CWorld &pWorld, CObjectCube::Cube_Size size, const Ogre::Vector3 &pos)
-    : m_cubeSize(size)
+CObjectCube::CObjectCube(CWorld& pWorld, CObjectCube::Cube_Size size, const Ogre::Vector3& pos)
+    : CObject("Cube", pWorld, pos)
+    , m_cubeSize(size)
 {
-    if( &pWorld != NULL )
-        setWorld(&pWorld);
-
-    m_Position = pos;
 }
 
 void CObjectCube::init()
@@ -31,7 +28,7 @@ void CObjectCube::init()
     {
         //Create Ogre stuff.
         m_pEntity = m_pGame->m_pSceneMgr->createEntity("objectcube.mesh");
-        m_pNode = m_pParent->m_pNode->createChildSceneNode(m_Position);
+        m_pNode = m_pParent->node()->createChildSceneNode(m_Position);
         m_pNode->attachObject(m_pEntity);
         m_pNode->scale(Ogre::Vector3(m_cubeSize));
 

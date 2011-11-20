@@ -63,7 +63,7 @@ private:
     /** @brief Copy operator
      *
      * @param obj const CAction&
-     * @return CAction & operator
+     * @return CAction& operator
      */
     CAction& operator=(const CAction& obj);
 

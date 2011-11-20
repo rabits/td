@@ -45,32 +45,32 @@ public:
      * @return unsigned int
      *
      */
-    unsigned int id();
+    inline unsigned int id(){ return m_Id; }
 
     /** @brief Get Value of event
      *
      * @return float
      *
      */
-    float value();
+    inline float value(){ return m_Value; }
 
     /** @brief Set coefficient of sensitivity
      *
      * @param sens float - coefficient
      */
-    void setSens(float sens);
+    inline void setSens(float sens){ m_Value = std::min(m_Value * sens, 1.0f); }
 
     /** @brief Get type of value
      *
      * @return Type - from CSignal::Type
      */
-    Type type();
+    inline Type type(){ return m_Type; }
 
     /** @brief Set type of value
      *
      * @param type Type - new type
      */
-    void type(Type type);
+    inline void type(Type type){ m_Type = type; }
 
 protected:
     unsigned int m_Id;    ///< Id

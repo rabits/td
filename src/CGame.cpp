@@ -31,6 +31,7 @@
 
 CGame::CGame()
    : CData("Game")
+   , CControlled("Game")
    , m_pSceneMgr()
    , m_pCamera()
    , m_pTrayMgr()
@@ -122,7 +123,7 @@ bool CGame::initialise()
 
     // Loading gettext messages locale
     config_path = CGame::getPrefix() / fs::path(path("root_data")) / path("locale");
-    setlocale(LC_ALL, "");
+    std::setlocale(LC_ALL, "");
     bindtextdomain(CONFIG_TD_NAME, config_path.c_str());
     textdomain(CONFIG_TD_NAME);
 
@@ -406,9 +407,9 @@ bool CGame::initGame()
     m_pCamera = m_pSceneMgr->createCamera("MainGameCamera");
 
     // Position it at 500 in Z direction
-    m_pCamera->setPosition(Ogre::Vector3(30.0,60.0,30.0));
+    m_pCamera->setPosition(Ogre::Vector3(300.0,300.0,300.0));
     // Look back along -Z
-    m_pCamera->lookAt(Ogre::Vector3(0.0,50.0,0.0));
+    m_pCamera->lookAt(Ogre::Vector3(0.0,0.0,0.0));
     m_pCamera->setNearClipDistance(0.01f);
 
     log_info("Creating viewport");
@@ -548,7 +549,7 @@ void CGame::updateUsers(const Ogre::FrameEvent& evt)
         (*m_oCurrentUser)->update(evt);
 }
 
-bool CGame::frameStarted(const Ogre::FrameEvent &evt)
+bool CGame::frameStarted(const Ogre::FrameEvent& evt)
 {
     return true;
 }
@@ -559,7 +560,7 @@ void CGame::windowResized(Ogre::RenderWindow* rw)
     int left, top;
     rw->getMetrics(width, height, depth, left, top);
 
-    const OIS::MouseState &ms = m_pInputHandler->getMouse()->getMouseState();
+    const OIS::MouseState& ms = m_pInputHandler->getMouse()->getMouseState();
     ms.width = static_cast<int>(width);
     ms.height = static_cast<int>(height);
 }
@@ -574,7 +575,7 @@ void CGame::windowClosed(Ogre::RenderWindow* rw)
 void CGame::registerActions()
 {
     addAction('e', "Exit");
-    addAction('s', "ScreenShot");
+    addAction('s', "Screen Shot");
     //addAction("Up");
     //addAction("Down");
     //addAction("Left");
@@ -585,13 +586,17 @@ void CGame::registerActions()
 
 void CGame::doAction(char act, CSignal& sig)
 {
-    switch(act){
-    case 'e':
-        log_debug("Exit action");
-        exit();
-        break;
-    case 's':
-        log_debug("ScreenShot action");
-        getScreenshot();
+    if( sig.value() == 1.0 )
+    {
+        switch(act){
+        case 'e':
+            log_debug("Exit action");
+            exit();
+            break;
+        case 's':
+            log_debug("ScreenShot action");
+            getScreenshot();
+            break;
+        }
     }
 }

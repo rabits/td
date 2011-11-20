@@ -50,6 +50,7 @@ You need get and compile next libs:
 
  - libboost-filesystem-dev 1.46.1
  - libboost-system-dev 1.46.1
+ - gettext 0.18.1.1
 
 == 2. Get the sources ==
 

@@ -17,17 +17,28 @@
 
 #include "Common.h"
 
+#include "CMaster.h"
 #include "Nerv/CAction.h"
 #include "Nerv/CSignal.h"
 
 /** @brief Object with this class can be controlled by actions
  */
 class CControlled
+    : CMaster
 {
 public:
-    CControlled();
+    /** @brief Constructor with name
+     *
+     * @param name const char*
+     */
+    CControlled(const char* name);
     virtual ~CControlled();
 
+    /** @brief Controlled object from global list by id
+     *
+     * @param id
+     * @return CControlled*
+     */
     static CControlled* getControlledObject(unsigned int id){ return s_ControlledObjects.find(id)->second; }
 
     /** @brief Return list of actions

@@ -139,7 +139,7 @@ public:
     std::vector<CWorld*>::iterator          m_oCurrentWorld; ///< Current processing world
 
 private:
-    /** @brief Adding actions of Game
+    /** @brief Adding actions
      *
      * @see CControlled::registerActions()
      */

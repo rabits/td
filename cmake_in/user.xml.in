@@ -21,8 +21,12 @@
           <action object="Game" id="10205" name="Right" />
           <action object="Game" id="10028" name="Yes" />
           <action object="Game" id="10001" name="No" />
-          <action object="Game" id="10183" name="ScreenShot" />
+          <action object="Game" id="10183" name="Screen Shot" />
           <action object="Game" id="10001" name="Exit" />
+          <action object="1" id="10200" name="Move Front" />
+          <action object="1" id="10208" name="Move Backward" />
+          <action object="1" id="10203" name="Move Left" />
+          <action object="1" id="10205" name="Move Right" />
         </mapping>
       </control>
     </config>

@@ -18,6 +18,7 @@
 #include "Common.h"
 
 #include "CObject.h"
+#include "Nerv/CControlled.h"
 
 /** @brief Sphere - it is minimal bot and kernel of user
  *
@@ -30,19 +31,16 @@
  */
 class CObjectKernel
     : public CObject
+    , public CControlled
 {
 public:
-    /** @brief Simple kernel constructor
-     */
-    CObjectKernel();
-
     /** @brief Constructor
      *
      * @param pWorld CWorld&
      * @param mass const btScalar
      * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
      */
-    CObjectKernel(CWorld & pWorld, const btScalar mass, const Ogre::Vector3 &pos = Ogre::Vector3(0.0f));
+    CObjectKernel(CWorld& pWorld, const btScalar mass, const Ogre::Vector3& pos = Ogre::Vector3(0.0f));
 
     /** @brief Destructor
      */
@@ -71,7 +69,33 @@ public:
      */
     void setObjectState(int State);
 
+
+    /** @brief Doing need actions
+     *
+     * @see CControlled::doAction()
+     */
+    void doAction(char act, CSignal& sig);
+
 private:
+    /** @brief Adding actions
+     *
+     * @see CControlled::registerActions()
+     */
+    void registerActions();
+
+    bool m_ActForward;     ///< Action move forward
+    bool m_ActBackward;    ///< Action move backward
+    bool m_ActLeft;        ///< Action move left
+    bool m_ActRight;       ///< Action move right
+    bool m_ActJump;        ///< Action jump
+    float m_ForceForward;  ///< Force move forward
+    float m_ForceBackward; ///< Force move backward
+    float m_ForceLeft;     ///< Force move left
+    float m_ForceRight;    ///< Force move right
+    float m_ForceJump;     ///< Force jump
+
+    float m_ForceMax;    ///< Maximum force
+    float m_ForceValue;  ///< User's action force value
 };
 
 #endif // COBJECTKERNEL_H_INCLUDED

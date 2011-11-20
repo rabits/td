@@ -16,17 +16,23 @@
 #include "CObjectKernel.h"
 #include "CGame.h"
 
-CObjectKernel::CObjectKernel()
+CObjectKernel::CObjectKernel(CWorld& pWorld, const btScalar mass, const Ogre::Vector3& pos)
+    : CObject("Kernel", pWorld, pos, mass)
+    , CControlled("Kernel")
+    , m_ActForward(false)
+    , m_ActBackward(false)
+    , m_ActLeft(false)
+    , m_ActRight(false)
+    , m_ActJump(false)
+    , m_ForceForward(0.0)
+    , m_ForceBackward(0.0)
+    , m_ForceLeft(0.0)
+    , m_ForceRight(0.0)
+    , m_ForceJump(0.0)
+    , m_ForceMax(2.5)
+    , m_ForceValue(0.0)
 {
-}
-
-CObjectKernel::CObjectKernel(CWorld & pWorld, const btScalar mass, const Ogre::Vector3 &pos)
-{
-    if( &pWorld != NULL )
-        setWorld(&pWorld);
-
-    m_Position = pos;
-    m_Mass = mass;
+    registerActions();
 }
 
 void CObjectKernel::init()
@@ -35,7 +41,7 @@ void CObjectKernel::init()
     {
         //Create Ogre stuff.
         m_pEntity = m_pGame->m_pSceneMgr->createEntity("objectkernel.mesh");
-        m_pNode = m_pParent->m_pNode->createChildSceneNode(m_Position);
+        m_pNode = m_pParent->node()->createChildSceneNode(m_Position);
         m_pNode->attachObject(m_pEntity);
 
         //Create shape.
@@ -68,12 +74,87 @@ void CObjectKernel::update()
     m_pBody->setGravity(m_pWorld->m_pGravityField->getObjectGravity(m_pBody->getBroadphaseProxy()->getUid()));
 
     // Draw gravity line
-    m_pWorld->m_pDbgDraw->drawLine(m_pBody->getCenterOfMassPosition(), m_pBody->getCenterOfMassPosition() + m_pBody->getGravity()*4, btVector3());
+    m_pWorld->m_pDbgDraw->drawLine(m_pBody->getCenterOfMassPosition(), m_pBody->getCenterOfMassPosition() + m_pBody->getGravity()*2, btVector3());
+
+    // Processing action state
+    if( m_ActForward )
+        m_ForceForward += m_ForceValue * 0.1f;
+    else
+        m_ForceForward -= 0.1f;
+    if( m_ActBackward )
+        m_ForceBackward += m_ForceValue * 0.1f;
+    else
+        m_ForceBackward -= 0.1f;
+    if( m_ActLeft )
+        m_ForceLeft += m_ForceValue * 0.1f;
+    else
+        m_ForceLeft -= 0.1f;
+    if( m_ActRight )
+        m_ForceRight += m_ForceValue * 0.1f;
+    else
+        m_ForceRight -= 0.1f;
+
+    // Validation of action states
+    if( m_ForceForward < 0.0f )
+        m_ForceForward = 0.0f;
+    else if( m_ForceForward > m_ForceMax )
+        m_ForceForward = m_ForceMax;
+    if( m_ForceBackward < 0.0f )
+        m_ForceBackward = 0.0f;
+    else if( m_ForceBackward > m_ForceMax )
+        m_ForceBackward = m_ForceMax;
+    if( m_ForceLeft < 0.0f )
+        m_ForceLeft = 0.0f;
+    else if( m_ForceLeft > m_ForceMax )
+        m_ForceLeft = m_ForceMax;
+    if( m_ForceRight < 0.0f )
+        m_ForceRight = 0.0f;
+    else if( m_ForceRight > m_ForceMax )
+        m_ForceRight = m_ForceMax;
 
     // Set rotation
-    m_pBody->setAngularVelocity(btVector3(-2.5f,m_pBody->getAngularVelocity().y(),m_pBody->getAngularVelocity().z()));
+    m_pBody->setAngularVelocity(btVector3(m_pBody->getAngularVelocity().x(),
+                                          m_ForceBackward - m_ForceForward,
+                                          m_ForceLeft - m_ForceRight));
 }
 
 void CObjectKernel::setObjectState(int iState)
 {
+}
+
+void CObjectKernel::registerActions()
+{
+    addAction('f', "Move Front");
+    addAction('b', "Move Backward");
+    addAction('l', "Move Left");
+    addAction('r', "Move Right");
+    addAction('j', "Jump");
+}
+
+void CObjectKernel::doAction(char act, CSignal& sig)
+{
+    m_ForceValue = sig.value();
+
+    switch(act){
+    case 'f':
+        log_debug("Move front action");
+        m_ActForward = (sig.value() > 0) ? true : false;
+        break;
+    case 'b':
+        log_debug("Move backward action");
+        m_ActBackward = (sig.value() > 0) ? true : false;
+        break;
+    case 'l':
+        log_debug("Move left action");
+        m_ActLeft = (sig.value() > 0) ? true : false;
+        break;
+    case 'r':
+        log_debug("Move right action");
+        m_ActRight = (sig.value() > 0) ? true : false;
+        break;
+    case 'j':
+        log_debug("Jump action");
+        m_ActJump = (sig.value() > 0) ? true : false;
+        break;
+    }
 }

@@ -215,7 +215,7 @@ foreach( po_file ${GETTEXT_po_files} )
     get_filename_component( lang ${po_file} NAME_WE )
     set( mo_file ${CMAKE_CURRENT_BINARY_DIR}/locale/${lang}.mo )
     add_custom_command( TARGET translate
-        COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} --directory ${CMAKE_CURRENT_SOURCE_DIR} --update ${po_file} ${GETTEXT_TEMPLATE}
+        COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} --backup=none --directory ${CMAKE_CURRENT_SOURCE_DIR} --update ${po_file} ${GETTEXT_TEMPLATE}
         COMMENT "Update po files from gettext template" VERBATIM DEPENDS ${po_file} ${CMAKE_CURRENT_SOURCE_DIR}/locale/td.pot )
     add_custom_command( TARGET translate
         COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -c --directory ${CMAKE_CURRENT_SOURCE_DIR} -o ${mo_file} ${po_file}

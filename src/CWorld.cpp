@@ -15,8 +15,9 @@
 #include "CWorld.h"
 #include "CGame.h"
 
-CWorld::CWorld(const Ogre::Vector3 &pos)
-    : m_pPhyWorld()
+CWorld::CWorld(const Ogre::Vector3& pos)
+    : CObject("World", *this)
+    , m_pPhyWorld()
     , m_pGravityField()
     , m_pDbgDraw()
     , m_pBroadphase()
@@ -44,8 +45,8 @@ CWorld::CWorld(const Ogre::Vector3 &pos)
     m_pGravityField = new CGravityField(this, 20.0f);
 
     // Create scene
-    attachChild(new CObjectKernel(*this, 20, Ogre::Vector3(5.0f, 11.0f, 0.0f)));
-    attachChild(new CObjectCube(*this, CObjectCube::CUBE, Ogre::Vector3(0.0f, 0.0f, 0.0f)));
+    attachChild(new CObjectKernel(*this, 20, Ogre::Vector3(200.0f, 11.0f, 0.0f)));
+    attachChild(new CObjectCube(*this, CObjectCube::CCUBE, Ogre::Vector3(0.0f, 0.0f, 0.0f)));
 }
 
 void CWorld::init()
