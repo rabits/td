@@ -29,7 +29,7 @@ CObjectKernel::CObjectKernel(CWorld& pWorld, const btScalar mass, const Ogre::Ve
     , m_ForceLeft(0.0)
     , m_ForceRight(0.0)
     , m_ForceJump(0.0)
-    , m_ForceMax(2.5)
+    , m_ForceMax(4.5)
     , m_ForceValue(0.0)
 {
     registerActions();
@@ -76,46 +76,75 @@ void CObjectKernel::update()
     // Draw gravity line
     m_pWorld->m_pDbgDraw->drawLine(m_pBody->getCenterOfMassPosition(), m_pBody->getCenterOfMassPosition() + m_pBody->getGravity()*2, btVector3());
 
-    // Processing action state
-    if( m_ActForward )
-        m_ForceForward += m_ForceValue * 0.1f;
-    else
-        m_ForceForward -= 0.1f;
-    if( m_ActBackward )
-        m_ForceBackward += m_ForceValue * 0.1f;
-    else
-        m_ForceBackward -= 0.1f;
-    if( m_ActLeft )
-        m_ForceLeft += m_ForceValue * 0.1f;
-    else
-        m_ForceLeft -= 0.1f;
-    if( m_ActRight )
-        m_ForceRight += m_ForceValue * 0.1f;
-    else
-        m_ForceRight -= 0.1f;
+    if( m_ActForward || m_ActBackward || m_ActLeft || m_ActRight )
+    {
+        m_pBody->activate();
+        // Processing action state
+        if( m_ActForward )
+            m_ForceForward += 0.1f;
+        else
+            m_ForceForward -= 0.1f;
+        if( m_ActBackward )
+            m_ForceBackward += 0.1f;
+        else
+            m_ForceBackward -= 0.1f;
+        if( m_ActLeft )
+            m_ForceLeft += 0.1f;
+        else
+            m_ForceLeft -= 0.1f;
+        if( m_ActRight )
+            m_ForceRight += 0.1f;
+        else
+            m_ForceRight -= 0.1f;
 
-    // Validation of action states
-    if( m_ForceForward < 0.0f )
-        m_ForceForward = 0.0f;
-    else if( m_ForceForward > m_ForceMax )
-        m_ForceForward = m_ForceMax;
-    if( m_ForceBackward < 0.0f )
-        m_ForceBackward = 0.0f;
-    else if( m_ForceBackward > m_ForceMax )
-        m_ForceBackward = m_ForceMax;
-    if( m_ForceLeft < 0.0f )
-        m_ForceLeft = 0.0f;
-    else if( m_ForceLeft > m_ForceMax )
-        m_ForceLeft = m_ForceMax;
-    if( m_ForceRight < 0.0f )
-        m_ForceRight = 0.0f;
-    else if( m_ForceRight > m_ForceMax )
-        m_ForceRight = m_ForceMax;
+        // Validation of action states
+        if( m_ForceForward < 0.0f )
+            m_ForceForward = 0.0f;
+        if( m_ForceBackward < 0.0f )
+            m_ForceBackward = 0.0f;
+        if( m_ForceLeft < 0.0f )
+            m_ForceLeft = 0.0f;
+        if( m_ForceRight < 0.0f )
+            m_ForceRight = 0.0f;
 
-    // Set rotation
-    m_pBody->setAngularVelocity(btVector3(m_pBody->getAngularVelocity().x(),
-                                          m_ForceBackward - m_ForceForward,
-                                          m_ForceLeft - m_ForceRight));
+        if( m_ForceValue > 0.0f )
+        {
+            if( m_ForceForward > m_ForceMax )
+                m_ForceForward = m_ForceMax * m_ForceValue;
+            else
+                m_ForceForward *= m_ForceValue;
+            if( m_ForceBackward > m_ForceMax )
+                m_ForceBackward = m_ForceMax * m_ForceValue;
+            else
+                m_ForceBackward *= m_ForceValue;
+            if( m_ForceLeft > m_ForceMax )
+                m_ForceLeft = m_ForceMax * m_ForceValue;
+            else
+                m_ForceLeft *= m_ForceValue;
+            if( m_ForceRight > m_ForceMax )
+                m_ForceRight = m_ForceMax * m_ForceValue;
+            else
+                m_ForceRight *= m_ForceValue;
+        }
+        else
+        {
+            if( m_ForceForward > m_ForceMax )
+                m_ForceForward = m_ForceMax;
+            if( m_ForceBackward > m_ForceMax )
+                m_ForceBackward = m_ForceMax;
+            if( m_ForceLeft > m_ForceMax )
+                m_ForceLeft = m_ForceMax;
+            if( m_ForceRight > m_ForceMax )
+                m_ForceRight = m_ForceMax;
+        }
+
+        log_debug("Cube force: F:%6.3f B:%6.3f L:%6.3f R:%6.3f", m_ForceForward, m_ForceBackward, m_ForceLeft, m_ForceRight);
+
+        // Set rotation
+        m_pBody->setAngularVelocity(btVector3(m_pBody->getAngularVelocity().x(),
+                                              m_ForceBackward - m_ForceForward,
+                                              m_ForceLeft - m_ForceRight));
+    }
 }
 
 void CObjectKernel::setObjectState(int iState)
