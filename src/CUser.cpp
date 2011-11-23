@@ -17,11 +17,13 @@
 #include "CGame.h"
 #include "Nerv/CSensor.h"
 #include "Nerv/CAction.h"
+#include "CEye.h"
 
 CUser::CUser()
     : CData("User")
     , m_Name()
     , m_pWorld()
+    , m_pEye()
     , m_Nervs()
     , m_NervMaps()
     , m_CurrentNervMap()
@@ -38,6 +40,7 @@ CUser::CUser(const char* data_file)
     : CData("User")
     , m_Name()
     , m_pWorld()
+    , m_pEye()
     , m_Nervs()
     , m_NervMaps()
     , m_CurrentNervMap()
@@ -48,6 +51,7 @@ CUser::CUser(const char* data_file)
 
 CUser::~CUser()
 {
+    delete m_pEye;
 }
 
 void CUser::init(const char* data_file)
@@ -58,6 +62,9 @@ void CUser::init(const char* data_file)
 
     // Set name
     m_Name = user_config.child_value("name");
+
+    // Create Eye
+    m_pEye = new CEye(CGame::getInstance()->m_pCamera);
 
     // Controlling set
 
@@ -108,6 +115,7 @@ void CUser::init(const char* data_file)
 
 void CUser::update(const Ogre::FrameEvent& evt)
 {
+    m_pEye->update(evt);
 }
 
 void CUser::addNerv(const char* name, unsigned int id)

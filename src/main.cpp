@@ -58,10 +58,12 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
         log_emerg("An unknown exception has occured!");
     }
 
-    log_notice("See you...");
+    log_notice("Exiting...");
 
     // Destroy game in the end
     CGame::destroyInstance();
+
+    log_notice("See you...");
 
     return 0;
 }

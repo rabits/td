@@ -49,14 +49,14 @@ public:
      * @return CGame*
      *
      */
-    static CGame* getInstance(){ if( s_pInstance == NULL ) s_pInstance = new CGame(); return s_pInstance; }
+    inline static CGame* getInstance() { if( s_pInstance == NULL ) s_pInstance = new CGame(); return s_pInstance; }
 
     /** @brief Remove main game object
      *
      * @return void
      *
      */
-    static void   destroyInstance(){ delete s_pInstance; }
+    inline static void   destroyInstance() { delete s_pInstance; }
 
     /** @brief Get current prefix of game
      *
@@ -86,7 +86,7 @@ public:
      * @return void
      *
      */
-    void exit(){ m_ShutDown = true; }
+    inline void exit() { m_ShutDown = true; }
 
     /** @brief Save screenshot
      *
@@ -100,7 +100,7 @@ public:
      * @return unsigned int - Number of milliseconds since start
      *
      */
-    unsigned int time(){ return m_pTimer->getMilliseconds(); }
+    inline unsigned int time() { return m_pTimer->getMilliseconds(); }
 
 
     /** @brief Return environment variable
@@ -108,14 +108,14 @@ public:
      * @param name char const*
      * @return char const*
      */
-    const char* env(const char* name){ return m_data.child("env").child_value(name); }
+    inline const char* env(const char* name) { return m_data.child("env").child_value(name); }
 
     /** @brief Return path variable
      *
      * @param name const char*
      * @return const char*
      */
-    const char* path(const char* name){ return m_data.child("path").child_value(name); }
+    inline const char* path(const char* name) { return m_data.child("path").child_value(name); }
 
     /** @brief Doing need actions
      *
@@ -127,7 +127,7 @@ public:
      *
      * @return CSensor*
      */
-    CSensor* inputHandler(){ return m_pInputHandler; }
+    inline CSensor* inputHandler() { return m_pInputHandler; }
 
 
     Ogre::SceneManager*                     m_pSceneMgr; ///< Scene Manager object

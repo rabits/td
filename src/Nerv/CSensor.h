@@ -171,7 +171,7 @@ protected:
     OIS::Keyboard*     m_pKeyboard; ///< Keyboard device
     OIS::JoyStick*     m_pJoyStick[CONFIG_JOYSTICK_MAX_NUMBER]; ///< Joysticks devices
 
-    int                m_joysticsNum; ///< Number of preset joystics
+    int                m_JoysticsNum; ///< Number of preset joystics
 
     CGame*             m_pGame; ///< Link to game
 

@@ -13,88 +13,75 @@
  */
 #include "CEye.h"
 
-CEye::CEye(Ogre::Camera* camera = NULL)
-    : m_pCamera(camera)
+CEye::CEye(Ogre::Camera* camera)
+    : CControlled("Eye")
+    , m_pCamera(camera)
     , m_cameraPositionLimits()
-    , m_style(EYE_CS_FREELOOK)
-    , m_pTarget(0)
+    , m_Style(EYE_CS_FREELOOK)
+    , m_pTarget()
     , m_orbiting(false)
     , m_zooming(false)
-    , m_topSpeed(150)
-    , m_velocity(Ogre::Vector3::ZERO)
-    , m_goingForward(false)
-    , m_goingBack(false)
-    , m_goingLeft(false)
-    , m_goingRight(false)
-    , m_goingUp(false)
-    , m_goingDown(false)
-    , m_fastMove(false)
+    , m_TopSpeed(150)
+    , m_Velocity(Ogre::Vector3::ZERO)
+    , m_ActForward(false)
+    , m_ActBackward(false)
+    , m_ActLeft(false)
+    , m_ActRight(false)
+    , m_ActUp(false)
+    , m_ActDown(false)
+    , m_ActSpeedUp(false)
 {
-//    if( camera == NULL )
-//        newCamera();
+    registerActions();
 }
 
 CEye::~CEye()
 {
-    //dtor
 }
 
 void CEye::update(const Ogre::FrameEvent& evt)
 {
-    if( m_style == EYE_CS_FREELOOK )
+    if( m_Style == EYE_CS_FREELOOK )
     {
-        // build our acceleration vector based on keyboard input composite
         Ogre::Vector3 accel = Ogre::Vector3::ZERO;
-        if( m_goingForward ) accel += m_pCamera->getDirection();
-        if( m_goingBack ) accel -= m_pCamera->getDirection();
-        if( m_goingRight ) accel += m_pCamera->getRight();
-        if( m_goingLeft ) accel -= m_pCamera->getRight();
-        if( m_goingUp ) accel += m_pCamera->getUp();
-        if( m_goingDown ) accel -= m_pCamera->getUp();
+        if( m_ActForward )  accel += m_pCamera->getDirection();
+        if( m_ActBackward ) accel -= m_pCamera->getDirection();
+        if( m_ActRight )    accel += m_pCamera->getRight();
+        if( m_ActLeft )     accel -= m_pCamera->getRight();
+        if( m_ActUp )       accel += m_pCamera->getUp();
+        if( m_ActDown )     accel -= m_pCamera->getUp();
 
-        // if accelerating, try to reach top speed in a certain time
-        Ogre::Real topSpeed = m_fastMove ? m_topSpeed * 5 : m_topSpeed;
+        Ogre::Real topSpeed = m_ActSpeedUp ? m_TopSpeed * 5 : m_TopSpeed;
         if( accel.squaredLength() != 0 )
         {
             accel.normalise();
-            m_velocity += accel * topSpeed * evt.timeSinceLastFrame * 10;
-        } // if not accelerating, try to stop in a certain time
-        else m_velocity -= m_velocity * evt.timeSinceLastFrame * 10;
+            m_Velocity += accel * topSpeed * evt.timeSinceLastFrame * 10;
+        }
+        else
+            m_Velocity -= m_Velocity * evt.timeSinceLastFrame * 10;
 
         Ogre::Real tooSmall = std::numeric_limits<Ogre::Real>::epsilon();
 
-        // keep camera velocity below top speed and above epsilon
-        if( m_velocity.squaredLength() > (topSpeed * topSpeed) )
+        if( m_Velocity.squaredLength() > (topSpeed * topSpeed) )
         {
-            m_velocity.normalise();
-            m_velocity *= topSpeed;
+            m_Velocity.normalise();
+            m_Velocity *= topSpeed;
         }
-        else if( m_velocity.squaredLength() < (tooSmall * tooSmall) )
-            m_velocity = Ogre::Vector3::ZERO;
+        else if( m_Velocity.squaredLength() < (tooSmall * tooSmall) )
+            m_Velocity = Ogre::Vector3::ZERO;
 
-        if( m_velocity != Ogre::Vector3::ZERO )
-            m_pCamera->move(m_velocity * evt.timeSinceLastFrame);
+        if( m_Velocity != Ogre::Vector3::ZERO )
+            m_pCamera->move(m_Velocity * evt.timeSinceLastFrame);
     }
 }
 
-void CEye::setCamera(Ogre::Camera* cam)
-{
-    m_pCamera = cam;
-}
-
-Ogre::Camera* CEye::getCamera()
-{
-    return m_pCamera;
-}
-
-void CEye::setTarget(Ogre::SceneNode* target)
+void CEye::target(Ogre::SceneNode* target)
 {
     if( target != m_pTarget )
     {
         m_pTarget = target;
         if(target)
         {
-            setYawPitchDist(Ogre::Degree(0), Ogre::Degree(15), 150);
+            yawPitchDist(Ogre::Degree(0), Ogre::Degree(15), 150);
             m_pCamera->setAutoTracking(true, m_pTarget);
         }
         else
@@ -105,12 +92,7 @@ void CEye::setTarget(Ogre::SceneNode* target)
     }
 }
 
-Ogre::SceneNode* CEye::getTarget()
-{
-    return m_pTarget;
-}
-
-void CEye::setYawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, Ogre::Real dist)
+void CEye::yawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, Ogre::Real dist)
 {
     m_pCamera->setPosition(m_pTarget->_getDerivedPosition());
     m_pCamera->setOrientation(m_pTarget->_getDerivedOrientation());
@@ -119,108 +101,93 @@ void CEye::setYawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, Ogre::Real dist
     m_pCamera->moveRelative(Ogre::Vector3(0, 0, dist));
 }
 
-void CEye::setTopSpeed(Ogre::Real topSpeed)
+void CEye::style(CameraStyle style)
 {
-    m_topSpeed = topSpeed;
-}
-
-Ogre::Real CEye::getTopSpeed()
-{
-    return m_topSpeed;
-}
-
-void CEye::setStyle(CameraStyle style)
-{
-    if( m_style != EYE_CS_ORBIT && style == EYE_CS_ORBIT )
+    if( m_Style != EYE_CS_ORBIT && style == EYE_CS_ORBIT )
     {
-        setTarget(m_pTarget ? m_pTarget : m_pCamera->getSceneManager()->getRootSceneNode());
+        target(m_pTarget ? m_pTarget : m_pCamera->getSceneManager()->getRootSceneNode());
         m_pCamera->setFixedYawAxis(true);
-        manualStop();
-        setYawPitchDist(Ogre::Degree(0), Ogre::Degree(15), 150);
+        stop();
+        yawPitchDist(Ogre::Degree(0), Ogre::Degree(15), 150);
 
     }
-    else if( m_style != EYE_CS_FREELOOK && style == EYE_CS_FREELOOK )
+    else if( m_Style != EYE_CS_FREELOOK && style == EYE_CS_FREELOOK )
     {
         m_pCamera->setAutoTracking(false);
         m_pCamera->setFixedYawAxis(true);
     }
-    else if( m_style != EYE_CS_MANUAL && style == EYE_CS_MANUAL )
+    else if( m_Style != EYE_CS_MANUAL && style == EYE_CS_MANUAL )
     {
         m_pCamera->setAutoTracking(false);
-        manualStop();
+        stop();
     }
-    m_style = style;
+    m_Style = style;
 
 }
 
-CEye::CameraStyle CEye::getStyle()
+void CEye::stop()
 {
-    return m_style;
-}
-
-void CEye::manualStop()
-{
-    if( m_style == EYE_CS_FREELOOK )
+    if( m_Style == EYE_CS_FREELOOK )
     {
-        m_goingForward = false;
-        m_goingBack = false;
-        m_goingLeft = false;
-        m_goingRight = false;
-        m_goingUp = false;
-        m_goingDown = false;
-        m_velocity = Ogre::Vector3::ZERO;
+        m_ActForward = false;
+        m_ActBackward = false;
+        m_ActLeft = false;
+        m_ActRight = false;
+        m_ActUp = false;
+        m_ActDown = false;
+        m_Velocity = Ogre::Vector3::ZERO;
+    }
+}
+
+void CEye::registerActions()
+{
+    addAction('f', "Move Forward");
+    addAction('b', "Move Backward");
+    addAction('l', "Move Left");
+    addAction('r', "Move Right");
+    addAction('u', "Move Up");
+    addAction('d', "Move Down");
+    addAction('s', "Speed Up");
+}
+
+void CEye::doAction(char act, CSignal& sig)
+{
+    if( m_Style == EYE_CS_FREELOOK )
+    {
+        switch(act){
+        case 'f':
+            log_debug("Move forward action");
+            m_ActForward = (sig.value() > 0) ? true : false;
+            break;
+        case 'b':
+            log_debug("Move backward action");
+            m_ActBackward = (sig.value() > 0) ? true : false;
+            break;
+        case 'l':
+            log_debug("Move left action");
+            m_ActLeft = (sig.value() > 0) ? true : false;
+            break;
+        case 'r':
+            log_debug("Move right action");
+            m_ActRight = (sig.value() > 0) ? true : false;
+            break;
+        case 'u':
+            log_debug("Move up action");
+            m_ActUp = (sig.value() > 0) ? true : false;
+            break;
+        case 'd':
+            log_debug("Move down action");
+            m_ActDown = (sig.value() > 0) ? true : false;
+            break;
+        case 's':
+            log_debug("Speed up action");
+            m_ActSpeedUp = (sig.value() > 0) ? true : false;
+            break;
+        }
     }
 }
 
 /* Will be replaced by Nerv control system
-
-bool CUser::keyPressed( const OIS::KeyEvent &arg )
-{
-    if( useKeyboard() )
-    {
-        if( m_style == USER_CS_FREELOOK )
-        {
-            if( arg.key == OIS::KC_W || arg.key == OIS::KC_UP ) m_goingForward = true;
-            else if( arg.key == OIS::KC_S || arg.key == OIS::KC_DOWN ) m_goingBack = true;
-            else if( arg.key == OIS::KC_A || arg.key == OIS::KC_LEFT ) m_goingLeft = true;
-            else if( arg.key == OIS::KC_D || arg.key == OIS::KC_RIGHT ) m_goingRight = true;
-            else if( arg.key == OIS::KC_PGUP ) m_goingUp = true;
-            else if( arg.key == OIS::KC_PGDOWN ) m_goingDown = true;
-            else if( arg.key == OIS::KC_LSHIFT ) m_fastMove = true;
-        }
-    }
-
-    return true;
-}
-
-bool CUser::keyReleased( const OIS::KeyEvent &arg )
-{
-    if( useKeyboard() )
-    {
-        if( m_style == USER_CS_FREELOOK )
-        {
-            if( arg.key == OIS::KC_W || arg.key == OIS::KC_UP ) m_goingForward = false;
-            else if( arg.key == OIS::KC_S || arg.key == OIS::KC_DOWN ) m_goingBack = false;
-            else if( arg.key == OIS::KC_A || arg.key == OIS::KC_LEFT ) m_goingLeft = false;
-            else if( arg.key == OIS::KC_D || arg.key == OIS::KC_RIGHT ) m_goingRight = false;
-            else if( arg.key == OIS::KC_PGUP ) m_goingUp = false;
-            else if( arg.key == OIS::KC_PGDOWN ) m_goingDown = false;
-            else if( arg.key == OIS::KC_LSHIFT ) m_fastMove = false;
-        }
-    }
-
-    return true;
-}
-
-bool CUser::mouseMoved( const OIS::MouseEvent &arg )
-{
-    if( useMouse() )
-    {
-//actionLook()
-    }
-
-    return true;
-}
 
 bool CUser::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
@@ -230,7 +197,7 @@ bool CUser::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
         | Processes mouse presses. Only applies for orbit style.
         | Left button is for orbiting, and right button is for zooming.
         ------------------------------------------------------------------------
-        if( m_style == USER_CS_ORBIT )
+        if( m_Style == EYE_CS_ORBIT )
         {
             if( id == OIS::MB_Left ) m_orbiting = true;
             else if( id == OIS::MB_Right ) m_zooming = true;
@@ -248,76 +215,37 @@ bool CUser::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
         | Processes mouse releases. Only applies for orbit style.
         | Left button is for orbiting, and right button is for zooming.
         ------------------------------------------------------------------------
-        if( m_style == USER_CS_ORBIT )
+        if( m_Style == EYE_CS_ORBIT )
         {
             if( id == OIS::MB_Left ) m_orbiting = false;
             else if( id == OIS::MB_Right ) m_zooming = false;
         }
     }
 
-    return true;
-}
+*/
 
-bool CUser::povMoved( const OIS::JoyStickEvent &arg, int pov )
+void CEye::actionMove(Ogre::Vector3& one)
 {
-    if( useJoyStick() )
+    if( m_Style == EYE_CS_FREELOOK )
     {
-    }
-
-    return true;
-}
-
-bool CUser::buttonPressed( const OIS::JoyStickEvent &arg, int button )
-{
-    if( useJoyStick() )
-    {
-    }
-
-    return true;
-}
-
-bool CUser::buttonReleased( const OIS::JoyStickEvent &arg, int button )
-{
-    if( useJoyStick() )
-    {
-    }
-
-    return true;
-}
-
-bool CUser::axisMoved( const OIS::JoyStickEvent &arg, int axis )
-{
-    if( useJoyStick() )
-    {
-    }
-
-    return true;
-}
-
-// ---------- Actions -----------
-
-void CUser::actionMove(Ogre::Vector3 &one)
-{
-    if( m_style == USER_CS_FREELOOK )
-    {
-        m_goingForward = (one.z > 0.0f);
-        m_goingBack = (one.z < 0.0f);
-        m_goingLeft = (one.x < 0.0f);
-        m_goingRight = (one.x > 0.0f);
-        m_goingUp = (one.y > 0.0f);
-        m_goingDown = (one.y < 0.0f);
+        m_ActForward = (one.z > 0.0f);
+        m_ActBackward = (one.z < 0.0f);
+        m_ActLeft = (one.x < 0.0f);
+        m_ActRight = (one.x > 0.0f);
+        m_ActUp = (one.y > 0.0f);
+        m_ActDown = (one.y < 0.0f);
     }
 }
 
-void CUser::actionSpeedBoost(float act)
+void CEye::actionSpeedBoost(float act)
 {
-    if( m_style == USER_CS_FREELOOK )
-        m_fastMove = (act > 0.0f);
+    if( m_Style == EYE_CS_FREELOOK )
+        m_ActSpeedUp = (act > 0.0f);
 }
 
-void CUser::actionLook(Ogre::Vector3 &rel)
+void CEye::actionLook(Ogre::Vector3& rel)
 {
-    if( m_style == USER_CS_ORBIT )
+    if( m_Style == EYE_CS_ORBIT )
     {
         Ogre::Real dist = (m_pCamera->getPosition() - m_pTarget->_getDerivedPosition()).length();
 
@@ -343,10 +271,9 @@ void CUser::actionLook(Ogre::Vector3 &rel)
             m_pCamera->moveRelative(Ogre::Vector3(0, 0, -rel.z * 0.0008f * dist));
         }
     }
-    else if( m_style == USER_CS_FREELOOK )
+    else if( m_Style == EYE_CS_FREELOOK )
     {
         m_pCamera->yaw(Ogre::Degree(-rel.x * 0.15f));
         m_pCamera->pitch(Ogre::Degree(-rel.y * 0.15f));
     }
 }
-*/

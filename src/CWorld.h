@@ -52,13 +52,6 @@ public:
      */
     void update(const Ogre::FrameEvent& evt);
 
-    /** @brief Update from CObject
-     *
-     * @return void
-     *
-     */
-    void update(){}
-
     /** @brief Initialize object
      *
      * @return void

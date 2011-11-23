@@ -49,10 +49,11 @@ public:
 
     /** @brief Update object data, it may be animation or just object translation or so on
      *
+     * @param evt const Ogre::FrameEvent&
      * @return void
      *
      */
-    void update();
+    void update(const Ogre::FrameEvent& evt);
 
     /** @brief Initialize object
      *

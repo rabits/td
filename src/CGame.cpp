@@ -67,9 +67,9 @@ CGame::~CGame()
 
     //Remove ourself as a Window listener
     Ogre::WindowEventUtilities::removeWindowEventListener(m_pWindow, this);
-    windowClosed(m_pWindow);
 
-    delete m_pInputHandler;
+    // m_pInputManager will be destructed by windowClosed
+    windowClosed(m_pWindow);
 
     delete m_pRoot;
     delete m_pLogManager;

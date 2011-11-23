@@ -59,18 +59,19 @@ public:
 
     /** @brief Set cube size
      *
-     * @param eCubeSize CObjectCube::Cube_Size
+     * @param cube_size CObjectCube::Cube_Size
      * @return void
      *
      */
-    void setCubeSize(CObjectCube::Cube_Size eCubeSize);
+    void cubeSize(CObjectCube::Cube_Size cube_size) { m_CubeSize = cube_size; }
 
     /** @brief Update object data, it may be animation or just object translation or so on
      *
+     * @param evt const Ogre::FrameEvent&
      * @return void
      *
      */
-    void update();
+    void update(const Ogre::FrameEvent& evt);
 
     /** @brief Initialize object
      *
@@ -88,8 +89,8 @@ public:
     void setObjectState(int State);
 
 private:
-    CObjectCube::Cube_Size  m_cubeSize; ///< Size of cube
-    int                     m_gravityVolumes[6]; ///< Ids of connected gravity elements
+    CObjectCube::Cube_Size  m_CubeSize; ///< Size of cube
+    int                     m_GravityVolumes[6]; ///< Ids of connected gravity elements
 };
 
 

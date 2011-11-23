@@ -21,7 +21,7 @@ CSensor::CSensor(size_t windowHnd)
     , m_pMouse()
     , m_pKeyboard()
     , m_pJoyStick()
-    , m_joysticsNum()
+    , m_JoysticsNum()
     , m_pGame(CGame::getInstance())
     , m_subscribedUsers()
 {
@@ -59,11 +59,11 @@ CSensor::CSensor(size_t windowHnd)
 
     try
     {
-        m_joysticsNum = std::min(m_pInputManager->getNumberOfDevices(OIS::OISJoyStick), CONFIG_JOYSTICK_MAX_NUMBER);
-        if( m_joysticsNum > 0 )
+        m_JoysticsNum = std::min(m_pInputManager->getNumberOfDevices(OIS::OISJoyStick), CONFIG_JOYSTICK_MAX_NUMBER);
+        if( m_JoysticsNum > 0 )
         {
-            log_info("\tInit %d joysticks:", m_joysticsNum);
-            for( int i = 0; i < m_joysticsNum; i++ )
+            log_info("\tInit %d joysticks:", m_JoysticsNum);
+            for( int i = 0; i < m_JoysticsNum; i++ )
             {
                 m_pJoyStick[i] = static_cast<OIS::JoyStick*>(m_pInputManager->createInputObject( OIS::OISJoyStick, true ));
                 m_pJoyStick[i]->setEventCallback(this);
@@ -94,11 +94,13 @@ CSensor::CSensor(size_t windowHnd)
 
 CSensor::~CSensor()
 {
+    log_debug("Destroying Nerv sensor");
+
     m_pInputManager->destroyInputObject(m_pMouse);
     m_pInputManager->destroyInputObject(m_pKeyboard);
-    if( m_joysticsNum > 0 )
+    if( m_JoysticsNum > 0 )
     {
-        for( int i = 0; i < m_joysticsNum; i++ )
+        for( int i = 0; i < m_JoysticsNum; i++ )
             m_pInputManager->destroyInputObject(m_pJoyStick[i]);
     }
 
@@ -109,15 +111,17 @@ CSensor::~CSensor()
     }
 
     OIS::InputManager::destroyInputSystem(m_pInputManager);
+
+    log_debug("Complete destroying Nerv sensor");
 }
 
 void CSensor::capture()
 {
     m_pKeyboard->capture();
     m_pMouse->capture();
-    if( m_joysticsNum > 0 )
+    if( m_JoysticsNum > 0 )
     {
-        for( int i = 0; i < m_joysticsNum; i++ )
+        for( int i = 0; i < m_JoysticsNum; i++ )
             m_pJoyStick[i]->capture();
     }
 }
@@ -134,7 +138,7 @@ OIS::Keyboard* CSensor::getKeyboard()
 
 OIS::JoyStick* CSensor::getJoyStick(int joyId)
 {
-    if( joyId >= 0 && joyId < m_joysticsNum )
+    if( joyId >= 0 && joyId < m_JoysticsNum )
         return m_pJoyStick[joyId];
     else
         log_warn("Joystick with id#%d not present", joyId);

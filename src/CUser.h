@@ -24,6 +24,7 @@
 #include "CWorld.h"
 
 class CControlled;
+class CEye;
 
 typedef std::multimap<unsigned int, CAction const*> NervMap; ///< SignalId->Action multimap
 typedef std::map<std::string, NervMap> NervMaps; ///< Name->NervMap map
@@ -154,6 +155,7 @@ public:
 protected:
     std::string                        m_Name; ///< User name
     CWorld*                            m_pWorld; ///< User's world
+    CEye*                              m_pEye;   ///< User's eye
 
     Nervs                              m_Nervs; ///< Subscribed events
     NervMaps                           m_NervMaps; ///< Lists with mappings of nervs to actions

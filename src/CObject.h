@@ -102,7 +102,7 @@ public:
      * @return virtual void
      *
      */
-    virtual void update() = 0;
+    virtual void update(const Ogre::FrameEvent& evt) = 0;
 
     /** @brief Initialize object
      *

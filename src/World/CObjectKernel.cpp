@@ -68,7 +68,7 @@ CObjectKernel::~CObjectKernel()
 {
 }
 
-void CObjectKernel::update()
+void CObjectKernel::update(const Ogre::FrameEvent& evt)
 {
     // Update gravity
     m_pBody->setGravity(m_pWorld->m_pGravityField->getObjectGravity(m_pBody->getBroadphaseProxy()->getUid()));
@@ -76,9 +76,10 @@ void CObjectKernel::update()
     // Draw gravity line
     m_pWorld->m_pDbgDraw->drawLine(m_pBody->getCenterOfMassPosition(), m_pBody->getCenterOfMassPosition() + m_pBody->getGravity()*2, btVector3());
 
-    if( m_ActForward || m_ActBackward || m_ActLeft || m_ActRight )
+    if( m_ActForward || m_ActBackward || m_ActLeft || m_ActRight || m_ActJump )
     {
         m_pBody->activate();
+
         // Processing action state
         if( m_ActForward )
             m_ForceForward += 0.1f;
@@ -153,7 +154,7 @@ void CObjectKernel::setObjectState(int iState)
 
 void CObjectKernel::registerActions()
 {
-    addAction('f', "Move Front");
+    addAction('f', "Move Forward");
     addAction('b', "Move Backward");
     addAction('l', "Move Left");
     addAction('r', "Move Right");
@@ -166,7 +167,7 @@ void CObjectKernel::doAction(char act, CSignal& sig)
 
     switch(act){
     case 'f':
-        log_debug("Move front action");
+        log_debug("Move forward action");
         m_ActForward = (sig.value() > 0) ? true : false;
         break;
     case 'b':

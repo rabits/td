@@ -16,7 +16,7 @@
 #include "CGame.h"
 
 CWorld::CWorld(const Ogre::Vector3& pos)
-    : CObject("World", *this)
+    : CObject("World", *this, pos)
     , m_pPhyWorld()
     , m_pGravityField()
     , m_pDbgDraw()
@@ -25,8 +25,6 @@ CWorld::CWorld(const Ogre::Vector3& pos)
     , m_pDispatcher()
     , m_pSolver()
 {
-    m_Position = pos;
-
     m_pNode = m_pGame->m_pSceneMgr->getRootSceneNode()->createChildSceneNode(m_Position);
 
     // Bullet initialisation.
@@ -78,7 +76,7 @@ void CWorld::update(const Ogre::FrameEvent& evt)
 
     // Update childrens
     for( m_itChildrens = m_Childrens.begin() ; m_itChildrens < m_Childrens.end(); m_itChildrens++ )
-        (*m_itChildrens)->update();
+        (*m_itChildrens)->update(evt);
 
     // Clear object in gravity fields map
     m_pGravityField->clearObjectsInGravityField();

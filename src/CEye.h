@@ -15,12 +15,14 @@
 #define CEYE_H
 
 #include <OGRE/Ogre.h>
+#include "Nerv/CControlled.h"
 
 /** @brief It is invisible camera controller
  *
  * Container for camera for connection to controll set
  */
 class CEye
+    : public CControlled
 {
 public:
     /** @brief Constructor
@@ -54,14 +56,14 @@ public:
      * @return void
      *
      */
-    void          setCamera(Ogre::Camera* cam);
+    inline void camera(Ogre::Camera* cam) { m_pCamera = cam; }
 
     /** @brief Get connected camera object
      *
      * @return Ogre::Camera*
      *
      */
-    Ogre::Camera* getCamera();
+    inline Ogre::Camera* camera() { return m_pCamera; }
 
 
     /** @brief Sets the target we will revolve around. Only applies for orbit style
@@ -70,14 +72,14 @@ public:
      * @return void
      *
      */
-    void             setTarget(Ogre::SceneNode* target);
+    void target(Ogre::SceneNode* target);
 
     /** @brief Get target of camera
      *
      * @return Ogre::SceneNode*
      *
      */
-    Ogre::SceneNode* getTarget();
+    inline Ogre::SceneNode* target() { return m_pTarget; }
 
     /** @brief Sets the spatial offset from the target. Only applies for orbit style
      *
@@ -87,23 +89,23 @@ public:
      * @return void
      *
      */
-    void setYawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, Ogre::Real dist);
+    void yawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, Ogre::Real dist);
 
 
     /** @brief Sets the camera's top speed. Only applies for free-look style
      *
-     * @param topSpeed Ogre::Real
+     * @param top_speed Ogre::Real
      * @return void
      *
      */
-    void       setTopSpeed(Ogre::Real topSpeed);
+    inline void topSpeed(Ogre::Real top_speed) { m_TopSpeed = top_speed; }
 
     /** @brief Get top speed
      *
      * @return Ogre::Real
      *
      */
-    Ogre::Real getTopSpeed();
+    inline Ogre::Real topSpeed() { return m_TopSpeed; }
 
 
     /** @brief Sets the movement style of our camera man
@@ -112,14 +114,14 @@ public:
      * @return void
      *
      */
-    void        setStyle(CameraStyle style);
+    void style(CameraStyle style);
 
     /** @brief Get camera controlling style
      *
      * @return CameraStyle
      *
      */
-    CameraStyle getStyle();
+    inline CameraStyle style() { return m_Style; }
 
 
     /** @brief Manually stops the camera when in free-look mode
@@ -127,48 +129,58 @@ public:
      * @return void
      *
      */
-    void manualStop();
+    void stop();
 
-    /* Will be replaced by Nerv controlling system
-
-    // Keyboard events
-    bool keyPressed( const OIS::KeyEvent &arg );
-    bool keyReleased( const OIS::KeyEvent &arg );
-
-    // Mouse events
-    bool mouseMoved( const OIS::MouseEvent &arg );
-    bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-    bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-
-    // Joystick events
-    bool povMoved( const OIS::JoyStickEvent &arg, int pov );
-    bool buttonPressed( const OIS::JoyStickEvent &arg, int button );
-    bool buttonReleased( const OIS::JoyStickEvent &arg, int button );
-    bool axisMoved( const OIS::JoyStickEvent &arg, int axis );
-
+    /** @brief Move eye
+     *
+     * @param one
+     */
     void actionMove(Ogre::Vector3 &one);
+
+    /** @brief Speed boost
+     *
+     * @param act
+     */
     void actionSpeedBoost(float act);
+
+    /** @brief Set look
+     *
+     * @param rel
+     */
     void actionLook(Ogre::Vector3 &rel);
-    */
+
+
+    /** @brief Doing need actions
+     *
+     * @see CControlled::doAction()
+     */
+    void doAction(char act, CSignal& sig);
 
 protected:
+    /** @brief Adding actions
+     *
+     * @see CControlled::registerActions()
+     */
+    void registerActions();
+
     Ogre::Camera*                m_pCamera; ///< Camera object
 
     Ogre::Vector3                m_cameraPositionLimits; ///< Camera limits of posioion
 
-    CameraStyle m_style;
+    CameraStyle m_Style;
     Ogre::SceneNode* m_pTarget;
     bool m_orbiting;
     bool m_zooming;
-    Ogre::Real m_topSpeed;
-    Ogre::Vector3 m_velocity;
-    bool m_goingForward;
-    bool m_goingBack;
-    bool m_goingLeft;
-    bool m_goingRight;
-    bool m_goingUp;
-    bool m_goingDown;
-    bool m_fastMove;
+    Ogre::Real m_TopSpeed;
+    Ogre::Vector3 m_Velocity;
+
+    bool m_ActForward;     ///< Action move forward
+    bool m_ActBackward;    ///< Action move backward
+    bool m_ActLeft;        ///< Action move left
+    bool m_ActRight;       ///< Action move right
+    bool m_ActUp;          ///< Action move up
+    bool m_ActDown;        ///< Action move down
+    bool m_ActSpeedUp;     ///< Action speed up
 
 private:
     /** @brief Fake copy constructor
