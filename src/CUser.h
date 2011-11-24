@@ -19,15 +19,16 @@
 
 #include <OGRE/Ogre.h>
 
-#include "Nerv/CSignal.h"
 #include "CData.h"
 #include "CWorld.h"
 
 class CControlled;
 class CEye;
+class CSynaps;
+class CSignal;
 
-typedef std::multimap<unsigned int, CAction const*> NervMap; ///< SignalId->Action multimap
-typedef std::map<std::string, NervMap> NervMaps; ///< Name->NervMap map
+typedef std::multimap<unsigned int, CSynaps*> SynapsMap; ///< SignalId->Action multimap
+typedef std::map<std::string, SynapsMap> NervMaps; ///< Name->SynapsMap map
 typedef std::map<unsigned int, std::string> Nervs; ///< Nervs of current user (for unsubscribe and list)
 
 /** @brief Self user
@@ -96,21 +97,21 @@ public:
      *
      * @return NervMaps::iterator*
      */
-    NervMap* currentNervMap(){ return &m_NervMaps[m_CurrentNervMap.c_str()]; }
+    SynapsMap* currentSynapsMap(){ return &m_NervMaps[m_CurrentSynapsMap.c_str()]; }
 
     /** @brief Select or create new nerv map with specified name
      *
      * @param name const char* - name of map
      * @return NervMaps::iterator*
      */
-    NervMap* currentNervMap(const char* name){ m_CurrentNervMap = name; return &m_NervMaps[name]; }
+    SynapsMap* currentSynapsMap(const char* name){ m_CurrentSynapsMap = name; return &m_NervMaps[name]; }
 
     /** @brief Map nerv to action in selected nerv map
      *
      * @param nerv_id int - nerv identificator
-     * @param action CAction* - action of need object
+     * @param synaps CSynaps* - synaps with need action
      */
-    void setNervMapping(unsigned int nerv_id, CAction const* action);
+    void setSynapsMapping(unsigned int nerv_id, CSynaps* synaps);
 
     /** @brief Recieve, modify and route to controlled object signal from Sensor
      *
@@ -159,7 +160,7 @@ protected:
 
     Nervs                              m_Nervs; ///< Subscribed events
     NervMaps                           m_NervMaps; ///< Lists with mappings of nervs to actions
-    std::string                        m_CurrentNervMap; ///< Current selected map
+    std::string                        m_CurrentSynapsMap; ///< Current selected map
 
     CControlled*                       m_pControlledObject; ///< Object under control
 

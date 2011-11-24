@@ -14,10 +14,10 @@
 
 #include "Nerv/CSignal.h"
 
-CSignal::CSignal(unsigned int id, float value)
+CSignal::CSignal(unsigned int id, float value, float sens)
     : m_Id(id)
     , m_Value(value)
-    , m_Type()
+    , m_Sensitivity(sens)
 {
 }
 

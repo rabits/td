@@ -17,6 +17,8 @@
 #include "CGame.h"
 #include "Nerv/CSensor.h"
 #include "Nerv/CAction.h"
+#include "Nerv/CSignal.h"
+#include "Nerv/CSynaps.h"
 #include "CEye.h"
 
 CUser::CUser()
@@ -26,7 +28,7 @@ CUser::CUser()
     , m_pEye()
     , m_Nervs()
     , m_NervMaps()
-    , m_CurrentNervMap()
+    , m_CurrentSynapsMap()
     , m_pControlledObject()
 {
     // Loading default skeleton config
@@ -43,7 +45,7 @@ CUser::CUser(const char* data_file)
     , m_pEye()
     , m_Nervs()
     , m_NervMaps()
-    , m_CurrentNervMap()
+    , m_CurrentSynapsMap()
     , m_pControlledObject()
 {
     init(data_file);
@@ -51,6 +53,12 @@ CUser::CUser(const char* data_file)
 
 CUser::~CUser()
 {
+    for( NervMaps::iterator its = m_NervMaps.begin(); its != m_NervMaps.end(); ++its )
+    {
+        for( SynapsMap::iterator it = its->second.begin(); it != its->second.end(); ++it )
+            delete it->second;
+    }
+
     delete m_pEye;
 }
 
@@ -99,8 +107,9 @@ void CUser::init(const char* data_file)
                 CAction* act = obj->getAction(action->attribute("name").value());
                 if( act != NULL )
                 {
-                    log_debug("\tmapping %d->%s", action->attribute("id").as_int(), act->name());
-                    setNervMapping(static_cast<unsigned int>(action->attribute("id").as_int()), act);
+                    unsigned int id = static_cast<unsigned int>(action->attribute("id").as_int());
+                    log_debug("\tmapping %d->%s", id, act->name());
+                    setSynapsMapping(id, new CSynaps(id, act, action->attribute("sensitivity").as_float()));
                 }
                 else
                     log_warn("\tnot found action %s", action->attribute("name").value());
@@ -134,16 +143,16 @@ void CUser::delNerv(unsigned int id)
 bool CUser::nervSignal(CSignal& sig)
 {
     log_debug("USER %s: Recieved signal %d: %f", m_Name.c_str(), sig.id(), sig.value());
-    std::pair<NervMap::iterator, NervMap::iterator> itp = m_NervMaps[m_CurrentNervMap.c_str()].equal_range(sig.id());
-    for( NervMap::iterator it = itp.first; it != itp.second; ++it )
-        it->second->action(sig);
+    std::pair<SynapsMap::iterator, SynapsMap::iterator> itp = m_NervMaps[m_CurrentSynapsMap.c_str()].equal_range(sig.id());
+    for( SynapsMap::iterator it = itp.first; it != itp.second; ++it )
+        it->second->route(sig);
 
     return true;
 }
 
-void CUser::setNervMapping(unsigned int nerv_id, CAction const* action)
+void CUser::setSynapsMapping(unsigned int nerv_id, CSynaps* synaps)
 {
-    m_NervMaps[m_CurrentNervMap.c_str()].insert(std::pair<unsigned int, CAction const*>(nerv_id, action));
+    m_NervMaps[m_CurrentSynapsMap.c_str()].insert(std::pair<unsigned int, CSynaps*>(nerv_id, synaps));
 }
 
 void CUser::save()
