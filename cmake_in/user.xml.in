@@ -41,10 +41,10 @@
           <synaps object="2" id="10030" sensitivity="0.0" name="Move Left" />
           <synaps object="2" id="10032" sensitivity="0.0" name="Move Right" />
           <synaps object="2" id="10042" sensitivity="0.0" name="Speed Up" />
-          <synaps object="2" id="20004" sensitivity="0.3" name="Look Up" />
-          <synaps object="2" id="20003" sensitivity="0.3" name="Look Down" />
-          <synaps object="2" id="20002" sensitivity="0.3" name="Look Left" />
-          <synaps object="2" id="20001" sensitivity="0.3" name="Look Right" />
+          <synaps object="2" id="20003" sensitivity="0.01" name="Look Up" />
+          <synaps object="2" id="20002" sensitivity="0.01" name="Look Down" />
+          <synaps object="2" id="20001" sensitivity="0.01" name="Look Left" />
+          <synaps object="2" id="20000" sensitivity="0.01" name="Look Right" />
         </mapping>
       </control>
     </config>

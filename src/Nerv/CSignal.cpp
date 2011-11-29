@@ -15,9 +15,9 @@
 #include "Nerv/CSignal.h"
 
 CSignal::CSignal()
-    : m_Id()
-    , m_Value()
-    , m_Sensitivity()
+    : m_Id(0)
+    , m_Value(0.0)
+    , m_Sensitivity(0.0)
 {
 }
 

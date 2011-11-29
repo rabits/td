@@ -201,6 +201,12 @@ private:
     int m_LastMouseX; ///< Last mouse move X
     int m_LastMouseY; ///< Last mouse move Y
     int m_LastMouseZ; ///< Last mouse move Z
+
+    int m_LastPovX;     ///< Last joystick pov X
+    int m_LastPovY;     ///< Last joystick pov Y
+
+    int m_JoyStickZero; ///< Zero for sticks on joystick
+    bool m_ChangedAxis[16]; ///< Axis of joystick has changed and need to send zero Signal
 };
 
 #endif // CSENSOR_H

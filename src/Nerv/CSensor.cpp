@@ -28,6 +28,9 @@ CSensor::CSensor(size_t windowHnd)
     , m_LastMouseX(0)
     , m_LastMouseY(0)
     , m_LastMouseZ(0)
+    , m_JoyStickZero(200)
+    , m_LastPovX(0)
+    , m_LastPovY(0)
 {
     m_DeviceType[0] = "Unknown";
     m_DeviceType[1] = "Keyboard";
@@ -297,9 +300,9 @@ bool CSensor::mouseMoved( const OIS::MouseEvent& arg )
         m_LastMouseX = arg.state.X.rel;
 
         if( arg.state.X.rel > 0 )
-            sig = CSignal(genId(OIS::OISMouse, 0, 1), static_cast<float>(arg.state.X.rel), 0.05f);
+            sig = CSignal(genId(OIS::OISMouse, 0, 0), static_cast<float>(arg.state.X.rel), 0.05f);
         else
-            sig = CSignal(genId(OIS::OISMouse, 0, 2), static_cast<float>(-arg.state.X.rel), 0.05f);
+            sig = CSignal(genId(OIS::OISMouse, 0, 1), static_cast<float>(-arg.state.X.rel), 0.05f);
 
         SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
         if( user != m_subscribedUsers[OIS::OISMouse].end() )
@@ -311,9 +314,9 @@ bool CSensor::mouseMoved( const OIS::MouseEvent& arg )
         m_LastMouseY = arg.state.Y.rel;
 
         if( arg.state.Y.rel > 0 )
-            sig = CSignal(genId(OIS::OISMouse, 0, 3), static_cast<float>(arg.state.Y.rel), 0.05f);
+            sig = CSignal(genId(OIS::OISMouse, 0, 2), static_cast<float>(arg.state.Y.rel), 0.05f);
         else
-            sig = CSignal(genId(OIS::OISMouse, 0, 4), static_cast<float>(-arg.state.Y.rel), 0.05f);
+            sig = CSignal(genId(OIS::OISMouse, 0, 3), static_cast<float>(-arg.state.Y.rel), 0.05f);
 
         SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
         if( user != m_subscribedUsers[OIS::OISMouse].end() )
@@ -325,9 +328,9 @@ bool CSensor::mouseMoved( const OIS::MouseEvent& arg )
         m_LastMouseZ = arg.state.Z.rel;
 
         if( arg.state.Z.rel > 0 )
-            sig = CSignal(genId(OIS::OISMouse, 0, 5), static_cast<float>(arg.state.Z.rel), 0.004166f);
+            sig = CSignal(genId(OIS::OISMouse, 0, 4), static_cast<float>(arg.state.Z.rel), 0.004166f);
         else
-            sig = CSignal(genId(OIS::OISMouse, 0, 6), static_cast<float>(-arg.state.Z.rel), 0.004166f);
+            sig = CSignal(genId(OIS::OISMouse, 0, 5), static_cast<float>(-arg.state.Z.rel), 0.004166f);
 
         SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
         if( user != m_subscribedUsers[OIS::OISMouse].end() )
@@ -367,31 +370,69 @@ bool CSensor::mouseReleased( const OIS::MouseEvent& arg, OIS::MouseButtonID butt
 
 bool CSensor::povMoved( const OIS::JoyStickEvent& arg, int pov )
 {
-    // Log
-    std::string out = "";
-    if( arg.state.mPOV[pov].direction & OIS::Pov::North ) //Going up
-        out += "North";
-    else if( arg.state.mPOV[pov].direction & OIS::Pov::South ) //Going down
-        out += "South";
-    if( arg.state.mPOV[pov].direction & OIS::Pov::East ) //Going right
-        out += "East";
-    else if( arg.state.mPOV[pov].direction & OIS::Pov::West ) //Going left
-        out += "West";
-    if( arg.state.mPOV[pov].direction == OIS::Pov::Centered ) //stopped/centered out
-        out += "Centered";
-    log_debug("Joystick \"%s\" POV #%d moved: %s (%d)", arg.device->vendor().c_str(), pov, out.c_str(), arg.state.mPOV[pov].direction);
+    // @todo Realize many joysticks
+    CSignal sig;
 
-    // @todo Realize Signal interface
+    // X axis
+    if( arg.state.mPOV[pov].direction & OIS::Pov::West )
+    {
+        sig = CSignal(genId(OIS::OISJoyStick, 0, 0), 1.0);
+        m_LastPovX = 1;
+    }
+    else if( arg.state.mPOV[pov].direction & OIS::Pov::East )
+    {
+        sig = CSignal(genId(OIS::OISJoyStick, 0, 1), 1.0);
+        m_LastPovX = 2;
+    }
+    else if( m_LastPovX != 0 )
+    {
+        sig = CSignal(genId(OIS::OISJoyStick, 0, m_LastPovX), 0.0);
+        m_LastPovX = 0;
+    }
+
+    if( sig.id() != 0 )
+    {
+        SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
+        if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
+            user->second->nervSignal(sig);
+    }
+
+    // Y axis
+    if( arg.state.mPOV[pov].direction & OIS::Pov::North )
+    {
+        sig = CSignal(genId(OIS::OISJoyStick, 0, 2), 1.0);
+        m_LastPovY = 3;
+    }
+    else if( arg.state.mPOV[pov].direction & OIS::Pov::South )
+    {
+        sig = CSignal(genId(OIS::OISJoyStick, 0, 3), 1.0);
+        m_LastPovY = 4;
+    }
+    else if( m_LastPovY != 0 )
+    {
+        sig = CSignal(genId(OIS::OISJoyStick, 0, m_LastPovY), 0.0);
+        m_LastPovY = 0;
+    }
+
+    if( sig.id() != 0 )
+    {
+        SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
+        if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
+            user->second->nervSignal(sig);
+    }
+
+    log_debug("Joystick id#%d POV #%d moved: %d", arg.device->getID(), pov, arg.state.mPOV[pov].direction);
 
     return true;
 }
 
 bool CSensor::buttonPressed( const OIS::JoyStickEvent& arg, int button )
 {
+    // @todo Realize many joysticks
     log_debug("Joystick \"%s\" button #%d pressed", arg.device->vendor().c_str(), button);
 
     // Converting joystick button press to nerv Signal
-    CSignal sig(genId(OIS::OISJoyStick, 0, button), 1.0);
+    CSignal sig(genId(OIS::OISJoyStick, 1, button), 1.0);
 
     SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
     if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
@@ -402,10 +443,11 @@ bool CSensor::buttonPressed( const OIS::JoyStickEvent& arg, int button )
 
 bool CSensor::buttonReleased( const OIS::JoyStickEvent& arg, int button )
 {
+    // @todo Realize many joysticks
     log_debug("Joystick \"%s\" button #%d released", arg.device->vendor().c_str(), button);
 
     // Converting joystick button release to nerv Signal
-    CSignal sig(genId(OIS::OISJoyStick, 0, button), 0.0);
+    CSignal sig(genId(OIS::OISJoyStick, 1, button), 0.0);
 
     SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
     if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
@@ -416,9 +458,42 @@ bool CSensor::buttonReleased( const OIS::JoyStickEvent& arg, int button )
 
 bool CSensor::axisMoved( const OIS::JoyStickEvent& arg, int axis )
 {
-    log_debug("Joystick \"%s\" Axis #%d moved, Value: %d", arg.device->vendor().c_str(), axis, arg.state.mAxes[static_cast<unsigned int>(axis)].abs);
+    // @todo Realize many joysticks
+    int value = arg.state.mAxes[static_cast<unsigned int>(axis)].abs;
 
-    // @todo Realize Signal interface
+    // Separate axis by sign and change value if needed
+    axis *= 2;
+    if( value > 0 )
+        axis++;
+    else
+        value = (-value) - 1;
+
+    log_debug("Joystick \"%s\" Axis #%d moved, Value: %d", arg.device->vendor().c_str(), axis, value);
+
+    if( axis > 15 )
+        return log_warn("Stick %d not supported now - maximum is 4 sticks per one Joystick", axis/4);
+
+    CSignal sig;
+    if( (std::abs(value) < m_JoyStickZero) )
+    {
+        if( m_ChangedAxis[axis] == true )
+        {
+            m_ChangedAxis[axis] = false;
+            sig = CSignal(genId(OIS::OISJoyStick, 2, axis), 0.0);
+        }
+    }
+    else
+    {
+        m_ChangedAxis[axis] = true;
+        sig = CSignal(genId(OIS::OISJoyStick, 2, axis), static_cast<float>(value) / 32767.0f);
+    }
+
+    if( sig.id() != 0 )
+    {
+        SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
+        if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
+            user->second->nervSignal(sig);
+    }
 
     return true;
 }

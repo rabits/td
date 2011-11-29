@@ -307,7 +307,7 @@ void CEye::actionLook(Ogre::Vector3& rel)
     }
     else if( m_Style == EYE_CS_FREELOOK )
     {
-        m_pCamera->yaw(Ogre::Degree(-rel.x * 2));
-        m_pCamera->pitch(Ogre::Degree(-rel.y * 2));
+        m_pCamera->yaw(Ogre::Degree(-rel.x * 4));
+        m_pCamera->pitch(Ogre::Degree(-rel.y * 4));
     }
 }
