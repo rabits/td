@@ -24,6 +24,10 @@
 class CSignal
 {
 public:
+    /** @brief Default constructor
+     */
+    CSignal();
+
     /** @brief Constructor
      *
      * @param id unsigned int

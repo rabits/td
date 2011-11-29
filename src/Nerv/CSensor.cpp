@@ -24,6 +24,10 @@ CSensor::CSensor(size_t windowHnd)
     , m_JoysticsNum()
     , m_pGame(CGame::getInstance())
     , m_subscribedUsers()
+    , m_CleanMouse(-1)
+    , m_LastMouseX(0)
+    , m_LastMouseY(0)
+    , m_LastMouseZ(0)
 {
     m_DeviceType[0] = "Unknown";
     m_DeviceType[1] = "Keyboard";
@@ -117,8 +121,25 @@ CSensor::~CSensor()
 
 void CSensor::capture()
 {
+    // Capture keyboard
     m_pKeyboard->capture();
+
+    // Clean move and capture of mouse
+    if( m_CleanMouse >= 0 )
+    {
+        m_CleanMouse = m_CleanMouse - 1;
+        if( m_CleanMouse == -1 )
+        {
+            log_debug("Cleaning mouse move %d", m_CleanMouse);
+            OIS::MouseState mouse_state = m_pMouse->getMouseState();
+            mouse_state.clear();
+            OIS::MouseEvent mouse_event(m_pMouse, mouse_state);
+            mouseMoved(mouse_event);
+        }
+    }
     m_pMouse->capture();
+
+    // Capture joystics
     if( m_JoysticsNum > 0 )
     {
         for( int i = 0; i < m_JoysticsNum; i++ )
@@ -265,7 +286,53 @@ bool CSensor::mouseMoved( const OIS::MouseEvent& arg )
     log_debug("MouseMoved: Abs(%d,%d,%d) Rel(%d,%d,%d)", arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs
               , arg.state.X.rel, arg.state.Y.rel, arg.state.Z.rel);
 
-    // @todo Realize Signal interface
+    if( arg.state.X.rel || arg.state.Y.rel || arg.state.Z.rel )
+        m_CleanMouse = 2;
+
+    CSignal sig;
+
+    // Converting mouse move into nerv Signal
+    if( arg.state.X.rel != m_LastMouseX )
+    {
+        m_LastMouseX = arg.state.X.rel;
+
+        if( arg.state.X.rel > 0 )
+            sig = CSignal(genId(OIS::OISMouse, 0, 1), static_cast<float>(arg.state.X.rel), 0.05f);
+        else
+            sig = CSignal(genId(OIS::OISMouse, 0, 2), static_cast<float>(-arg.state.X.rel), 0.05f);
+
+        SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
+        if( user != m_subscribedUsers[OIS::OISMouse].end() )
+            user->second->nervSignal(sig);
+    }
+
+    if( arg.state.Y.rel != m_LastMouseY )
+    {
+        m_LastMouseY = arg.state.Y.rel;
+
+        if( arg.state.Y.rel > 0 )
+            sig = CSignal(genId(OIS::OISMouse, 0, 3), static_cast<float>(arg.state.Y.rel), 0.05f);
+        else
+            sig = CSignal(genId(OIS::OISMouse, 0, 4), static_cast<float>(-arg.state.Y.rel), 0.05f);
+
+        SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
+        if( user != m_subscribedUsers[OIS::OISMouse].end() )
+            user->second->nervSignal(sig);
+    }
+
+    if( arg.state.Z.rel != m_LastMouseZ )
+    {
+        m_LastMouseZ = arg.state.Z.rel;
+
+        if( arg.state.Z.rel > 0 )
+            sig = CSignal(genId(OIS::OISMouse, 0, 5), static_cast<float>(arg.state.Z.rel), 0.004166f);
+        else
+            sig = CSignal(genId(OIS::OISMouse, 0, 6), static_cast<float>(-arg.state.Z.rel), 0.004166f);
+
+        SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
+        if( user != m_subscribedUsers[OIS::OISMouse].end() )
+            user->second->nervSignal(sig);
+    }
 
     return true;
 }
@@ -275,7 +342,7 @@ bool CSensor::mousePressed( const OIS::MouseEvent& arg, OIS::MouseButtonID butto
     log_debug("Mouse pressed #%d", button);
 
     // Converting mouse button press to nerv Signal
-    CSignal sig(genId(OIS::OISMouse, 0, button), 1.0);
+    CSignal sig(genId(OIS::OISMouse, 1, button), 1.0);
 
     SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
     if( user != m_subscribedUsers[OIS::OISMouse].end() )
@@ -289,7 +356,7 @@ bool CSensor::mouseReleased( const OIS::MouseEvent& arg, OIS::MouseButtonID butt
     log_debug("Mouse released #%d", button);
 
     // Converting mouse button release to nerv Signal
-    CSignal sig(genId(OIS::OISMouse, 0, button), 0.0);
+    CSignal sig(genId(OIS::OISMouse, 1, button), 0.0);
 
     SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
     if( user != m_subscribedUsers[OIS::OISMouse].end() )

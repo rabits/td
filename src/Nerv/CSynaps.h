@@ -47,7 +47,7 @@ public:
      *
      * @param sens float - coefficient
      */
-    inline void sensitivity(float sens) { m_Sensitivity = sens; }
+    inline void sensitivity(float sens) { if( sens > 0.0f ) m_Sensitivity = sens; }
 
     /** @brief Set coefficient of sensitivity
      *
@@ -67,6 +67,20 @@ protected:
     float        m_Sensitivity; ///< Sensitivity changes
 
 private:
+    /** @brief Fake copy constructor
+     *
+     * @param obj const CSynaps&
+     *
+     * @todo create copy constructor
+     */
+    CSynaps(const CSynaps& obj);
+    /** @brief Fake eq operator
+     *
+     * @param obj const CSynaps&
+     *
+     * @toto create eq copy operator
+     */
+    CSynaps& operator=(const CSynaps& obj);
 };
 
 #endif // CSynaps_H

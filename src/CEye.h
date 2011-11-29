@@ -181,6 +181,10 @@ protected:
     bool m_ActUp;          ///< Action move up
     bool m_ActDown;        ///< Action move down
     bool m_ActSpeedUp;     ///< Action speed up
+    bool m_ActLookUpDown;       ///< Action look up-down
+    bool m_ActLookLeftRight;    ///< Action look left-right
+    float m_ValLookUpDown;      ///< Value look up-down
+    float m_ValLookLeftRight;   ///< Value look left-right
 
 private:
     /** @brief Fake copy constructor

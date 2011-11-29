@@ -196,6 +196,11 @@ private:
     inline unsigned int genId(OIS::Type dev, int dev_number, int button){ return static_cast<unsigned int>(dev) * 10000u + static_cast<unsigned int>(dev_number) * 1000u + static_cast<unsigned int>(button); }
 
     std::string        m_DeviceType[6]; ///< Device types
+
+    int m_CleanMouse; ///< Frames to clean mouse device move
+    int m_LastMouseX; ///< Last mouse move X
+    int m_LastMouseY; ///< Last mouse move Y
+    int m_LastMouseZ; ///< Last mouse move Z
 };
 
 #endif // CSENSOR_H

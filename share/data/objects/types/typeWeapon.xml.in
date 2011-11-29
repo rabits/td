@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<td version="${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}">
+  <TypeWeapon>
+    <config>
+      <name>Weapon</name>
+      <dependencies>
+        <parameter name="">
+          <value name=""/>
+        </parameter>
+      </dependencies>
+      <services>
+        <parameter name="">
+          <min></min>
+          <max></max>
+        </parameter>
+      </services>
+    </config>
+  </TypeWeapon>
+</td>

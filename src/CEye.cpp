@@ -30,6 +30,10 @@ CEye::CEye(Ogre::Camera* camera)
     , m_ActUp(false)
     , m_ActDown(false)
     , m_ActSpeedUp(false)
+    , m_ActLookUpDown(false)
+    , m_ActLookLeftRight(false)
+    , m_ValLookUpDown(0.0f)
+    , m_ValLookLeftRight(0.0f)
 {
     registerActions();
 }
@@ -71,6 +75,12 @@ void CEye::update(const Ogre::FrameEvent& evt)
 
         if( m_Velocity != Ogre::Vector3::ZERO )
             m_pCamera->move(m_Velocity * evt.timeSinceLastFrame);
+
+        if( m_ActLookUpDown || m_ActLookLeftRight )
+        {
+            Ogre::Vector3 look_direction(m_ValLookLeftRight, m_ValLookUpDown, 0.0f);
+            actionLook(look_direction);
+        }
     }
 }
 
@@ -148,6 +158,10 @@ void CEye::registerActions()
     addAction('u', "Move Up");
     addAction('d', "Move Down");
     addAction('s', "Speed Up");
+    addAction('U', "Look Up");
+    addAction('D', "Look Down");
+    addAction('L', "Look Left");
+    addAction('R', "Look Right");
 }
 
 void CEye::doAction(char act, CSignal& sig)
@@ -182,6 +196,26 @@ void CEye::doAction(char act, CSignal& sig)
         case 's':
             log_debug("Speed up action");
             m_ActSpeedUp = (sig.value() > 0) ? true : false;
+            break;
+        case 'U':
+            log_debug("Look up action");
+            m_ActLookUpDown = (sig.value() > 0) ? true : false;
+            m_ValLookUpDown = -sig.value();
+            break;
+        case 'D':
+            log_debug("Look down action");
+            m_ActLookUpDown = (sig.value() > 0) ? true : false;
+            m_ValLookUpDown = sig.value();
+            break;
+        case 'L':
+            log_debug("Lok left action");
+            m_ActLookLeftRight = (sig.value() > 0) ? true : false;
+            m_ValLookLeftRight = -sig.value();
+            break;
+        case 'R':
+            log_debug("Look right action");
+            m_ActLookLeftRight = (sig.value() > 0) ? true : false;
+            m_ValLookLeftRight = sig.value();
             break;
         }
     }
@@ -263,17 +297,17 @@ void CEye::actionLook(Ogre::Vector3& rel)
         else if( m_zooming )  // move the camera toward or away from the target
         {
             // the further the camera is, the faster it moves
-            m_pCamera->moveRelative(Ogre::Vector3(0, 0, rel.y * 0.004f * dist));
+            m_pCamera->moveRelative(Ogre::Vector3(0, 0, rel.y * dist));
         }
         else if( rel.z != 0 )  // move the camera toward or away from the target
         {
             // the further the camera is, the faster it moves
-            m_pCamera->moveRelative(Ogre::Vector3(0, 0, -rel.z * 0.0008f * dist));
+            m_pCamera->moveRelative(Ogre::Vector3(0, 0, -rel.z * dist));
         }
     }
     else if( m_Style == EYE_CS_FREELOOK )
     {
-        m_pCamera->yaw(Ogre::Degree(-rel.x * 0.15f));
-        m_pCamera->pitch(Ogre::Degree(-rel.y * 0.15f));
+        m_pCamera->yaw(Ogre::Degree(-rel.x * 2));
+        m_pCamera->pitch(Ogre::Degree(-rel.y * 2));
     }
 }

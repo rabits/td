@@ -19,8 +19,10 @@
 CSynaps::CSynaps(unsigned int id, CAction* act, float sens)
     : m_Id(id)
     , m_Action(act)
-    , m_Sensitivity(sens)
+    , m_Sensitivity()
 {
+    if( sens > 0.0f )
+        m_Sensitivity = sens;
 }
 
 CSynaps::~CSynaps()

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<td version="${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}">
+  <ObjectCamera>
+    <config>
+      <names>
+        <name></name>
+      </names>
+      <health>
+        <min></min>
+        <max></max>
+      </health>
+      <types>
+        <dependency name="">
+          <parameter name="">
+            <min></min>
+            <max></max>
+          </parameter>
+        </dependency>
+        <service name="">
+          <parameter name="">
+            <min></min>
+            <max></max>
+          </parameter>
+        </service>
+      </types>
+    </config>
+  </ObjectCamera>
+</td>

@@ -18,6 +18,10 @@
           <nerv id="10030" name="a" />
           <nerv id="10032" name="d" />
           <nerv id="10042" name="Shift_L" />
+          <nerv id="20001" name="MouseUp" />
+          <nerv id="20002" name="MouseDown" />
+          <nerv id="20003" name="MouseLeft" />
+          <nerv id="20004" name="MouseRight" />
         </nervs>
         <mapping>
           <synaps object="Game" id="10200" sensitivity="0.0" name="Up" />
@@ -37,6 +41,10 @@
           <synaps object="2" id="10030" sensitivity="0.0" name="Move Left" />
           <synaps object="2" id="10032" sensitivity="0.0" name="Move Right" />
           <synaps object="2" id="10042" sensitivity="0.0" name="Speed Up" />
+          <synaps object="2" id="20004" sensitivity="0.0" name="Look Up" />
+          <synaps object="2" id="20003" sensitivity="0.0" name="Look Down" />
+          <synaps object="2" id="20002" sensitivity="0.0" name="Look Left" />
+          <synaps object="2" id="20001" sensitivity="0.0" name="Look Right" />
         </mapping>
       </control>
     </config>

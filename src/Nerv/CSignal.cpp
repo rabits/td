@@ -14,6 +14,13 @@
 
 #include "Nerv/CSignal.h"
 
+CSignal::CSignal()
+    : m_Id()
+    , m_Value()
+    , m_Sensitivity()
+{
+}
+
 CSignal::CSignal(unsigned int id, float value, float sens)
     : m_Id(id)
     , m_Value(value)
