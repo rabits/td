@@ -121,11 +121,9 @@ bool CGame::initialise()
     if( ! loadData(config_path.c_str()) )
         log_notice("Can't load user configuration \"%s\"", config_path.c_str());
 
-    // Loading gettext messages locale
+    // Loading gettext messages for default locale on this machine
     config_path = CGame::getPrefix() / fs::path(path("root_data")) / path("locale");
-    std::setlocale(LC_ALL, "");
-    bindtextdomain(CONFIG_TD_NAME, config_path.c_str());
-    textdomain(CONFIG_TD_NAME);
+    setLocale(config_path.c_str());
 
     // Initialise OGRE
     initOgre();
@@ -599,4 +597,12 @@ void CGame::doAction(char act, CSignal& sig)
             break;
         }
     }
+}
+
+void CGame::setLocale(const char* messages_path, const char* locale)
+{
+    std::setlocale(LC_ALL, locale);
+    std::setlocale(LC_NUMERIC, "C");
+    bindtextdomain(CONFIG_TD_NAME, messages_path);
+    textdomain(CONFIG_TD_NAME);
 }

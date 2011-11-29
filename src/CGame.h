@@ -205,6 +205,13 @@ private:
      */
     bool initGame();
 
+    /** @brief This function changes program locale
+     *
+     * @param messages_path const char* - Path to directory with locale messages was be searched
+     * @param locale const char* ("") - Need locale, "" - is default
+     */
+    void setLocale(const char* messages_path, const char* locale = "");
+
     /** @brief Frame listener of info panel
      *
      * @return void

@@ -108,7 +108,7 @@ void CUser::init(const char* data_file)
                 if( act != NULL )
                 {
                     unsigned int id = static_cast<unsigned int>(action->attribute("id").as_int());
-                    log_debug("\tmapping %d->%s", id, act->name());
+                    log_debug("\tmapping %d->%s (sens:%f)", id, act->name(), action->attribute("sensitivity").as_float());
                     setSynapsMapping(id, new CSynaps(id, act, action->attribute("sensitivity").as_float()));
                 }
                 else
