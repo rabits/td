@@ -16,13 +16,17 @@
 #include "Nerv/CSignal.h"
 #include "Nerv/CAction.h"
 
-CSynaps::CSynaps(unsigned int id, CAction* act, float sens)
+CSynaps::CSynaps(unsigned int id, CAction* act, float sens, float limit)
     : m_Id(id)
     , m_Action(act)
     , m_Sensitivity()
+    , m_Limit()
+    , m_LastValue(0.0f)
 {
     if( sens > 0.0f )
         m_Sensitivity = sens;
+    if( limit > 0.0f )
+        m_Limit = limit;
 }
 
 CSynaps::~CSynaps()
@@ -33,9 +37,21 @@ void CSynaps::route(CSignal &sig)
 {
     if( m_Sensitivity > 0.0f )
         sig.sensitivity(m_Sensitivity);
+    if( m_Limit > 0.0f )
+        sig.limit(m_Limit);
+
+    float value = sig.value();
 
     if( m_Action )
-        m_Action->action(sig);
+    {
+        if( m_LastValue != value )
+        {
+            m_Action->action(sig);
+            m_LastValue = value;
+        }
+        else
+            log_debug("Drop signal as already been send (%f == %f)", m_LastValue, value);
+    }
     else
         EXCEPTION("Synaps: Can't provide signal to bad action");
 }

@@ -33,8 +33,9 @@ public:
      * @param id unsigned int
      * @param value float
      * @param sens float
+     * @param limit float
      */
-    CSignal(unsigned int id, float value, float sens = 1.0f);
+    CSignal(unsigned int id, float value, float sens = 1.0f, float limit = 0.0f);
 
     /** @brief Destructor
      */
@@ -52,24 +53,37 @@ public:
      * @return float
      *
      */
-    inline float value() { return std::min(m_Value * m_Sensitivity, 1.0f); }
+    float value();
 
     /** @brief Set coefficient of sensitivity
      *
-     * @param sens float - coefficient
+     * @param sens float - coefficient of value
      */
     inline void sensitivity(float sens) { m_Sensitivity = sens; }
 
-    /** @brief Set coefficient of sensitivity
+    /** @brief Get coefficient
      *
-     * @param sens float - coefficient
+     * @return float - coefficient of value
      */
-    inline float sensitivity() { return m_Sensitivity; }
+    inline float sensitivity() const { return m_Sensitivity; }
+
+    /** @brief Set minimal non-zero value
+     *
+     * @param limit float - Minimal non-zero value
+     */
+    inline void limit(float limit) { m_Limit = limit; }
+
+    /** @brief Get minimal non-zero value
+     *
+     * @return float - Minimal non-zero value
+     */
+    inline float limit() const { return m_Limit; }
 
 protected:
     unsigned int m_Id;    ///< Id
     float        m_Value; ///< Value
     float        m_Sensitivity; ///< Sensitivity
+    float        m_Limit;       ///< Minimal non-zero value
 
 private:
 };

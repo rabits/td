@@ -16,18 +16,26 @@
 
 CSignal::CSignal()
     : m_Id(0)
-    , m_Value(0.0)
-    , m_Sensitivity(0.0)
+    , m_Value(0.0f)
+    , m_Sensitivity(0.0f)
+    , m_Limit(0.0f)
 {
 }
 
-CSignal::CSignal(unsigned int id, float value, float sens)
+CSignal::CSignal(unsigned int id, float value, float sens, float limit)
     : m_Id(id)
     , m_Value(value)
     , m_Sensitivity(sens)
+    , m_Limit(limit)
 {
 }
 
 CSignal::~CSignal()
 {
+}
+
+float CSignal::value()
+{
+    float value = std::min(m_Value * m_Sensitivity, 1.0f);
+    return (m_Limit > value) ? 0.0f : value;
 }

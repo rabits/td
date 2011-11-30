@@ -28,9 +28,9 @@ CSensor::CSensor(size_t windowHnd)
     , m_LastMouseX(0)
     , m_LastMouseY(0)
     , m_LastMouseZ(0)
-    , m_JoyStickZero(200)
     , m_LastPovX(0)
     , m_LastPovY(0)
+    , m_JoyStickZero(200)
 {
     m_DeviceType[0] = "Unknown";
     m_DeviceType[1] = "Keyboard";
@@ -286,6 +286,7 @@ bool CSensor::keyReleased( const OIS::KeyEvent& arg )
 
 bool CSensor::mouseMoved( const OIS::MouseEvent& arg )
 {
+    // @todo Fix left-right and up-down
     log_debug("MouseMoved: Abs(%d,%d,%d) Rel(%d,%d,%d)", arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs
               , arg.state.X.rel, arg.state.Y.rel, arg.state.Z.rel);
 
@@ -297,44 +298,53 @@ bool CSensor::mouseMoved( const OIS::MouseEvent& arg )
     // Converting mouse move into nerv Signal
     if( arg.state.X.rel != m_LastMouseX )
     {
-        m_LastMouseX = arg.state.X.rel;
-
-        if( arg.state.X.rel > 0 )
-            sig = CSignal(genId(OIS::OISMouse, 0, 0), static_cast<float>(arg.state.X.rel), 0.05f);
+        if( arg.state.X.rel < 0 )
+            sig = CSignal(genId(OIS::OISMouse, 0, SENS_LEFT), static_cast<float>(-arg.state.X.rel), 0.05f);
+        else if( arg.state.X.rel > 0 )
+            sig = CSignal(genId(OIS::OISMouse, 0, SENS_RIGHT), static_cast<float>(arg.state.X.rel), 0.05f);
         else
-            sig = CSignal(genId(OIS::OISMouse, 0, 1), static_cast<float>(-arg.state.X.rel), 0.05f);
+            sig = CSignal(genId(OIS::OISMouse, 0, (m_LastMouseX < 0) ? SENS_LEFT : SENS_RIGHT),
+                          static_cast<float>(arg.state.X.rel), 0.05f);
 
         SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
         if( user != m_subscribedUsers[OIS::OISMouse].end() )
             user->second->nervSignal(sig);
+
+        m_LastMouseX = arg.state.X.rel;
     }
 
     if( arg.state.Y.rel != m_LastMouseY )
     {
-        m_LastMouseY = arg.state.Y.rel;
-
-        if( arg.state.Y.rel > 0 )
-            sig = CSignal(genId(OIS::OISMouse, 0, 2), static_cast<float>(arg.state.Y.rel), 0.05f);
+        if( arg.state.Y.rel < 0 )
+            sig = CSignal(genId(OIS::OISMouse, 0, SENS_UP), static_cast<float>(-arg.state.Y.rel), 0.05f);
+        else if( arg.state.Y.rel > 0 )
+            sig = CSignal(genId(OIS::OISMouse, 0, SENS_DOWN), static_cast<float>(arg.state.Y.rel), 0.05f);
         else
-            sig = CSignal(genId(OIS::OISMouse, 0, 3), static_cast<float>(-arg.state.Y.rel), 0.05f);
+            sig = CSignal(genId(OIS::OISMouse, 0, (m_LastMouseY < 0) ? SENS_UP : SENS_DOWN),
+                          static_cast<float>(arg.state.Z.rel), 0.05f);
 
         SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
         if( user != m_subscribedUsers[OIS::OISMouse].end() )
             user->second->nervSignal(sig);
+
+        m_LastMouseY = arg.state.Y.rel;
     }
 
     if( arg.state.Z.rel != m_LastMouseZ )
     {
-        m_LastMouseZ = arg.state.Z.rel;
-
-        if( arg.state.Z.rel > 0 )
-            sig = CSignal(genId(OIS::OISMouse, 0, 4), static_cast<float>(arg.state.Z.rel), 0.004166f);
+        if( arg.state.Z.rel < 0 )
+            sig = CSignal(genId(OIS::OISMouse, 0, SENS_IMMERSION), static_cast<float>(-arg.state.Z.rel), 0.004166f);
+        else if( arg.state.Z.rel > 0 )
+            sig = CSignal(genId(OIS::OISMouse, 0, SENS_EMERSION), static_cast<float>(arg.state.Z.rel), 0.004166f);
         else
-            sig = CSignal(genId(OIS::OISMouse, 0, 5), static_cast<float>(-arg.state.Z.rel), 0.004166f);
+            sig = CSignal(genId(OIS::OISMouse, 0, (m_LastMouseZ < 0) ? SENS_IMMERSION : SENS_EMERSION),
+                          static_cast<float>(arg.state.Z.rel), 0.05f);
 
         SigUser::iterator user = m_subscribedUsers[OIS::OISMouse].find(sig.id());
         if( user != m_subscribedUsers[OIS::OISMouse].end() )
             user->second->nervSignal(sig);
+
+        m_LastMouseZ = arg.state.Z.rel;
     }
 
     return true;
@@ -490,6 +500,7 @@ bool CSensor::axisMoved( const OIS::JoyStickEvent& arg, int axis )
 
     if( sig.id() != 0 )
     {
+        log_debug("Joystick Axis #%d moved, Id#%d Value: %f", axis, sig.id(), sig.value());
         SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
         if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
             user->second->nervSignal(sig);

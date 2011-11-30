@@ -29,8 +29,9 @@ public:
      * @param id unsigned int
      * @param act CAction*
      * @param sens float
+     * @param limit float
      */
-    CSynaps(unsigned int id, CAction* act, float sens = 0.0f);
+    CSynaps(unsigned int id, CAction* act, float sens = 0.0f, float limit = 0.0f);
 
     /** @brief Destructor
      */
@@ -45,15 +46,27 @@ public:
 
     /** @brief Set coefficient of sensitivity
      *
-     * @param sens float - coefficient
+     * @param sens float - coefficient of value
      */
     inline void sensitivity(float sens) { if( sens > 0.0f ) m_Sensitivity = sens; }
 
-    /** @brief Set coefficient of sensitivity
+    /** @brief Get coefficient
      *
-     * @param sens float - coefficient
+     * @return float - coefficient of value
      */
     inline float sensitivity() const { return m_Sensitivity; }
+
+    /** @brief Set minimal non-zero value
+     *
+     * @param limit float - Minimal non-zero value
+     */
+    inline void limit(float limit) { if( limit > 0.0f ) m_Limit = limit; }
+
+    /** @brief Get minimal non-zero value
+     *
+     * @return float - Minimal non-zero value
+     */
+    inline float limit() const { return m_Limit; }
 
     /** @brief Route and change Signal by Synaps settings
      *
@@ -65,6 +78,8 @@ protected:
     unsigned int m_Id;          ///< Signal id
     CAction*     m_Action;      ///< Reference to connected Action
     float        m_Sensitivity; ///< Sensitivity changes
+    float        m_Limit;       ///< Minimal non-zero value
+    float        m_LastValue;   ///< Last sended signal
 
 private:
     /** @brief Fake copy constructor

@@ -41,6 +41,14 @@ public:
      */
     ~CSensor();
 
+    enum {
+        SENS_LEFT      = 0, ///< X Left
+        SENS_RIGHT     = 1, ///< X Right
+        SENS_UP        = 2, ///< Y Up
+        SENS_DOWN      = 3, ///< Y Down
+        SENS_IMMERSION = 4, ///< Z Up
+        SENS_EMERSION  = 5  ///< Z Down
+    };
 
     /** @brief Capture of events in mouse, keyboard or joystics
      *

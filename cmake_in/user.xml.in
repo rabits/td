@@ -18,33 +18,55 @@
           <nerv id="10030" name="a" />
           <nerv id="10032" name="d" />
           <nerv id="10042" name="Shift_L" />
-          <nerv id="20001" name="MouseUp" />
-          <nerv id="20002" name="MouseDown" />
-          <nerv id="20003" name="MouseLeft" />
-          <nerv id="20004" name="MouseRight" />
+          <nerv id="20000" name="MouseUp" />
+          <nerv id="20001" name="MouseDown" />
+          <nerv id="20002" name="MouseLeft" />
+          <nerv id="20003" name="MouseRight" />
+          <nerv id="10017" name="w" />
+          <nerv id="10031" name="s" />
+          <nerv id="10030" name="a" />
+          <nerv id="10032" name="d" />
+          <nerv id="32000" name="JoyStick0Up" />
+          <nerv id="32001" name="JoyStick0Down" />
+          <nerv id="32002" name="JoyStick0Left" />
+          <nerv id="32003" name="JoyStick0Right" />
+          <nerv id="32004" name="JoyStick1Up" />
+          <nerv id="32005" name="JoyStick1Down" />
+          <nerv id="32006" name="JoyStick1Left" />
+          <nerv id="32007" name="JoyStick1Right" />
+          <nerv id="31001" name="JoyKey2" />
         </nervs>
         <mapping>
-          <synaps object="Game" id="10200" sensitivity="0.0" name="Up" />
-          <synaps object="Game" id="10208" sensitivity="0.0" name="Down" />
-          <synaps object="Game" id="10203" sensitivity="0.0" name="Left" />
-          <synaps object="Game" id="10205" sensitivity="0.0" name="Right" />
-          <synaps object="Game" id="10028" sensitivity="0.0" name="Yes" />
-          <synaps object="Game" id="10001" sensitivity="0.0" name="No" />
-          <synaps object="Game" id="10183" sensitivity="0.0" name="Screen Shot" />
-          <synaps object="Game" id="10001" sensitivity="0.0" name="Exit" />
-          <synaps object="1" id="10200" sensitivity="0.0" name="Move Forward" />
-          <synaps object="1" id="10208" sensitivity="0.0" name="Move Backward" />
-          <synaps object="1" id="10203" sensitivity="0.0" name="Move Left" />
-          <synaps object="1" id="10205" sensitivity="0.0" name="Move Right" />
-          <synaps object="2" id="10017" sensitivity="0.0" name="Move Forward" />
-          <synaps object="2" id="10031" sensitivity="0.0" name="Move Backward" />
-          <synaps object="2" id="10030" sensitivity="0.0" name="Move Left" />
-          <synaps object="2" id="10032" sensitivity="0.0" name="Move Right" />
-          <synaps object="2" id="10042" sensitivity="0.0" name="Speed Up" />
-          <synaps object="2" id="20003" sensitivity="0.01" name="Look Up" />
-          <synaps object="2" id="20002" sensitivity="0.01" name="Look Down" />
-          <synaps object="2" id="20001" sensitivity="0.01" name="Look Left" />
-          <synaps object="2" id="20000" sensitivity="0.01" name="Look Right" />
+          <synaps object="Game" id="10200" name="Up" />
+          <synaps object="Game" id="10208" name="Down" />
+          <synaps object="Game" id="10203" name="Left" />
+          <synaps object="Game" id="10205" name="Right" />
+          <synaps object="Game" id="10028" name="Yes" />
+          <synaps object="Game" id="10001" name="No" />
+          <synaps object="Game" id="10183" name="Screen Shot" />
+          <synaps object="Game" id="10001" name="Exit" />
+          <synaps object="1" id="10200" name="Move Forward" />
+          <synaps object="1" id="10208" name="Move Backward" />
+          <synaps object="1" id="10203" name="Move Left" />
+          <synaps object="1" id="10205" name="Move Right" />
+          <synaps object="2" id="10017" name="Move Forward" />
+          <synaps object="2" id="10031" name="Move Backward" />
+          <synaps object="2" id="10030" name="Move Left" />
+          <synaps object="2" id="10032" name="Move Right" />
+          <synaps object="2" id="10042" name="Speed Up" />
+          <synaps object="2" id="20000" sensitivity="0.01" name="Look Left" />
+          <synaps object="2" id="20001" sensitivity="0.01" name="Look Right" />
+          <synaps object="2" id="20002" sensitivity="0.01" name="Look Up" />
+          <synaps object="2" id="20003" sensitivity="0.01" name="Look Down" />
+          <synaps object="2" id="32000" sensitivity="0.0" name="Move Forward" />
+          <synaps object="2" id="32001" sensitivity="0.0" name="Move Backward" />
+          <synaps object="2" id="32002" sensitivity="0.0" name="Move Left" />
+          <synaps object="2" id="32003" sensitivity="0.0" name="Move Right" />
+          <synaps object="2" id="31001" sensitivity="0.0" name="Speed Up" />
+          <synaps object="2" id="32004" sensitivity="0.1" limit="0.001" name="Look Up" />
+          <synaps object="2" id="32005" sensitivity="0.1" limit="0.001" name="Look Down" />
+          <synaps object="2" id="32006" sensitivity="0.1" limit="0.001" name="Look Left" />
+          <synaps object="2" id="32007" sensitivity="0.1" limit="0.001" name="Look Right" />
         </mapping>
       </control>
     </config>
