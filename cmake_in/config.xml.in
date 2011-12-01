@@ -14,12 +14,6 @@
       <ogre>
         <plugins>
           <!-- Plugins for Ogre -->
-          <plugin value="Plugin_ParticleFX" />
-          <plugin value="Plugin_BSPSceneManager" />
-          <plugin value="Plugin_CgProgramManager" />
-          <plugin value="Plugin_PCZSceneManager" />
-          <plugin value="Plugin_OctreeZone" />
-          <plugin value="Plugin_OctreeSceneManager" />
         </plugins>
         <video choice="OpenGL">
           <!-- Video render engines -->
@@ -43,14 +37,10 @@
         </video>
         <resources>
           <!-- Path to ogre resources (from $root_data/$data or $home_data/$data) -->
-          <Bootstrap>
-            <Zip value="graphic/OgreCore.zip" />
-            <Zip value="graphic/SdkTrays.zip" />
-          </Bootstrap>
           <General>
             <FileSystem value="graphic" />
             <FileSystem value="graphic/meshes" />
-            <FileSystem value="graphic/textures" />
+            <FileSystem value="graphic/materials" />
           </General>
         </resources>
       </ogre>

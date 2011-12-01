@@ -33,9 +33,3 @@ CSignal::CSignal(unsigned int id, float value, float sens, float limit)
 CSignal::~CSignal()
 {
 }
-
-float CSignal::value()
-{
-    float value = std::min(m_Value * m_Sensitivity, 1.0f);
-    return (m_Limit > value) ? 0.0f : value;
-}

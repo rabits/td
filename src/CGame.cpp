@@ -34,8 +34,6 @@ CGame::CGame()
    , CControlled("Game")
    , m_pSceneMgr()
    , m_pCamera()
-   , m_pTrayMgr()
-   , m_pDetailsPanel()
    , m_oCurrentWorld()
    , m_pInputHandler()
    , m_pWindow()
@@ -62,8 +60,10 @@ CGame::~CGame()
     for( m_oCurrentUser = m_Users.begin() ; m_oCurrentUser < m_Users.end(); m_oCurrentUser++ )
         delete (*m_oCurrentUser);
 
-    delete m_pTrayMgr;
     delete m_pTimer;
+
+    // Remove debug drawer
+    delete DebugDrawer::getSingletonPtr();
 
     //Remove ourself as a Window listener
     Ogre::WindowEventUtilities::removeWindowEventListener(m_pWindow, this);
@@ -140,6 +140,11 @@ bool CGame::initialise()
     // Initialise Game
     initGame();
 
+#ifdef CONFIG_DEBUG
+    log_info("Init debug drawer");
+    new DebugDrawer(m_pSceneMgr, 0.5f);
+#endif
+
     log_info("Complete configuration");
 
     return true;
@@ -182,7 +187,6 @@ bool CGame::initOgre()
 
     // Loading root object
     m_pRoot = new Ogre::Root("", "", "");
-
 
     // Get plugin directory
     fs::path ogre_plugins_dir(path("ogre_plugins"));
@@ -398,7 +402,7 @@ bool CGame::initGame()
     log_notice("Initialising Game");
 
     log_info("Creating root scene");
-    m_pSceneMgr = m_pRoot->createSceneManager(Ogre::ST_GENERIC);
+    m_pSceneMgr = m_pRoot->createSceneManager(Ogre::ST_EXTERIOR_REAL_FAR);
 
     log_info("Creating main camera");
     // Create the camera
@@ -409,6 +413,11 @@ bool CGame::initGame()
     // Look back along -Z
     m_pCamera->lookAt(Ogre::Vector3(0.0,0.0,0.0));
     m_pCamera->setNearClipDistance(0.01f);
+
+    // Create light
+    m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+    Ogre::Light* l = m_pSceneMgr->createLight("MainLight");
+    l->setPosition(200,200,200);
 
     log_info("Creating viewport");
     // Create one viewport, entire window
@@ -472,36 +481,12 @@ void CGame::createFrameListener()
     //Register as a Window listener
     Ogre::WindowEventUtilities::addWindowEventListener(m_pWindow, this);
 
-    m_pTrayMgr = new OgreBites::SdkTrayManager("InterfaceName", m_pWindow, m_pInputHandler->getMouse(), this);
-    m_pTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
-    m_pTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
-    m_pTrayMgr->hideCursor();
-
-    // create a params panel for displaying sample details
-    Ogre::StringVector items;
-    items.push_back("cam.pX");
-    items.push_back("cam.pY");
-    items.push_back("cam.pZ");
-    items.push_back("");
-    items.push_back("cam.oW");
-    items.push_back("cam.oX");
-    items.push_back("cam.oY");
-    items.push_back("cam.oZ");
-    items.push_back("");
-    items.push_back("Filtering");
-    items.push_back("Poly Mode");
-
-    m_pDetailsPanel = m_pTrayMgr->createParamsPanel(OgreBites::TL_NONE, "DetailsPanel", 200, items);
-    m_pDetailsPanel->setParamValue(9, "Bilinear");
-    m_pDetailsPanel->setParamValue(10, "Solid");
-    m_pDetailsPanel->hide();
-
+    // Register frame listener
     m_pRoot->addFrameListener(this);
 }
 
 bool CGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
-//    kernelObj->update();
     if(m_pWindow->isClosed())
         return false;
 
@@ -510,27 +495,6 @@ bool CGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
 
     //Need to capture/update each device
     m_pInputHandler->capture();
-
-    m_pTrayMgr->frameRenderingQueued(evt);
-
-    // Updating worlds
-    updateWorlds(evt);
-    // Updating users
-    updateUsers(evt);
-
-    if( !m_pTrayMgr->isDialogVisible() )
-    {
-        if( m_pDetailsPanel->isVisible() )   // if details panel is visible, then update its contents
-        {
-            m_pDetailsPanel->setParamValue(0, Ogre::StringConverter::toString(m_pCamera->getDerivedPosition().x));
-            m_pDetailsPanel->setParamValue(1, Ogre::StringConverter::toString(m_pCamera->getDerivedPosition().y));
-            m_pDetailsPanel->setParamValue(2, Ogre::StringConverter::toString(m_pCamera->getDerivedPosition().z));
-            m_pDetailsPanel->setParamValue(4, Ogre::StringConverter::toString(m_pCamera->getDerivedOrientation().w));
-            m_pDetailsPanel->setParamValue(5, Ogre::StringConverter::toString(m_pCamera->getDerivedOrientation().x));
-            m_pDetailsPanel->setParamValue(6, Ogre::StringConverter::toString(m_pCamera->getDerivedOrientation().y));
-            m_pDetailsPanel->setParamValue(7, Ogre::StringConverter::toString(m_pCamera->getDerivedOrientation().z));
-        }
-    }
 
     return true;
 }
@@ -549,6 +513,22 @@ void CGame::updateUsers(const Ogre::FrameEvent& evt)
 
 bool CGame::frameStarted(const Ogre::FrameEvent& evt)
 {
+    // Updating worlds
+    updateWorlds(evt);
+    // Updating users
+    updateUsers(evt);
+
+#ifdef CONFIG_DEBUG
+    DebugDrawer::getSingleton().build();
+#endif
+    return true;
+}
+
+bool CGame::frameEnded(const Ogre::FrameEvent& evt)
+{
+#ifdef CONFIG_DEBUG
+    DebugDrawer::getSingleton().clear();
+#endif
     return true;
 }
 

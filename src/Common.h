@@ -33,12 +33,17 @@ namespace fs = boost::filesystem3;
 
 #include <OGRE/OgreTimer.h>
 
+#ifdef CONFIG_DEBUG
+#   include "OgreDebugDrawer/DebugDrawer.h"
+#endif
+
 #define _(string) gettext(string) ///< Gettext define
 
 #ifdef CONFIG_DEBUG
 #   define log_debug(format, ...)   Common::CLog::log(Common::CLog::LogLevel::LOG_DEBUG, format, ##__VA_ARGS__) ///< Debug log
 #   define log_info(format, ...)    Common::CLog::log(Common::CLog::LogLevel::LOG_INFO, format, ##__VA_ARGS__)  ///< Info log
 #   define EXCEPTION(message)       Common::Exception(message, __FUNCTION__, __FILE__, __LINE__)                ///< Hard exception
+#   define ODD                      DebugDrawer::getSingleton()                                                 ///< Ogre Debug Drawer
 #else
 #   define log_debug(format, ...)   /* not logged */                         ///< Disabled Debug log
 #   define log_info(format, ...)    /* not logged */                         ///< Disabled Info log

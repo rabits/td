@@ -174,12 +174,7 @@ protected:
     Ogre::Real m_TopSpeed;
     Ogre::Vector3 m_Velocity;
 
-    bool m_ActForward;     ///< Action move forward
-    bool m_ActBackward;    ///< Action move backward
-    bool m_ActLeft;        ///< Action move left
-    bool m_ActRight;       ///< Action move right
-    bool m_ActUp;          ///< Action move up
-    bool m_ActDown;        ///< Action move down
+    Ogre::Vector3 m_ActMove; ///< Action move
     bool m_ActSpeedUp;     ///< Action speed up
     bool m_ActLookUpDown;       ///< Action look up-down
     bool m_ActLookLeftRight;    ///< Action look left-right

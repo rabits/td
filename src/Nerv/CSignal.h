@@ -53,7 +53,7 @@ public:
      * @return float
      *
      */
-    float value();
+    inline float value() { return (m_Limit > m_Value) ? 0.0f : std::min(m_Value * m_Sensitivity, 1.0f); }
 
     /** @brief Set coefficient of sensitivity
      *

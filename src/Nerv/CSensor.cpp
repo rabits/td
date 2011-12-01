@@ -30,7 +30,7 @@ CSensor::CSensor(size_t windowHnd)
     , m_LastMouseZ(0)
     , m_LastPovX(0)
     , m_LastPovY(0)
-    , m_JoyStickZero(200)
+    , m_JoyStickZero(2048)
 {
     m_DeviceType[0] = "Unknown";
     m_DeviceType[1] = "Keyboard";
@@ -182,84 +182,53 @@ bool CSensor::keyPressed( const OIS::KeyEvent& arg )
         user->second->nervSignal(sig);
 
     // @todo Move control of game to CGame object Actions
-
-    if( m_pGame->m_pTrayMgr->isDialogVisible() ) return true;   // don't process any more keys if dialog is up
-
-    if( arg.key == OIS::KC_F )   // toggle visibility of advanced frame stats
+    if( arg.key == OIS::KC_T )
     {
-        m_pGame->m_pTrayMgr->toggleAdvancedFrameStats();
-    }
-    else if( arg.key == OIS::KC_G )   // toggle visibility of even rarer debugging details
-    {
-        if( m_pGame->m_pDetailsPanel->getTrayLocation() == OgreBites::TL_NONE )
-        {
-            m_pGame->m_pTrayMgr->moveWidgetToTray(m_pGame->m_pDetailsPanel, OgreBites::TL_TOPRIGHT, 0);
-            m_pGame->m_pDetailsPanel->show();
-        }
-        else
-        {
-            m_pGame->m_pTrayMgr->removeWidgetFromTray(m_pGame->m_pDetailsPanel);
-            m_pGame->m_pDetailsPanel->hide();
-        }
-    }
-    else if( arg.key == OIS::KC_T )   // cycle polygon rendering mode
-    {
-        std::string newVal;
+        // Cycle filter rendering mode
+        Ogre::FilterOptions ft = Ogre::MaterialManager::getSingleton().getDefaultTextureFiltering(Ogre::FT_MIN);
         Ogre::TextureFilterOptions tfo;
         unsigned int aniso;
 
-        switch( m_pGame->m_pDetailsPanel->getParamValue(9).asUTF8()[0] )
+        switch( ft )
         {
-            case 'B':
-                newVal = "Trilinear";
+            case Ogre::FO_POINT:
                 tfo = Ogre::TFO_TRILINEAR;
                 aniso = 1;
                 break;
-            case 'T':
-                newVal = "Anisotropic";
+            case Ogre::FO_LINEAR:
                 tfo = Ogre::TFO_ANISOTROPIC;
                 aniso = 8;
                 break;
-            case 'A':
-                newVal = "None";
-                tfo = Ogre::TFO_NONE;
-                aniso = 1;
-                break;
             default:
-                newVal = "Bilinear";
-                tfo = Ogre::TFO_BILINEAR;
+                tfo = Ogre::TFO_NONE;
                 aniso = 1;
         }
 
         Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(tfo);
         Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(aniso);
-        m_pGame->m_pDetailsPanel->setParamValue(9, newVal);
     }
-    else if( arg.key == OIS::KC_R )   // cycle polygon rendering mode
+    else if( arg.key == OIS::KC_R )
     {
-        std::string newVal;
+        // Cycle polygon rendering mode
         Ogre::PolygonMode pm;
 
         switch( m_pGame->m_pCamera->getPolygonMode() )
         {
             case Ogre::PM_SOLID:
-                newVal = "Wireframe";
                 pm = Ogre::PM_WIREFRAME;
                 break;
             case Ogre::PM_WIREFRAME:
-                newVal = "Points";
                 pm = Ogre::PM_POINTS;
                 break;
             default:
-                newVal = "Solid";
                 pm = Ogre::PM_SOLID;
         }
 
         m_pGame->m_pCamera->setPolygonMode(pm);
-        m_pGame->m_pDetailsPanel->setParamValue(10, newVal);
     }
-    else if( arg.key == OIS::KC_F5 )   // refresh all textures
+    else if( arg.key == OIS::KC_F5 )
     {
+        // Refresh all textures
         Ogre::TextureManager::getSingleton().reloadAll();
     }
     else if( arg.key == OIS::KC_Q )
@@ -478,13 +447,18 @@ bool CSensor::axisMoved( const OIS::JoyStickEvent& arg, int axis )
     else
         value = (-value) - 1;
 
-    log_debug("Joystick \"%s\" Axis #%d moved, Value: %d", arg.device->vendor().c_str(), axis, value);
+    log_debug("Joystick \"%s\" Axis #%d moved, Value: %d (%d)", arg.device->vendor().c_str(), axis, value);
 
     if( axis > 15 )
         return log_warn("Stick %d not supported now - maximum is 4 sticks per one Joystick", axis/4);
 
     CSignal sig;
-    if( (std::abs(value) < m_JoyStickZero) )
+    if( (std::abs(value) > m_JoyStickZero) )
+    {
+        m_ChangedAxis[axis] = true;
+        sig = CSignal(genId(OIS::OISJoyStick, 2, axis), static_cast<float>(value) / 32767.0f);
+    }
+    else
     {
         if( m_ChangedAxis[axis] == true )
         {
@@ -492,15 +466,23 @@ bool CSensor::axisMoved( const OIS::JoyStickEvent& arg, int axis )
             sig = CSignal(genId(OIS::OISJoyStick, 2, axis), 0.0);
         }
     }
-    else
-    {
-        m_ChangedAxis[axis] = true;
-        sig = CSignal(genId(OIS::OISJoyStick, 2, axis), static_cast<float>(value) / 32767.0f);
-    }
 
     if( sig.id() != 0 )
     {
         log_debug("Joystick Axis #%d moved, Id#%d Value: %f", axis, sig.id(), sig.value());
+        SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
+        if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
+            user->second->nervSignal(sig);
+    }
+
+    // Nulling opposite direction
+    axis += (1+axis)%2-axis%2;
+    if( m_ChangedAxis[axis] == true )
+    {
+        log_debug("Nulling opposite direction #%d", axis);
+        m_ChangedAxis[axis] = false;
+        sig = CSignal(genId(OIS::OISJoyStick, 2, axis), 0.0);
+
         SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
         if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
             user->second->nervSignal(sig);

@@ -38,7 +38,6 @@ class CGame
     : CData
     , Ogre::FrameListener
     , Ogre::WindowEventListener
-    , OgreBites::SdkTrayListener
     , public CControlled
 {
 public:
@@ -132,9 +131,6 @@ public:
 
     Ogre::SceneManager*                     m_pSceneMgr; ///< Scene Manager object
     Ogre::Camera*                           m_pCamera; ///< Main camera
-
-    OgreBites::SdkTrayManager*              m_pTrayMgr; ///< Tray Manager object
-    OgreBites::ParamsPanel*                 m_pDetailsPanel; ///< Sample details panel
 
     std::vector<CWorld*>::iterator          m_oCurrentWorld; ///< Current processing world
 
@@ -250,6 +246,14 @@ private:
      *
      */
     bool frameStarted(const Ogre::FrameEvent& evt);
+
+    /** @brief Event on end frame
+     *
+     * @param evt const Ogre::FrameEvent&
+     * @return bool
+     *
+     */
+    bool frameEnded(const Ogre::FrameEvent& evt);
 
 
     /** @brief Adjust mouse clipping area

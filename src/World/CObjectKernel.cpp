@@ -139,13 +139,16 @@ void CObjectKernel::update(const Ogre::FrameEvent& evt)
                 m_ForceRight = m_ForceMax;
         }
 
-        log_debug("Cube force: F:%6.3f B:%6.3f L:%6.3f R:%6.3f", m_ForceForward, m_ForceBackward, m_ForceLeft, m_ForceRight);
+        //log_debug("Cube force: F:%6.3f B:%6.3f L:%6.3f R:%6.3f", m_ForceForward, m_ForceBackward, m_ForceLeft, m_ForceRight);
 
         // Set rotation
-        m_pBody->setAngularVelocity(btVector3(m_pBody->getAngularVelocity().x(),
-                                              m_ForceBackward - m_ForceForward,
-                                              m_ForceLeft - m_ForceRight));
+        m_pBody->setAngularVelocity(m_pBody->getAngularVelocity().rotate(m_pBody->getGravity(), 0.1f));
+        //m_pBody->setAngularVelocity(btVector3(m_pBody->getAngularVelocity().x(),
+        //                                      m_ForceBackward - m_ForceForward,
+        //                                      m_ForceLeft - m_ForceRight));
     }
+
+    ODD.drawCuboid(m_pEntity->getBoundingBox().getAllCorners(), Ogre::ColourValue::Red, true);
 }
 
 void CObjectKernel::setObjectState(int iState)

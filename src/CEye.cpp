@@ -13,6 +13,8 @@
  */
 #include "CEye.h"
 
+#include "CGame.h"
+
 CEye::CEye(Ogre::Camera* camera)
     : CControlled("Eye")
     , m_pCamera(camera)
@@ -23,12 +25,7 @@ CEye::CEye(Ogre::Camera* camera)
     , m_zooming(false)
     , m_TopSpeed(150)
     , m_Velocity(Ogre::Vector3::ZERO)
-    , m_ActForward(false)
-    , m_ActBackward(false)
-    , m_ActLeft(false)
-    , m_ActRight(false)
-    , m_ActUp(false)
-    , m_ActDown(false)
+    , m_ActMove(Ogre::Vector3::ZERO)
     , m_ActSpeedUp(false)
     , m_ActLookUpDown(false)
     , m_ActLookLeftRight(false)
@@ -47,12 +44,12 @@ void CEye::update(const Ogre::FrameEvent& evt)
     if( m_Style == EYE_CS_FREELOOK )
     {
         Ogre::Vector3 accel = Ogre::Vector3::ZERO;
-        if( m_ActForward )  accel += m_pCamera->getDirection();
-        if( m_ActBackward ) accel -= m_pCamera->getDirection();
-        if( m_ActRight )    accel += m_pCamera->getRight();
-        if( m_ActLeft )     accel -= m_pCamera->getRight();
-        if( m_ActUp )       accel += m_pCamera->getUp();
-        if( m_ActDown )     accel -= m_pCamera->getUp();
+        if( m_ActMove.z > 0.0f ) accel += m_pCamera->getDirection();
+        if( m_ActMove.z < 0.0f ) accel -= m_pCamera->getDirection();
+        if( m_ActMove.x > 0.0f ) accel += m_pCamera->getRight();
+        if( m_ActMove.x < 0.0f ) accel -= m_pCamera->getRight();
+        if( m_ActMove.y > 0.0f ) accel += m_pCamera->getUp();
+        if( m_ActMove.y < 0.0f ) accel -= m_pCamera->getUp();
 
         Ogre::Real topSpeed = m_ActSpeedUp ? m_TopSpeed * 5 : m_TopSpeed;
         if( accel.squaredLength() != 0 )
@@ -139,12 +136,7 @@ void CEye::stop()
 {
     if( m_Style == EYE_CS_FREELOOK )
     {
-        m_ActForward = false;
-        m_ActBackward = false;
-        m_ActLeft = false;
-        m_ActRight = false;
-        m_ActUp = false;
-        m_ActDown = false;
+        m_ActMove = Ogre::Vector3::ZERO;
         m_Velocity = Ogre::Vector3::ZERO;
     }
 }
@@ -171,27 +163,27 @@ void CEye::doAction(char act, CSignal& sig)
         switch(act){
         case 'f':
             log_debug("Move forward action");
-            m_ActForward = (sig.value() > 0) ? true : false;
+            m_ActMove.z = sig.value();
             break;
         case 'b':
             log_debug("Move backward action");
-            m_ActBackward = (sig.value() > 0) ? true : false;
+            m_ActMove.z = -sig.value();
             break;
         case 'l':
             log_debug("Move left action");
-            m_ActLeft = (sig.value() > 0) ? true : false;
+            m_ActMove.x = -sig.value();
             break;
         case 'r':
             log_debug("Move right action");
-            m_ActRight = (sig.value() > 0) ? true : false;
+            m_ActMove.x = sig.value();
             break;
         case 'u':
             log_debug("Move up action");
-            m_ActUp = (sig.value() > 0) ? true : false;
+            m_ActMove.y = sig.value();
             break;
         case 'd':
             log_debug("Move down action");
-            m_ActDown = (sig.value() > 0) ? true : false;
+            m_ActMove.y = -sig.value();
             break;
         case 's':
             log_debug("Speed up action");
@@ -208,7 +200,7 @@ void CEye::doAction(char act, CSignal& sig)
             m_ValLookUpDown = sig.value();
             break;
         case 'L':
-            log_debug("Lok left action");
+            log_debug("Look left action");
             m_ActLookLeftRight = (sig.value() > 0) ? true : false;
             m_ValLookLeftRight = -sig.value();
             break;
@@ -261,14 +253,7 @@ bool CUser::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 void CEye::actionMove(Ogre::Vector3& one)
 {
     if( m_Style == EYE_CS_FREELOOK )
-    {
-        m_ActForward = (one.z > 0.0f);
-        m_ActBackward = (one.z < 0.0f);
-        m_ActLeft = (one.x < 0.0f);
-        m_ActRight = (one.x > 0.0f);
-        m_ActUp = (one.y > 0.0f);
-        m_ActDown = (one.y < 0.0f);
-    }
+        m_ActMove = one;
 }
 
 void CEye::actionSpeedBoost(float act)

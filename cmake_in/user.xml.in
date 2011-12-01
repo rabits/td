@@ -58,15 +58,15 @@
           <synaps object="2" id="20001" sensitivity="0.01" name="Look Right" />
           <synaps object="2" id="20002" sensitivity="0.01" name="Look Up" />
           <synaps object="2" id="20003" sensitivity="0.01" name="Look Down" />
-          <synaps object="2" id="32000" sensitivity="0.0" name="Move Forward" />
-          <synaps object="2" id="32001" sensitivity="0.0" name="Move Backward" />
-          <synaps object="2" id="32002" sensitivity="0.0" name="Move Left" />
-          <synaps object="2" id="32003" sensitivity="0.0" name="Move Right" />
+          <synaps object="2" id="32000" sensitivity="0.0" name="Move Left" />
+          <synaps object="2" id="32001" sensitivity="0.0" name="Move Right" />
+          <synaps object="2" id="32002" sensitivity="0.0" name="Move Forward" />
+          <synaps object="2" id="32003" sensitivity="0.0" name="Move Backward" />
           <synaps object="2" id="31001" sensitivity="0.0" name="Speed Up" />
-          <synaps object="2" id="32004" sensitivity="0.1" limit="0.001" name="Look Up" />
-          <synaps object="2" id="32005" sensitivity="0.1" limit="0.001" name="Look Down" />
-          <synaps object="2" id="32006" sensitivity="0.1" limit="0.001" name="Look Left" />
-          <synaps object="2" id="32007" sensitivity="0.1" limit="0.001" name="Look Right" />
+          <synaps object="2" id="32004" sensitivity="0.3" limit="0.2" name="Look Left" />
+          <synaps object="2" id="32005" sensitivity="0.3" limit="0.2" name="Look Right" />
+          <synaps object="2" id="32006" sensitivity="0.3" limit="0.2" name="Look Up" />
+          <synaps object="2" id="32007" sensitivity="0.3" limit="0.2" name="Look Down" />
         </mapping>
       </control>
     </config>
