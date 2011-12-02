@@ -49,8 +49,6 @@ void CSynaps::route(CSignal &sig)
             m_Action->action(sig);
             m_LastValue = value;
         }
-        else
-            log_debug("Drop signal as already been send (%f == %f)", m_LastValue, value);
     }
     else
         EXCEPTION("Synaps: Can't provide signal to bad action");

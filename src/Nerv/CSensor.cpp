@@ -172,8 +172,6 @@ OIS::JoyStick* CSensor::getJoyStick(int joyId)
 
 bool CSensor::keyPressed( const OIS::KeyEvent& arg )
 {
-    log_debug("Key pressed: %s (%d)", (static_cast<OIS::Keyboard*>(const_cast<OIS::Object*>(arg.device)))->getAsString(arg.key).c_str(), arg.key);
-
     // Converting keyboard keypress to nerv Signal
     CSignal sig(genId(OIS::OISKeyboard, 0, arg.key), 1.0);
 
@@ -241,8 +239,6 @@ bool CSensor::keyPressed( const OIS::KeyEvent& arg )
 
 bool CSensor::keyReleased( const OIS::KeyEvent& arg )
 {
-    log_debug("Key released: %s (%d)", (static_cast<OIS::Keyboard*>(const_cast<OIS::Object*>(arg.device)))->getAsString(arg.key).c_str(), arg.key);
-
     // Converting keyboard keyrelease to nerv Signal
     CSignal sig(genId(OIS::OISKeyboard, 0, arg.key), 0.0);
 
@@ -256,9 +252,6 @@ bool CSensor::keyReleased( const OIS::KeyEvent& arg )
 bool CSensor::mouseMoved( const OIS::MouseEvent& arg )
 {
     // @todo Fix left-right and up-down
-    log_debug("MouseMoved: Abs(%d,%d,%d) Rel(%d,%d,%d)", arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs
-              , arg.state.X.rel, arg.state.Y.rel, arg.state.Z.rel);
-
     if( arg.state.X.rel || arg.state.Y.rel || arg.state.Z.rel )
         m_CleanMouse = 2;
 
@@ -321,8 +314,6 @@ bool CSensor::mouseMoved( const OIS::MouseEvent& arg )
 
 bool CSensor::mousePressed( const OIS::MouseEvent& arg, OIS::MouseButtonID button )
 {
-    log_debug("Mouse pressed #%d", button);
-
     // Converting mouse button press to nerv Signal
     CSignal sig(genId(OIS::OISMouse, 1, button), 1.0);
 
@@ -335,8 +326,6 @@ bool CSensor::mousePressed( const OIS::MouseEvent& arg, OIS::MouseButtonID butto
 
 bool CSensor::mouseReleased( const OIS::MouseEvent& arg, OIS::MouseButtonID button )
 {
-    log_debug("Mouse released #%d", button);
-
     // Converting mouse button release to nerv Signal
     CSignal sig(genId(OIS::OISMouse, 1, button), 0.0);
 
@@ -355,12 +344,12 @@ bool CSensor::povMoved( const OIS::JoyStickEvent& arg, int pov )
     // X axis
     if( arg.state.mPOV[pov].direction & OIS::Pov::West )
     {
-        sig = CSignal(genId(OIS::OISJoyStick, 0, 0), 1.0);
+        sig = CSignal(genId(OIS::OISJoyStick, 0, SENS_LEFT), 1.0);
         m_LastPovX = 1;
     }
     else if( arg.state.mPOV[pov].direction & OIS::Pov::East )
     {
-        sig = CSignal(genId(OIS::OISJoyStick, 0, 1), 1.0);
+        sig = CSignal(genId(OIS::OISJoyStick, 0, SENS_RIGHT), 1.0);
         m_LastPovX = 2;
     }
     else if( m_LastPovX != 0 )
@@ -379,12 +368,12 @@ bool CSensor::povMoved( const OIS::JoyStickEvent& arg, int pov )
     // Y axis
     if( arg.state.mPOV[pov].direction & OIS::Pov::North )
     {
-        sig = CSignal(genId(OIS::OISJoyStick, 0, 2), 1.0);
+        sig = CSignal(genId(OIS::OISJoyStick, 0, SENS_UP), 1.0);
         m_LastPovY = 3;
     }
     else if( arg.state.mPOV[pov].direction & OIS::Pov::South )
     {
-        sig = CSignal(genId(OIS::OISJoyStick, 0, 3), 1.0);
+        sig = CSignal(genId(OIS::OISJoyStick, 0, SENS_DOWN), 1.0);
         m_LastPovY = 4;
     }
     else if( m_LastPovY != 0 )
@@ -400,16 +389,12 @@ bool CSensor::povMoved( const OIS::JoyStickEvent& arg, int pov )
             user->second->nervSignal(sig);
     }
 
-    log_debug("Joystick id#%d POV #%d moved: %d", arg.device->getID(), pov, arg.state.mPOV[pov].direction);
-
     return true;
 }
 
 bool CSensor::buttonPressed( const OIS::JoyStickEvent& arg, int button )
 {
     // @todo Realize many joysticks
-    log_debug("Joystick \"%s\" button #%d pressed", arg.device->vendor().c_str(), button);
-
     // Converting joystick button press to nerv Signal
     CSignal sig(genId(OIS::OISJoyStick, 1, button), 1.0);
 
@@ -441,47 +426,50 @@ bool CSensor::axisMoved( const OIS::JoyStickEvent& arg, int axis )
     int value = arg.state.mAxes[static_cast<unsigned int>(axis)].abs;
 
     // Separate axis by sign and change value if needed
-    axis *= 2;
+    int direct = axis * 2;
+    int opp_direct = 0;
+
     if( value > 0 )
-        axis++;
+    {
+        opp_direct = direct;
+        direct++;
+    }
     else
+    {
         value = (-value) - 1;
+        opp_direct = direct - 1;
+    }
 
-    log_debug("Joystick \"%s\" Axis #%d moved, Value: %d (%d)", arg.device->vendor().c_str(), axis, value);
-
-    if( axis > 15 )
-        return log_warn("Stick %d not supported now - maximum is 4 sticks per one Joystick", axis/4);
+    if( direct > 15 )
+        return log_warn("Stick %d not supported now - maximum is 4 sticks per one Joystick", direct/4);
 
     CSignal sig;
     if( (std::abs(value) > m_JoyStickZero) )
     {
-        m_ChangedAxis[axis] = true;
-        sig = CSignal(genId(OIS::OISJoyStick, 2, axis), static_cast<float>(value) / 32767.0f);
+        m_ChangedAxis[direct] = true;
+        sig = CSignal(genId(OIS::OISJoyStick, 2, direct), static_cast<float>(value) / 32767.0f);
     }
     else
     {
-        if( m_ChangedAxis[axis] == true )
+        if( m_ChangedAxis[direct] == true )
         {
-            m_ChangedAxis[axis] = false;
-            sig = CSignal(genId(OIS::OISJoyStick, 2, axis), 0.0);
+            m_ChangedAxis[direct] = false;
+            sig = CSignal(genId(OIS::OISJoyStick, 2, direct), 0.0);
         }
     }
 
     if( sig.id() != 0 )
     {
-        log_debug("Joystick Axis #%d moved, Id#%d Value: %f", axis, sig.id(), sig.value());
         SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
         if( user != m_subscribedUsers[OIS::OISJoyStick].end() )
             user->second->nervSignal(sig);
     }
 
     // Nulling opposite direction
-    axis += (1+axis)%2-axis%2;
-    if( m_ChangedAxis[axis] == true )
+    if( m_ChangedAxis[opp_direct] == true )
     {
-        log_debug("Nulling opposite direction #%d", axis);
-        m_ChangedAxis[axis] = false;
-        sig = CSignal(genId(OIS::OISJoyStick, 2, axis), 0.0);
+        m_ChangedAxis[opp_direct] = false;
+        sig = CSignal(genId(OIS::OISJoyStick, 2, opp_direct), 0.0);
 
         SigUser::iterator user = m_subscribedUsers[OIS::OISJoyStick].find(sig.id());
         if( user != m_subscribedUsers[OIS::OISJoyStick].end() )

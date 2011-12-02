@@ -170,23 +170,18 @@ void CObjectKernel::doAction(char act, CSignal& sig)
 
     switch(act){
     case 'f':
-        log_debug("Move forward action");
         m_ActForward = (sig.value() > 0) ? true : false;
         break;
     case 'b':
-        log_debug("Move backward action");
         m_ActBackward = (sig.value() > 0) ? true : false;
         break;
     case 'l':
-        log_debug("Move left action");
         m_ActLeft = (sig.value() > 0) ? true : false;
         break;
     case 'r':
-        log_debug("Move right action");
         m_ActRight = (sig.value() > 0) ? true : false;
         break;
     case 'j':
-        log_debug("Jump action");
         m_ActJump = (sig.value() > 0) ? true : false;
         break;
     }

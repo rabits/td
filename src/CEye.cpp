@@ -162,50 +162,39 @@ void CEye::doAction(char act, CSignal& sig)
     {
         switch(act){
         case 'f':
-            log_debug("Move forward action");
             m_ActMove.z = sig.value();
             break;
         case 'b':
-            log_debug("Move backward action");
             m_ActMove.z = -sig.value();
             break;
         case 'l':
-            log_debug("Move left action");
             m_ActMove.x = -sig.value();
             break;
         case 'r':
-            log_debug("Move right action");
             m_ActMove.x = sig.value();
             break;
         case 'u':
-            log_debug("Move up action");
             m_ActMove.y = sig.value();
             break;
         case 'd':
-            log_debug("Move down action");
             m_ActMove.y = -sig.value();
             break;
         case 's':
-            log_debug("Speed up action");
             m_ActSpeedUp = (sig.value() > 0) ? true : false;
             break;
         case 'U':
-            log_debug("Look up action");
             m_ActLookUpDown = (sig.value() > 0) ? true : false;
             m_ValLookUpDown = -sig.value();
             break;
         case 'D':
-            log_debug("Look down action");
             m_ActLookUpDown = (sig.value() > 0) ? true : false;
             m_ValLookUpDown = sig.value();
             break;
         case 'L':
-            log_debug("Look left action");
             m_ActLookLeftRight = (sig.value() > 0) ? true : false;
             m_ValLookLeftRight = -sig.value();
             break;
         case 'R':
-            log_debug("Look right action");
             m_ActLookLeftRight = (sig.value() > 0) ? true : false;
             m_ValLookLeftRight = sig.value();
             break;

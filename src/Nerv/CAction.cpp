@@ -30,6 +30,6 @@ CAction::~CAction()
 
 void CAction::action(CSignal& sig) const
 {
-    log_debug("ACTION %s: doing signal", m_Name.c_str());
+    log_debug("ACTION %s: doing signal id#%d value: %f", m_Name.c_str(), sig.id(), sig.value());
     m_pObject->doAction(m_Action, sig);
 }
