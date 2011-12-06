@@ -118,9 +118,9 @@ void IcoSphere::create(int recursionLevel)
         for (std::list<TriangleIndices>::iterator j = faces.begin(); j != faces.end(); j++)
         {
             TriangleIndices f = *j;
-            int a = getMiddlePoint(f.v1, f.v2);
-            int b = getMiddlePoint(f.v2, f.v3);
-            int c = getMiddlePoint(f.v3, f.v1);
+            uint a = getMiddlePoint(f.v1, f.v2);
+            uint b = getMiddlePoint(f.v2, f.v3);
+            uint c = getMiddlePoint(f.v3, f.v1);
 
             removeLineIndices(f.v1, f.v2);
             removeLineIndices(f.v2, f.v3);
@@ -140,12 +140,12 @@ void IcoSphere::create(int recursionLevel)
     }
 }
 
-void IcoSphere::addLineIndices(int index0, int index1)
+void IcoSphere::addLineIndices(uint index0, uint index1)
 {
     lineIndices.push_back(LineIndices(index0, index1));
 }
 
-void IcoSphere::removeLineIndices(int index0, int index1)
+void IcoSphere::removeLineIndices(uint index0, uint index1)
 {
     std::list<LineIndices>::iterator result = std::find(lineIndices.begin(), lineIndices.end(), LineIndices(index0, index1));
 
@@ -153,21 +153,21 @@ void IcoSphere::removeLineIndices(int index0, int index1)
         lineIndices.erase(result);
 }
 
-void IcoSphere::addTriangleLines(int index0, int index1, int index2)
+void IcoSphere::addTriangleLines(uint index0, uint index1, uint index2)
 {
     addLineIndices(index0, index1);
     addLineIndices(index1, index2);
     addLineIndices(index2, index0);
 }
 
-int IcoSphere::addVertex(const Ogre::Vector3 &vertex)
+uint IcoSphere::addVertex(const Ogre::Vector3 &vertex)
 {
     Ogre::Real length = vertex.length();
     vertices.push_back(Ogre::Vector3(vertex.x / length, vertex.y / length, vertex.z / length));
     return index++;
 }
 
-int IcoSphere::getMiddlePoint(int index0, int index1)
+uint IcoSphere::getMiddlePoint(uint index0, uint index1)
 {
     bool isFirstSmaller = index0 < index1;
     uint64_t smallerIndex = isFirstSmaller ? index0 : index1;
@@ -181,17 +181,17 @@ int IcoSphere::getMiddlePoint(int index0, int index1)
     Ogre::Vector3 point2 = vertices[index1];
     Ogre::Vector3 middle = point1.midPoint(point2);
 
-    int index = addVertex(middle);
+    uint index = addVertex(middle);
     middlePointIndexCache[key] = index;
     return index;
 }
 
-void IcoSphere::addFace(int index0, int index1, int index2)
+void IcoSphere::addFace(uint index0, uint index1, uint index2)
 {
     faces.push_back(TriangleIndices(index0, index1, index2));
 }
 
-void IcoSphere::addToLineIndices(int baseIndex, std::list<int> *target)
+void IcoSphere::addToLineIndices(uint baseIndex, std::list<uint> *target)
 {
     for (std::list<LineIndices>::iterator i = lineIndices.begin(); i != lineIndices.end(); i++)
     {
@@ -200,7 +200,7 @@ void IcoSphere::addToLineIndices(int baseIndex, std::list<int> *target)
     }
 }
 
-void IcoSphere::addToTriangleIndices(int baseIndex, std::list<int> *target)
+void IcoSphere::addToTriangleIndices(uint baseIndex, std::list<uint> *target)
 {
     for (std::list<TriangleIndices>::iterator i = faces.begin(); i != faces.end(); i++)
     {
@@ -210,13 +210,13 @@ void IcoSphere::addToTriangleIndices(int baseIndex, std::list<int> *target)
     }
 }
 
-int IcoSphere::addToVertices(std::list<VertexPair> *target, const Ogre::Vector3 &position, const Ogre::ColourValue &colour, float scale)
+uint IcoSphere::addToVertices(std::list<VertexPair> *target, const Ogre::Vector3 &position, const Ogre::ColourValue &colour, float scale)
 {
     Ogre::Matrix4 transform = Ogre::Matrix4::IDENTITY;
     transform.setTrans(position);
     transform.setScale(Ogre::Vector3(scale, scale, scale));
 
-    for (int i = 0; i < (int)vertices.size(); i++)
+    for (uint i = 0; i < static_cast<uint>(vertices.size()); i++)
         target->push_back(VertexPair(transform * vertices[i], colour));
 
     return vertices.size();
@@ -236,8 +236,14 @@ DebugDrawer& DebugDrawer::getSingleton(void)
 
 DebugDrawer::DebugDrawer(Ogre::SceneManager *_sceneManager, float _fillAlpha)
    : sceneManager(_sceneManager)
-   , fillAlpha(_fillAlpha)
    , manualObject(0)
+   , fillAlpha(_fillAlpha)
+   , icoSphere()
+   , isEnabled(true)
+   , lineVertices()
+   , triangleVertices()
+   , lineIndices()
+   , triangleIndices()
    , linesIndex(0)
    , trianglesIndex(0)
 {
@@ -284,7 +290,7 @@ void DebugDrawer::shutdown()
 
 void DebugDrawer::buildLine(const Ogre::Vector3& start, const Ogre::Vector3& end, const Ogre::ColourValue& colour, float alpha)
 {
-    int i = addLineVertex(start, Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
+    uint i = addLineVertex(start, Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
     addLineVertex(end, Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
 
     addLineIndices(i, i + 1);
@@ -292,38 +298,38 @@ void DebugDrawer::buildLine(const Ogre::Vector3& start, const Ogre::Vector3& end
 
 void DebugDrawer::buildQuad(const Ogre::Vector3 *vertices, const Ogre::ColourValue& colour, float alpha)
 {
-    int index = addLineVertex(vertices[0], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
+    uint index = addLineVertex(vertices[0], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
     addLineVertex(vertices[1], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
     addLineVertex(vertices[2], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
     addLineVertex(vertices[3], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
 
-    for (int i = 0; i < 4; ++i) addLineIndices(index + i, index + ((i + 1) % 4));
+    for (uint i = 0; i < 4; ++i) addLineIndices(index + i, index + ((i + 1) % 4));
 }
 
-void DebugDrawer::buildCircle(const Ogre::Vector3 &centre, float radius, int segmentsCount, const Ogre::ColourValue& colour, float alpha)
+void DebugDrawer::buildCircle(const Ogre::Vector3 &centre, float radius, uint segmentsCount, const Ogre::ColourValue& colour, float alpha)
 {
-    int index = linesIndex;
-    float increment = 2 * Ogre::Math::PI / segmentsCount;
+    uint index = linesIndex;
+    float increment = 2 * Ogre::Math::PI / static_cast<float>(segmentsCount);
     float angle = 0.0f;
 
-    for (int i = 0; i < segmentsCount; i++)
+    for (uint i = 0; i < segmentsCount; i++)
     {
         addLineVertex(Ogre::Vector3(centre.x + radius * Ogre::Math::Cos(angle), centre.y, centre.z + radius * Ogre::Math::Sin(angle)),
             Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
         angle += increment;
     }
 
-    for (int i = 0; i < segmentsCount; i++)
+    for (uint i = 0; i < segmentsCount; i++)
         addLineIndices(index + i, i + 1 < segmentsCount ? index + i + 1 : index);
 }
 
-void DebugDrawer::buildFilledCircle(const Ogre::Vector3 &centre, float radius, int segmentsCount, const Ogre::ColourValue& colour, float alpha)
+void DebugDrawer::buildFilledCircle(const Ogre::Vector3 &centre, float radius, uint segmentsCount, const Ogre::ColourValue& colour, float alpha)
 {
-    int index = trianglesIndex;
-    float increment = 2 * Ogre::Math::PI / segmentsCount;
+    uint index = trianglesIndex;
+    float increment = 2 * Ogre::Math::PI / static_cast<float>(segmentsCount);
     float angle = 0.0f;
 
-    for (int i = 0; i < segmentsCount; i++)
+    for (uint i = 0; i < segmentsCount; i++)
     {
         addTriangleVertex(Ogre::Vector3(centre.x + radius * Ogre::Math::Cos(angle), centre.y, centre.z + radius * Ogre::Math::Sin(angle)),
             Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
@@ -332,18 +338,18 @@ void DebugDrawer::buildFilledCircle(const Ogre::Vector3 &centre, float radius, i
 
     addTriangleVertex(centre, Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
 
-    for (int i = 0; i < segmentsCount; i++)
+    for (uint i = 0; i < segmentsCount; i++)
         addTriangleIndices(i + 1 < segmentsCount ? index + i + 1 : index, index + i, index + segmentsCount);
 }
 
-void DebugDrawer::buildCylinder(const Ogre::Vector3 &centre, float radius, int segmentsCount, float height, const Ogre::ColourValue& colour, float alpha)
+void DebugDrawer::buildCylinder(const Ogre::Vector3 &centre, float radius, uint segmentsCount, float height, const Ogre::ColourValue& colour, float alpha)
 {
-    int index = linesIndex;
-    float increment = 2 * Ogre::Math::PI / segmentsCount;
+    uint index = linesIndex;
+    float increment = 2 * Ogre::Math::PI / static_cast<float>(segmentsCount);
     float angle = 0.0f;
 
     // Top circle
-    for (int i = 0; i < segmentsCount; i++)
+    for (uint i = 0; i < segmentsCount; i++)
     {
         addLineVertex(Ogre::Vector3(centre.x + radius * Ogre::Math::Cos(angle), centre.y + height / 2, centre.z + radius * Ogre::Math::Sin(angle)),
             Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
@@ -353,14 +359,14 @@ void DebugDrawer::buildCylinder(const Ogre::Vector3 &centre, float radius, int s
     angle = 0.0f;
 
     // Bottom circle
-    for (int i = 0; i < segmentsCount; i++)
+    for (uint i = 0; i < segmentsCount; i++)
     {
         addLineVertex(Ogre::Vector3(centre.x + radius * Ogre::Math::Cos(angle), centre.y - height / 2, centre.z + radius * Ogre::Math::Sin(angle)),
             Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
         angle += increment;
     }
 
-    for (int i = 0; i < segmentsCount; i++)
+    for (uint i = 0; i < segmentsCount; i++)
     {
         addLineIndices(index + i, i + 1 < segmentsCount ? index + i + 1 : index);
         addLineIndices(segmentsCount + index + i, i + 1 < segmentsCount ? segmentsCount + index + i + 1 : segmentsCount + index);
@@ -368,14 +374,14 @@ void DebugDrawer::buildCylinder(const Ogre::Vector3 &centre, float radius, int s
     }
 }
 
-void DebugDrawer::buildFilledCylinder(const Ogre::Vector3 &centre, float radius, int segmentsCount, float height, const Ogre::ColourValue& colour, float alpha)
+void DebugDrawer::buildFilledCylinder(const Ogre::Vector3 &centre, float radius, uint segmentsCount, float height, const Ogre::ColourValue& colour, float alpha)
 {
-    int index = trianglesIndex;
-    float increment = 2 * Ogre::Math::PI / segmentsCount;
+    uint index = trianglesIndex;
+    float increment = 2 * Ogre::Math::PI / static_cast<float>(segmentsCount);
     float angle = 0.0f;
 
     // Top circle
-    for (int i = 0; i < segmentsCount; i++)
+    for (uint i = 0; i < segmentsCount; i++)
     {
         addTriangleVertex(Ogre::Vector3(centre.x + radius * Ogre::Math::Cos(angle), centre.y + height / 2, centre.z + radius * Ogre::Math::Sin(angle)),
             Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
@@ -387,7 +393,7 @@ void DebugDrawer::buildFilledCylinder(const Ogre::Vector3 &centre, float radius,
     angle = 0.0f;
 
     // Bottom circle
-    for (int i = 0; i < segmentsCount; i++)
+    for (uint i = 0; i < segmentsCount; i++)
     {
         addTriangleVertex(Ogre::Vector3(centre.x + radius * Ogre::Math::Cos(angle), centre.y - height / 2, centre.z + radius * Ogre::Math::Sin(angle)),
             Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
@@ -396,7 +402,7 @@ void DebugDrawer::buildFilledCylinder(const Ogre::Vector3 &centre, float radius,
 
     addTriangleVertex(Ogre::Vector3(centre.x, centre.y - height / 2, centre.z), Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
 
-    for (int i = 0; i < segmentsCount; i++)
+    for (uint i = 0; i < segmentsCount; i++)
     {
         addTriangleIndices(i + 1 < segmentsCount ? index + i + 1 : index,
                            index + i,
@@ -416,11 +422,11 @@ void DebugDrawer::buildFilledCylinder(const Ogre::Vector3 &centre, float radius,
 
 void DebugDrawer::buildCuboid(const Ogre::Vector3 *vertices, const Ogre::ColourValue& colour, float alpha)
 {
-    int index = addLineVertex(vertices[0], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
-    for (int i = 1; i < 8; ++i) addLineVertex(vertices[i], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
+    uint index = addLineVertex(vertices[0], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
+    for (uint i = 1; i < 8; ++i) addLineVertex(vertices[i], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
 
-    for (int i = 0; i < 4; ++i) addLineIndices(index + i, index + ((i + 1) % 4));
-    for (int i = 4; i < 8; ++i) addLineIndices(index + i, i == 7 ? index + 4 : index + i + 1);
+    for (uint i = 0; i < 4; ++i) addLineIndices(index + i, index + ((i + 1) % 4));
+    for (uint i = 4; i < 8; ++i) addLineIndices(index + i, i == 7 ? index + 4 : index + i + 1);
     addLineIndices(index + 1, index + 5);
     addLineIndices(index + 2, index + 4);
     addLineIndices(index,     index + 6);
@@ -429,8 +435,8 @@ void DebugDrawer::buildCuboid(const Ogre::Vector3 *vertices, const Ogre::ColourV
 
 void DebugDrawer::buildFilledCuboid(const Ogre::Vector3 *vertices, const Ogre::ColourValue& colour, float alpha)
 {
-    int index = addTriangleVertex(vertices[0], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
-    for (int i = 1; i < 8; ++i) addTriangleVertex(vertices[i], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
+    uint index = addTriangleVertex(vertices[0], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
+    for (uint i = 1; i < 8; ++i) addTriangleVertex(vertices[i], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
 
     addQuadIndices(index,     index + 1, index + 2, index + 3);
     addQuadIndices(index + 4, index + 5, index + 6, index + 7);
@@ -444,7 +450,7 @@ void DebugDrawer::buildFilledCuboid(const Ogre::Vector3 *vertices, const Ogre::C
 
 void DebugDrawer::buildFilledQuad(const Ogre::Vector3 *vertices, const Ogre::ColourValue& colour, float alpha)
 {
-    int index = addTriangleVertex(vertices[0], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
+    uint index = addTriangleVertex(vertices[0], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
     addTriangleVertex(vertices[1], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
     addTriangleVertex(vertices[2], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
     addTriangleVertex(vertices[3], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
@@ -454,7 +460,7 @@ void DebugDrawer::buildFilledQuad(const Ogre::Vector3 *vertices, const Ogre::Col
 
 void DebugDrawer::buildFilledTriangle(const Ogre::Vector3 *vertices, const Ogre::ColourValue& colour, float alpha)
 {
-    int index = addTriangleVertex(vertices[0], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
+    uint index = addTriangleVertex(vertices[0], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
     addTriangleVertex(vertices[1], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
     addTriangleVertex(vertices[2], Ogre::ColourValue(colour.r, colour.g, colour.b, alpha));
 
@@ -463,7 +469,7 @@ void DebugDrawer::buildFilledTriangle(const Ogre::Vector3 *vertices, const Ogre:
 
 void DebugDrawer::buildTetrahedron(const Ogre::Vector3 &centre, float scale, const Ogre::ColourValue &colour, float alpha)
 {
-    int index = linesIndex;
+    uint index = linesIndex;
 
     // Distance from the centre
     float bottomDistance = scale * 0.2f;
@@ -492,7 +498,7 @@ void DebugDrawer::buildTetrahedron(const Ogre::Vector3 &centre, float scale, con
 
 void DebugDrawer::buildFilledTetrahedron(const Ogre::Vector3 &centre, float scale, const Ogre::ColourValue &colour, float alpha)
 {
-    int index = trianglesIndex;
+    uint index = trianglesIndex;
 
     // Distance from the centre
     float bottomDistance = scale * 0.2f;
@@ -522,13 +528,13 @@ void DebugDrawer::drawLine(const Ogre::Vector3& start, const Ogre::Vector3& end,
     buildLine(start, end, colour);
 }
 
-void DebugDrawer::drawCircle(const Ogre::Vector3 &centre, float radius, int segmentsCount, const Ogre::ColourValue& colour, bool isFilled)
+void DebugDrawer::drawCircle(const Ogre::Vector3 &centre, float radius, uint segmentsCount, const Ogre::ColourValue& colour, bool isFilled)
 {
     buildCircle(centre, radius, segmentsCount, colour);
     if (isFilled) buildFilledCircle(centre, radius, segmentsCount, colour, fillAlpha);
 }
 
-void DebugDrawer::drawCylinder(const Ogre::Vector3 &centre, float radius, int segmentsCount, float height, const Ogre::ColourValue& colour, bool isFilled)
+void DebugDrawer::drawCylinder(const Ogre::Vector3 &centre, float radius, uint segmentsCount, float height, const Ogre::ColourValue& colour, bool isFilled)
 {
     buildCylinder(centre, radius, segmentsCount, height, colour);
     if (isFilled) buildFilledCylinder(centre, radius, segmentsCount, height, colour, fillAlpha);
@@ -548,7 +554,7 @@ void DebugDrawer::drawCuboid(const Ogre::Vector3 *vertices, const Ogre::ColourVa
 
 void DebugDrawer::drawSphere(const Ogre::Vector3 &centre, float radius, const Ogre::ColourValue& colour, bool isFilled)
 {
-    int baseIndex = linesIndex;
+    uint baseIndex = linesIndex;
     linesIndex += icoSphere.addToVertices(&lineVertices, centre, colour, radius);
     icoSphere.addToLineIndices(baseIndex, &lineIndices);
 
@@ -578,7 +584,7 @@ void DebugDrawer::build()
                 manualObject->position(i->first);
                 manualObject->colour(i->second);
         }
-        for (std::list<int>::iterator i = lineIndices.begin(); i != lineIndices.end(); i++)
+        for (std::list<uint>::iterator i = lineIndices.begin(); i != lineIndices.end(); i++)
             manualObject->index(*i);
     }
     manualObject->end();
@@ -593,7 +599,7 @@ void DebugDrawer::build()
                 manualObject->position(i->first);
                 manualObject->colour(i->second.r, i->second.g, i->second.b, fillAlpha);
         }
-        for (std::list<int>::iterator i = triangleIndices.begin(); i != triangleIndices.end(); i++)
+        for (std::list<uint>::iterator i = triangleIndices.begin(); i != triangleIndices.end(); i++)
             manualObject->index(*i);
     }
     manualObject->end();
@@ -608,32 +614,32 @@ void DebugDrawer::clear()
     linesIndex = trianglesIndex = 0;
 }
 
-int DebugDrawer::addLineVertex(const Ogre::Vector3 &vertex, const Ogre::ColourValue &colour)
+uint DebugDrawer::addLineVertex(const Ogre::Vector3 &vertex, const Ogre::ColourValue &colour)
 {
     lineVertices.push_back(VertexPair(vertex, colour));
     return linesIndex++;
 }
 
-void DebugDrawer::addLineIndices(int index1, int index2)
+void DebugDrawer::addLineIndices(uint index1, uint index2)
 {
     lineIndices.push_back(index1);
     lineIndices.push_back(index2);
 }
 
-int DebugDrawer::addTriangleVertex(const Ogre::Vector3 &vertex, const Ogre::ColourValue &colour)
+uint DebugDrawer::addTriangleVertex(const Ogre::Vector3 &vertex, const Ogre::ColourValue &colour)
 {
     triangleVertices.push_back(VertexPair(vertex, colour));
     return trianglesIndex++;
 }
 
-void DebugDrawer::addTriangleIndices(int index1, int index2, int index3)
+void DebugDrawer::addTriangleIndices(uint index1, uint index2, uint index3)
 {
     triangleIndices.push_back(index1);
     triangleIndices.push_back(index2);
     triangleIndices.push_back(index3);
 }
 
-void DebugDrawer::addQuadIndices(int index1, int index2, int index3, int index4)
+void DebugDrawer::addQuadIndices(uint index1, uint index2, uint index3, uint index4)
 {
     triangleIndices.push_back(index1);
     triangleIndices.push_back(index2);
