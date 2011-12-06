@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<td version="${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}">
+  <TypeWaveReciever>
+    <config>
+      <name>Wave Reciever</name>
+      <description>Recieved waves and filtering its</description>
+      <services>
+        <parameter name="range">
+          <min>1</min>
+          <max>65535</max>
+        </parameter>
+        <parameter name="type">
+          <value name="direct"/>
+          <value name="omni"/>
+        </parameter>
+        <parameter name="spectrum">
+          <value name="sound"/>
+          <value name="radio"/>
+          <value name="infrared"/>
+          <value name="light"/>
+          <value name="ultraviolet"/>
+          <value name="radiation"/>
+        </parameter>
+        <parameter name="noice reduction">
+          <min>0</min>
+          <max>65535</max>
+        </parameter>
+      </services>
+    </config>
+  </TypeWaveReciever>
+</td>

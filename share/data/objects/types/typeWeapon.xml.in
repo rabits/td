@@ -3,6 +3,7 @@
   <TypeWeapon>
     <config>
       <name>Weapon</name>
+      <description>Attacking system</description>
       <dependencies>
         <parameter name="">
           <value name=""/>

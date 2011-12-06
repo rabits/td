@@ -3,15 +3,17 @@
   <TypeSpace>
     <config>
       <name>Space</name>
+      <description>Physical space in hold</description>
       <dependencies>
-        <parameter name="">
-          <value name=""/>
+        <parameter name="space" description="Required space in hold">
+          <min>1</min>
+          <max>65535</max>
         </parameter>
       </dependencies>
       <services>
-        <parameter name="">
-          <min></min>
-          <max></max>
+        <parameter name="space" description="Provided space in hold">
+          <min>1</min>
+          <max>65535</max>
         </parameter>
       </services>
     </config>

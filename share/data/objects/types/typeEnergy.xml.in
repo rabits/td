@@ -3,15 +3,33 @@
   <TypeEnergy>
     <config>
       <name>Energy</name>
+      <description>Resource for engines or devices</description>
       <dependencies>
-        <parameter name="">
-          <value name=""/>
+        <parameter name="energy" description="Discharge (per second)">
+          <min>0.001</min>
+          <max>65535</max>
+        </parameter>
+        <parameter name="type">
+          <value name="gasoline"/>
+          <value name="electricity"/>
+          <value name="plasma"/>
+          <value name="black energy"/>
         </parameter>
       </dependencies>
       <services>
-        <parameter name="">
-          <min></min>
-          <max></max>
+        <parameter name="energy" description="Maximum of containing energy">
+          <min>1</min>
+          <max>65535</max>
+        </parameter>
+        <parameter name="type">
+          <value name="gasoline"/>
+          <value name="electricity"/>
+          <value name="plasma"/>
+          <value name="black energy"/>
+        </parameter>
+        <parameter name="regenerate" description="Speed of energy regeneration (per second)">
+          <min>1</min>
+          <max>65535</max>
         </parameter>
       </services>
     </config>

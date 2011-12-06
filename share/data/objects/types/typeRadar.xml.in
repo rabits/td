@@ -3,17 +3,7 @@
   <TypeRadar>
     <config>
       <name>Radar</name>
-      <dependencies>
-        <parameter name="">
-          <value name=""/>
-        </parameter>
-      </dependencies>
-      <services>
-        <parameter name="">
-          <min></min>
-          <max></max>
-        </parameter>
-      </services>
+      <description>Universal scanner</description>
     </config>
   </TypeRadar>
 </td>

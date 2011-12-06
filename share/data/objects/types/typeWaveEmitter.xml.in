@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<td version="${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PATCH}">
+  <TypeWaveEmitter>
+    <config>
+      <name>Wave Emitter</name>
+      <description>Emitting of any waves</description>
+      <services>
+        <parameter name="power">
+          <min>1</min>
+          <max>65535</max>
+        </parameter>
+        <parameter name="type">
+          <value name="noice"/>
+          <value name="info"/>
+        </parameter>
+        <parameter name="directivity">
+          <value name="direct"/>
+          <value name="omni"/>
+        </parameter>
+        <parameter name="spectrum">
+          <value name="sound"/>
+          <value name="radio"/>
+          <value name="infrared"/>
+          <value name="light"/>
+          <value name="ultraviolet"/>
+          <value name="radiation"/>
+        </parameter>
+      </services>
+    </config>
+  </TypeWaveEmitter>
+</td>

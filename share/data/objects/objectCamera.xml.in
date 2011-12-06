@@ -3,7 +3,7 @@
   <ObjectCamera>
     <config>
       <names>
-        <name></name>
+        <name>Camera</name>
       </names>
       <health>
         <min></min>
