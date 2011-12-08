@@ -81,7 +81,7 @@ bool CData::verifyData(pugi::xml_document& document) const
     if( std::strcmp(CONFIG_TD_VERSION, root.attribute("version").value()) )
     {
         log_info("Versions of program and data is different (data v%s)", root.attribute("version").value());
-        unsigned int n_major, n_minor, n_patch, c_major, c_minor, c_patch;
+        uint n_major, n_minor, n_patch, c_major, c_minor, c_patch;
 
         std::sscanf(CONFIG_TD_VERSION, "%u.%u.%u", &c_major, &c_minor, &c_patch);
         std::sscanf(root.attribute("version").value(), "%u.%u.%u", &n_major, &n_minor, &n_patch);

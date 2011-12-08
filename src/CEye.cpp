@@ -79,6 +79,10 @@ void CEye::update(const Ogre::FrameEvent& evt)
             actionLook(look_direction);
         }
     }
+    else if( m_Style == EYE_CS_ORBIT )
+    {
+        m_pCamera->setPosition(m_pTarget->getPosition() + 20);
+    }
 }
 
 void CEye::target(Ogre::SceneNode* target)
@@ -92,10 +96,7 @@ void CEye::target(Ogre::SceneNode* target)
             m_pCamera->setAutoTracking(true, m_pTarget);
         }
         else
-        {
             m_pCamera->setAutoTracking(false);
-        }
-
     }
 }
 

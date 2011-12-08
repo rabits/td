@@ -15,8 +15,8 @@
 
 #include "Nerv/CControlled.h"
 
-std::map<unsigned int, CControlled*> CControlled::s_ControlledObjects;
-unsigned int CControlled::s_LastId = 0;
+std::map<uint, CControlled*> CControlled::s_ControlledObjects;
+uint CControlled::s_LastId = 0;
 
 CControlled::CControlled(const char* name)
     : CMaster(name)

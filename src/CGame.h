@@ -96,10 +96,10 @@ public:
 
     /** @brief Get time in milliseconds since game start
      *
-     * @return unsigned int - Number of milliseconds since start
+     * @return uint - Number of milliseconds since start
      *
      */
-    inline unsigned int time() { return m_pTimer->getMilliseconds(); }
+    inline uint time() { return m_pTimer->getMilliseconds(); }
 
 
     /** @brief Return environment variable

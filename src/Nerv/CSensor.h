@@ -22,7 +22,7 @@
 #include "CGame.h"
 #include "Nerv/CSignal.h"
 
-typedef std::map<unsigned int, CUser*> SigUser; ///< Signal->User map
+typedef std::map<uint, CUser*> SigUser; ///< Signal->User map
 typedef std::map<OIS::Type, SigUser > SubUsers; ///< Device->SigUser map - maybe no-need...
 
 /** @brief Global input handler from user and routed it in need user
@@ -82,16 +82,16 @@ public:
 
     /** @brief Add subscribe on event with special id
      *
-     * @param id unsigned int
+     * @param id uint
      * @param pUser CUser*
      */
-    bool addSubscribe(unsigned int id, CUser* pUser);
+    bool addSubscribe(uint id, CUser* pUser);
 
     /** @brief Delete subscribe on event
      *
-     * @param id unsigned int
+     * @param id uint
      */
-    bool delSubscribe(unsigned int id);
+    bool delSubscribe(uint id);
 
 protected:
     /** @brief Function on keyboard key pressed event
@@ -201,7 +201,7 @@ private:
      */
     CSensor& operator=(const CSensor& obj);
 
-    inline unsigned int genId(OIS::Type dev, int dev_number, int button){ return static_cast<unsigned int>(dev) * 10000u + static_cast<unsigned int>(dev_number) * 1000u + static_cast<unsigned int>(button); }
+    inline uint genId(OIS::Type dev, int dev_number, int button){ return static_cast<uint>(dev) * 10000u + static_cast<uint>(dev_number) * 1000u + static_cast<uint>(button); }
 
     std::string        m_DeviceType[6]; ///< Device types
 

@@ -20,12 +20,10 @@ CAction::CAction(CControlled* obj, char act, const char* name)
     , m_pObject(obj)
     , m_Action(act)
 {
-    //ctor
 }
 
 CAction::~CAction()
 {
-    //dtor
 }
 
 void CAction::action(CSignal& sig) const

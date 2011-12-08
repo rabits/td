@@ -22,7 +22,7 @@ CSignal::CSignal()
 {
 }
 
-CSignal::CSignal(unsigned int id, float value, float sens, float limit)
+CSignal::CSignal(uint id, float value, float sens, float limit)
     : m_Id(id)
     , m_Value(value)
     , m_Sensitivity(sens)

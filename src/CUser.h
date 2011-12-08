@@ -27,9 +27,9 @@ class CEye;
 class CSynaps;
 class CSignal;
 
-typedef std::multimap<unsigned int, CSynaps*> SynapsMap; ///< SignalId->Action multimap
+typedef std::multimap<uint, CSynaps*> SynapsMap; ///< SignalId->Action multimap
 typedef std::map<std::string, SynapsMap> NervMaps; ///< Name->SynapsMap map
-typedef std::map<unsigned int, std::string> Nervs; ///< Nervs of current user (for unsubscribe and list)
+typedef std::map<uint, std::string> Nervs; ///< Nervs of current user (for unsubscribe and list)
 
 /** @brief Self user
  *
@@ -40,12 +40,17 @@ class CUser
 {
 public:
     /** @brief Constructor of user
+     *
+     * @param world CWorld*
      */
-    CUser();
+    CUser(CWorld* world);
 
     /** @brief Constructor with data file path
+     *
+     * @param world CWorld*
+     * @param data_file const char* - path to User xml data
      */
-    CUser(const char* data_file);
+    CUser(CWorld* world, const char* data_file);
 
     /** @brief Destructor of user
      */
@@ -85,13 +90,13 @@ public:
      * @param name const char* - name of nerv
      * @param id int - id of need event
      */
-    void addNerv(const char* name, unsigned int id);
+    void addNerv(const char* name, uint id);
 
     /** @brief Remove nerv with specified id
      *
      * @param id int - id of nerv
      */
-    void delNerv(unsigned int id);
+    void delNerv(uint id);
 
     /** @brief Select current nerv map
      *
@@ -111,7 +116,7 @@ public:
      * @param nerv_id int - nerv identificator
      * @param synaps CSynaps* - synaps with need action
      */
-    void setSynapsMapping(unsigned int nerv_id, CSynaps* synaps);
+    void setSynapsMapping(uint nerv_id, CSynaps* synaps);
 
     /** @brief Recieve, modify and route to controlled object signal from Sensor
      *

@@ -8,20 +8,6 @@
  * This file is a part of Total Destruction project <http://www.rabits.ru/td>
  *
  * @brief   Game master object
- *
- * Controls:
- *
- * F - toggle visibility of advanced frame stats
- * G - toggle visibility of even rarer debugging details
- * T - cycle polygon rendering mode
- *  B - Trilinear
- *  T - Anisotropic
- *  A - None
- *  Default - Billenear
- * R - cycle polygon rendering mode (Wireframe, Points, Solid)
- * F5 - refresh all textures
- * SysRQ - screenshot
- * Esc - Quit
  */
 
 #include "CGame.h"
@@ -405,13 +391,9 @@ bool CGame::initGame()
     m_pSceneMgr = m_pRoot->createSceneManager(Ogre::ST_EXTERIOR_REAL_FAR);
 
     log_info("Creating main camera");
-    // Create the camera
     m_pCamera = m_pSceneMgr->createCamera("MainGameCamera");
-
-    // Position it at 500 in Z direction
-    m_pCamera->setPosition(Ogre::Vector3(300.0,300.0,300.0));
-    // Look back along -Z
-    m_pCamera->lookAt(Ogre::Vector3(0.0,0.0,0.0));
+    m_pCamera->setPosition(Ogre::Vector3(0.0f, 400.0f, -50.0f));
+    m_pCamera->lookAt(Ogre::Vector3(0.0f, 0.0f, 0.0f));
     m_pCamera->setNearClipDistance(0.01f);
 
     // Create light
@@ -432,13 +414,14 @@ bool CGame::initGame()
 
     // Create worlds
     log_info("Creating worlds");
-    m_Worlds.push_back(new CWorld());
+    CWorld* world = new CWorld();
+    m_Worlds.push_back(world);
 
     // Registering actions
     registerActions();
 
     // Create users after all game initialised - used game actions
-    m_pMainUser = new CUser();
+    m_pMainUser = new CUser(world);
     m_Users.push_back(m_pMainUser);
 
     return true;
@@ -534,7 +517,7 @@ bool CGame::frameEnded(const Ogre::FrameEvent& evt)
 
 void CGame::windowResized(Ogre::RenderWindow* rw)
 {
-    unsigned int width, height, depth;
+    uint width, height, depth;
     int left, top;
     rw->getMetrics(width, height, depth, left, top);
 

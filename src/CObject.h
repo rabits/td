@@ -31,7 +31,7 @@ class CGame;
 /** @brief Father of all objects in game
  */
 class CObject
-    : CMaster
+    : public CMaster
 {
 public:
     /** @brief Constructor of object

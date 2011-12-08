@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <limits>
 
 #include <libintl.h>
 #include <clocale>

@@ -12,25 +12,18 @@
  *
  */
 
-
 #include "CObjectKernel.h"
 #include "CGame.h"
 
 CObjectKernel::CObjectKernel(CWorld& pWorld, const btScalar mass, const Ogre::Vector3& pos)
     : CObject("Kernel", pWorld, pos, mass)
     , CControlled("Kernel")
-    , m_ActForward(false)
-    , m_ActBackward(false)
-    , m_ActLeft(false)
-    , m_ActRight(false)
-    , m_ActJump(false)
-    , m_ForceForward(0.0)
-    , m_ForceBackward(0.0)
-    , m_ForceLeft(0.0)
-    , m_ForceRight(0.0)
-    , m_ForceJump(0.0)
-    , m_ForceMax(4.5)
-    , m_ForceValue(0.0)
+    , m_Gravity(btVector3(0.0f,0.0f,0.0f))
+    , m_ActMove(Ogre::Vector3::ZERO)
+    , m_Velocity(Ogre::Vector3::ZERO)
+    , m_Direction(Ogre::Quaternion::IDENTITY)
+    , m_SpeedMin(std::numeric_limits<Ogre::Real>::epsilon())
+    , m_SpeedMax(10.0f)
 {
     registerActions();
 }
@@ -71,84 +64,68 @@ CObjectKernel::~CObjectKernel()
 void CObjectKernel::update(const Ogre::FrameEvent& evt)
 {
     // Update gravity
-    m_pBody->setGravity(m_pWorld->m_pGravityField->getObjectGravity(m_pBody->getBroadphaseProxy()->getUid()));
-
-    // Draw gravity line
-    m_pWorld->m_pDbgDraw->drawLine(m_pBody->getCenterOfMassPosition(), m_pBody->getCenterOfMassPosition() + m_pBody->getGravity()*2, btVector3());
-
-    if( m_ActForward || m_ActBackward || m_ActLeft || m_ActRight || m_ActJump )
+    btVector3 new_gravity = m_pWorld->m_pGravityField->getObjectGravity(m_pBody->getBroadphaseProxy()->getUid());
+    if( m_Gravity != new_gravity )
     {
-        m_pBody->activate();
-
-        // Processing action state
-        if( m_ActForward )
-            m_ForceForward += 0.1f;
-        else
-            m_ForceForward -= 0.1f;
-        if( m_ActBackward )
-            m_ForceBackward += 0.1f;
-        else
-            m_ForceBackward -= 0.1f;
-        if( m_ActLeft )
-            m_ForceLeft += 0.1f;
-        else
-            m_ForceLeft -= 0.1f;
-        if( m_ActRight )
-            m_ForceRight += 0.1f;
-        else
-            m_ForceRight -= 0.1f;
-
-        // Validation of action states
-        if( m_ForceForward < 0.0f )
-            m_ForceForward = 0.0f;
-        if( m_ForceBackward < 0.0f )
-            m_ForceBackward = 0.0f;
-        if( m_ForceLeft < 0.0f )
-            m_ForceLeft = 0.0f;
-        if( m_ForceRight < 0.0f )
-            m_ForceRight = 0.0f;
-
-        if( m_ForceValue > 0.0f )
-        {
-            if( m_ForceForward > m_ForceMax )
-                m_ForceForward = m_ForceMax * m_ForceValue;
-            else
-                m_ForceForward *= m_ForceValue;
-            if( m_ForceBackward > m_ForceMax )
-                m_ForceBackward = m_ForceMax * m_ForceValue;
-            else
-                m_ForceBackward *= m_ForceValue;
-            if( m_ForceLeft > m_ForceMax )
-                m_ForceLeft = m_ForceMax * m_ForceValue;
-            else
-                m_ForceLeft *= m_ForceValue;
-            if( m_ForceRight > m_ForceMax )
-                m_ForceRight = m_ForceMax * m_ForceValue;
-            else
-                m_ForceRight *= m_ForceValue;
-        }
-        else
-        {
-            if( m_ForceForward > m_ForceMax )
-                m_ForceForward = m_ForceMax;
-            if( m_ForceBackward > m_ForceMax )
-                m_ForceBackward = m_ForceMax;
-            if( m_ForceLeft > m_ForceMax )
-                m_ForceLeft = m_ForceMax;
-            if( m_ForceRight > m_ForceMax )
-                m_ForceRight = m_ForceMax;
-        }
-
-        //log_debug("Cube force: F:%6.3f B:%6.3f L:%6.3f R:%6.3f", m_ForceForward, m_ForceBackward, m_ForceLeft, m_ForceRight);
-
-        // Set rotation
-        m_pBody->setAngularVelocity(m_pBody->getAngularVelocity().rotate(m_pBody->getGravity(), 0.1f));
-        //m_pBody->setAngularVelocity(btVector3(m_pBody->getAngularVelocity().x(),
-        //                                      m_ForceBackward - m_ForceForward,
-        //                                      m_ForceLeft - m_ForceRight));
+        //m_Direction = BtOgre::Convert::toOgre(m_Gravity).getRotationTo(BtOgre::Convert::toOgre(new_gravity));
+        m_Gravity = new_gravity;
+        m_pBody->setGravity(new_gravity);
     }
 
-    ODD.drawCuboid(m_pEntity->getBoundingBox().getAllCorners(), Ogre::ColourValue::Red, true);
+    m_Front = CGame::getInstance()->m_pCamera->getDirection();
+    //log_debug("Camera direction: x:%f y:%f z:%f", m_Front.x, m_Front.y, m_Front.z);
+    //m_Front.y = 0;
+    m_Front.normalise();
+    m_Direction = Ogre::Vector3::NEGATIVE_UNIT_Y.getRotationTo(BtOgre::Convert::toOgre(m_Gravity)) * Ogre::Vector3::UNIT_Z.getRotationTo(m_Front);
+
+    Ogre::Vector3 move = m_Direction * m_ActMove;
+
+    if( ! move.isZeroLength() )
+    {
+        m_pBody->activate();
+        m_Velocity += move.normalisedCopy() * m_SpeedMax * evt.timeSinceLastFrame * 10;
+    }
+    else
+        m_Velocity -= m_Velocity * evt.timeSinceLastFrame * 10;
+
+    // Processing action state
+    if( m_Velocity.squaredLength() > (m_SpeedMax * m_SpeedMax) )
+    {
+        m_Velocity.normalise();
+        m_Velocity *= m_SpeedMax;
+    }
+    else if( m_Velocity.squaredLength() < (m_SpeedMin * m_SpeedMin) )
+        m_Velocity = Ogre::Vector3::ZERO;
+
+    if( move.length() > 1.0 )
+        m_Velocity *= move.normalisedCopy().length();
+    else
+        m_Velocity *= move.length();
+
+    //log_debug("Cube force: F:%6.3f B:%6.3f L:%6.3f R:%6.3f", m_ForceForward, m_ForceBackward, m_ForceLeft, m_ForceRight);
+
+    // Set rotation
+    //m_pBody->setAngularVelocity(m_pBody->getAngularVelocity().rotate(m_pBody->getGravity(), 0.1f));
+    m_pBody->setAngularVelocity(BtOgre::Convert::toBullet(m_Velocity).cross(m_Gravity.normalized()));
+
+    // Direction vector
+    ODD.drawLine(Ogre::Vector3::ZERO, m_Front * 10.0f, Ogre::ColourValue(1.0f, 0.0f, 1.0f));
+
+    // Direction vector
+    ODD.drawLine(m_pNode->getPosition(), (m_Direction * Ogre::Vector3::UNIT_Z)*10.0f + m_pNode->getPosition(), Ogre::ColourValue(0.0f, 1.0f, 1.0f));
+    // Gravity vector (Down)
+    ODD.drawLine(m_pNode->getPosition(), (m_Direction * Ogre::Vector3::UNIT_Y)*10.0f + m_pNode->getPosition(), Ogre::ColourValue(0.5f, 0.5f, 0.5f));
+    // Right vector (Down)
+    ODD.drawLine(m_pNode->getPosition(), (m_Direction * Ogre::Vector3::NEGATIVE_UNIT_X)*10.0f + m_pNode->getPosition(), Ogre::ColourValue(1.0f, 1.0f, 0.0f));
+    //ODD.drawLine(BtOgre::Convert::toOgre(m_pBody->getCenterOfMassPosition()), BtOgre::Convert::toOgre(m_pBody->getCenterOfMassPosition() + m_pBody->getGravity()*2), Ogre::ColourValue(1.0f, 0.0f, 1.0f));
+    // ActMove vector
+    ODD.drawLine(m_pNode->getPosition() + m_pEntity->getBoundingRadius(), m_ActMove*10.0f + m_pEntity->getBoundingRadius() + m_pNode->getPosition(), Ogre::ColourValue::Green);
+    // Velocity vector
+    ODD.drawLine(m_pNode->getPosition() + m_pEntity->getBoundingRadius(), m_Velocity*10.0f + m_pEntity->getBoundingRadius() + m_pNode->getPosition(), Ogre::ColourValue::Blue);
+    // Bounding box
+    Ogre::AxisAlignedBox cube = m_pEntity->getBoundingBox();
+    cube.transform(m_pNode->_getFullTransform());
+    ODD.drawCuboid(cube.getAllCorners(), Ogre::ColourValue::Red, true);
 }
 
 void CObjectKernel::setObjectState(int iState)
@@ -166,23 +143,21 @@ void CObjectKernel::registerActions()
 
 void CObjectKernel::doAction(char act, CSignal& sig)
 {
-    m_ForceValue = sig.value();
-
     switch(act){
     case 'f':
-        m_ActForward = (sig.value() > 0) ? true : false;
+        m_ActMove.z = sig.value();
         break;
     case 'b':
-        m_ActBackward = (sig.value() > 0) ? true : false;
+        m_ActMove.z = -sig.value();
         break;
     case 'l':
-        m_ActLeft = (sig.value() > 0) ? true : false;
+        m_ActMove.x = sig.value();
         break;
     case 'r':
-        m_ActRight = (sig.value() > 0) ? true : false;
+        m_ActMove.x = -sig.value();
         break;
     case 'j':
-        m_ActJump = (sig.value() > 0) ? true : false;
+        m_ActMove.y = sig.value();
         break;
     }
 }

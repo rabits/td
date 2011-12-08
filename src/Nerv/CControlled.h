@@ -39,7 +39,7 @@ public:
      * @param id
      * @return CControlled*
      */
-    static CControlled* getControlledObject(unsigned int id){ return s_ControlledObjects.find(id)->second; }
+    static CControlled* getControlledObject(uint id){ return s_ControlledObjects.find(id)->second; }
 
     /** @brief Return list of actions
      *
@@ -91,11 +91,11 @@ protected:
     virtual void registerActions() = 0;
 
     std::vector<CAction*>                m_Actions; ///< List of this object actions
-    unsigned int                         m_Id;      ///< Id of controlled object
+    uint                         m_Id;      ///< Id of controlled object
 
 private:
-    static std::map<unsigned int, CControlled*> s_ControlledObjects; ///< List of all created controlled objects
-    static unsigned int                         s_LastId;            ///< Greatest id
+    static std::map<uint, CControlled*> s_ControlledObjects; ///< List of all created controlled objects
+    static uint                         s_LastId;            ///< Greatest id
 };
 
 #endif // CCONTROLLED_H

@@ -21,10 +21,10 @@
 #include "Nerv/CSynaps.h"
 #include "CEye.h"
 
-CUser::CUser()
+CUser::CUser(CWorld* world)
     : CData("User")
     , m_Name()
-    , m_pWorld()
+    , m_pWorld(world)
     , m_pEye()
     , m_Nervs()
     , m_NervMaps()
@@ -38,10 +38,10 @@ CUser::CUser()
     init(skeleton_path.c_str());
 }
 
-CUser::CUser(const char* data_file)
+CUser::CUser(CWorld* world, const char* data_file)
     : CData("User")
     , m_Name()
-    , m_pWorld()
+    , m_pWorld(world)
     , m_pEye()
     , m_Nervs()
     , m_NervMaps()
@@ -73,6 +73,11 @@ void CUser::init(const char* data_file)
 
     // Create Eye
     m_pEye = new CEye(CGame::getInstance()->m_pCamera);
+    // For debug attach cameta to first object in world
+    // @todo remove this debug
+    m_pEye->style(CEye::EYE_CS_ORBIT);
+    std::vector<CObject*>* childrens = m_pWorld->getChildrens();
+    m_pEye->target(childrens->front()->node());
 
     // Controlling set
 
@@ -81,7 +86,7 @@ void CUser::init(const char* data_file)
     if( nervs )
     {
         for( auto nerv = nervs.begin(); nerv != nervs.end(); nerv++ )
-            addNerv(nerv->attribute("name").value(), static_cast<unsigned int>(nerv->attribute("id").as_int()));
+            addNerv(nerv->attribute("name").value(), static_cast<uint>(nerv->attribute("id").as_int()));
     }
     else
         log_warn("Not found nervs for user %s", m_Name.c_str());
@@ -98,7 +103,7 @@ void CUser::init(const char* data_file)
             if( std::strcmp(action->attribute("object").value(), "Game") == 0 )
                 obj = CGame::getInstance();
             else if( action->attribute("object").as_int() > 0 )
-                obj = CControlled::getControlledObject(static_cast<unsigned int>(action->attribute("object").as_int()));
+                obj = CControlled::getControlledObject(static_cast<uint>(action->attribute("object").as_int()));
             else
                 log_warn("\tnot found key \"%s\"", action->attribute("object").value());
 
@@ -107,7 +112,7 @@ void CUser::init(const char* data_file)
                 CAction* act = obj->getAction(action->attribute("name").value());
                 if( act != NULL )
                 {
-                    unsigned int id = static_cast<unsigned int>(action->attribute("id").as_int());
+                    uint id = static_cast<uint>(action->attribute("id").as_int());
                     log_debug("\tmapping %d->%s (sens:%f, limit:%f)", id, act->name(),
                               action->attribute("sensitivity").as_float(), action->attribute("limit").as_float());
                     setSynapsMapping(id, new CSynaps(id, act, action->attribute("sensitivity").as_float(),
@@ -129,14 +134,14 @@ void CUser::update(const Ogre::FrameEvent& evt)
     m_pEye->update(evt);
 }
 
-void CUser::addNerv(const char* name, unsigned int id)
+void CUser::addNerv(const char* name, uint id)
 {
     log_debug("Creating nerv %s %d", name, id);
     CGame::getInstance()->inputHandler()->addSubscribe(id, this);
     m_Nervs[id] = name;
 }
 
-void CUser::delNerv(unsigned int id)
+void CUser::delNerv(uint id)
 {
     CGame::getInstance()->inputHandler()->delSubscribe(id);
     m_Nervs.erase(id);
@@ -152,9 +157,9 @@ bool CUser::nervSignal(CSignal& sig)
     return true;
 }
 
-void CUser::setSynapsMapping(unsigned int nerv_id, CSynaps* synaps)
+void CUser::setSynapsMapping(uint nerv_id, CSynaps* synaps)
 {
-    m_NervMaps[m_CurrentSynapsMap.c_str()].insert(std::pair<unsigned int, CSynaps*>(nerv_id, synaps));
+    m_NervMaps[m_CurrentSynapsMap.c_str()].insert(std::pair<uint, CSynaps*>(nerv_id, synaps));
 }
 
 void CUser::save()

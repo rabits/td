@@ -77,6 +77,18 @@ public:
      */
     void doAction(char act, CSignal& sig);
 
+    /** @brief Get current direction
+     *
+     * @return Ogre::Vector3&
+     */
+    Ogre::Vector3& front();
+
+    /** @brief Set look direction of object
+     *
+     * @param direct Ogre::Vector3&
+     */
+    void front(Ogre::Vector3& direct);
+
 private:
     /** @brief Adding actions
      *
@@ -84,19 +96,15 @@ private:
      */
     void registerActions();
 
-    bool m_ActForward;     ///< Action move forward
-    bool m_ActBackward;    ///< Action move backward
-    bool m_ActLeft;        ///< Action move left
-    bool m_ActRight;       ///< Action move right
-    bool m_ActJump;        ///< Action jump
-    float m_ForceForward;  ///< Force move forward
-    float m_ForceBackward; ///< Force move backward
-    float m_ForceLeft;     ///< Force move left
-    float m_ForceRight;    ///< Force move right
-    float m_ForceJump;     ///< Force jump
+    Ogre::Vector3 m_Front;        ///< Look vector of object
+    btVector3 m_Gravity;          ///< Last gravity vector
 
-    float m_ForceMax;    ///< Maximum force
-    float m_ForceValue;  ///< User's action force value
+    Ogre::Vector3 m_ActMove;      ///< Action move
+    Ogre::Vector3 m_Velocity;     ///< Current velocity
+    Ogre::Quaternion m_Direction; ///< Current rotation state
+
+    float m_SpeedMin;    ///< Maximum speed
+    float m_SpeedMax;    ///< Minimum speed
 };
 
 #endif // COBJECTKERNEL_H_INCLUDED

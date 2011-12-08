@@ -43,7 +43,7 @@ CWorld::CWorld(const Ogre::Vector3& pos)
     m_pGravityField = new CGravityField(this, 20.0f);
 
     // Create scene
-    attachChild(new CObjectKernel(*this, 20, Ogre::Vector3(200.0f, 11.0f, 0.0f)));
+    attachChild(new CObjectKernel(*this, 20, Ogre::Vector3(0.0f, 200.0f, 0.0f)));
     attachChild(new CObjectCube(*this, CObjectCube::CCUBE, Ogre::Vector3(0.0f, 0.0f, 0.0f)));
 }
 

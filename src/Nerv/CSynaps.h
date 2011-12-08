@@ -26,12 +26,12 @@ class CSynaps
 public:
     /** @brief Constructor
      *
-     * @param id unsigned int
+     * @param id uint
      * @param act CAction*
      * @param sens float
      * @param limit float
      */
-    CSynaps(unsigned int id, CAction* act, float sens = 0.0f, float limit = 0.0f);
+    CSynaps(uint id, CAction* act, float sens = 0.0f, float limit = 0.0f);
 
     /** @brief Destructor
      */
@@ -39,10 +39,10 @@ public:
 
     /** @brief Get Id of catchable signal
      *
-     * @return unsigned int
+     * @return uint
      *
      */
-    inline unsigned int id() const { return m_Id; }
+    inline uint id() const { return m_Id; }
 
     /** @brief Set coefficient of sensitivity
      *
@@ -75,7 +75,7 @@ public:
     void route(CSignal& sig);
 
 protected:
-    unsigned int m_Id;          ///< Signal id
+    uint m_Id;          ///< Signal id
     CAction*     m_Action;      ///< Reference to connected Action
     float        m_Sensitivity; ///< Sensitivity changes
     float        m_Limit;       ///< Minimal non-zero value

@@ -30,7 +30,7 @@
 /** @brief World object
  */
 class CWorld
-    : CObject
+    : public CObject
 {
 public:
     /** @brief Constructor
@@ -69,9 +69,9 @@ public:
 
     btDiscreteDynamicsWorld*              m_pPhyWorld;     ///< Physical World
     CGravityField*                        m_pGravityField; ///< World gravity field
-    BtOgre::DebugDrawer*                  m_pDbgDraw;      ///< Debug drawer
 
 private:
+    BtOgre::DebugDrawer*                  m_pDbgDraw;      ///< Debug drawer
     btAxisSweep3*                         m_pBroadphase;      ///< Bullet broadphase
     btDefaultCollisionConfiguration*      m_pCollisionConfig; ///< Bullet collision config
     btCollisionDispatcher*                m_pDispatcher;      ///< Bullet dispatcher

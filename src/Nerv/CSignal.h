@@ -30,12 +30,12 @@ public:
 
     /** @brief Constructor
      *
-     * @param id unsigned int
+     * @param id uint
      * @param value float
      * @param sens float
      * @param limit float
      */
-    CSignal(unsigned int id, float value, float sens = 1.0f, float limit = 0.0f);
+    CSignal(uint id, float value, float sens = 1.0f, float limit = 0.0f);
 
     /** @brief Destructor
      */
@@ -43,10 +43,10 @@ public:
 
     /** @brief Get Id of signal
      *
-     * @return unsigned int
+     * @return uint
      *
      */
-    inline unsigned int id() { return m_Id; }
+    inline uint id() { return m_Id; }
 
     /** @brief Get Value of event
      *
@@ -80,7 +80,7 @@ public:
     inline float limit() const { return m_Limit; }
 
 protected:
-    unsigned int m_Id;    ///< Id
+    uint m_Id;    ///< Id
     float        m_Value; ///< Value
     float        m_Sensitivity; ///< Sensitivity
     float        m_Limit;       ///< Minimal non-zero value

@@ -93,7 +93,7 @@ CSensor::CSensor(size_t windowHnd)
     }
 
     // Preparing subscribers map
-    std::map<unsigned int, CUser*> nullmap;
+    std::map<uint, CUser*> nullmap;
     m_subscribedUsers[OIS::OISKeyboard] = nullmap;
     m_subscribedUsers[OIS::OISMouse] = nullmap;
     m_subscribedUsers[OIS::OISJoyStick] = nullmap;
@@ -185,7 +185,7 @@ bool CSensor::keyPressed( const OIS::KeyEvent& arg )
         // Cycle filter rendering mode
         Ogre::FilterOptions ft = Ogre::MaterialManager::getSingleton().getDefaultTextureFiltering(Ogre::FT_MIN);
         Ogre::TextureFilterOptions tfo;
-        unsigned int aniso;
+        uint aniso;
 
         switch( ft )
         {
@@ -423,21 +423,42 @@ bool CSensor::buttonReleased( const OIS::JoyStickEvent& arg, int button )
 bool CSensor::axisMoved( const OIS::JoyStickEvent& arg, int axis )
 {
     // @todo Realize many joysticks
-    int value = arg.state.mAxes[static_cast<unsigned int>(axis)].abs;
+    int value = arg.state.mAxes[static_cast<uint>(axis)].abs;
 
     // Separate axis by sign and change value if needed
+    //  Axis 1 need to inverse direction (and id)
     int direct = axis * 2;
-    int opp_direct = 0;
+    int opp_direct = axis % 2;
 
-    if( value > 0 )
+    log_debug("Value %d pos %d", value, direct);
+
+    if( opp_direct )
     {
-        opp_direct = direct;
-        direct++;
+        // Inverse Up-Down axis
+        if( value > 0 )
+        {
+            opp_direct = direct;
+            direct++;
+        }
+        else
+        {
+            value = (-value) - 1;
+            opp_direct = direct + 1;
+        }
     }
     else
     {
-        value = (-value) - 1;
-        opp_direct = direct - 1;
+        // Left-Right axis
+        if( value > 0 )
+        {
+            opp_direct = direct;
+            direct++;
+        }
+        else
+        {
+            value = (-value) - 1;
+            opp_direct = direct - 1;
+        }
     }
 
     if( direct > 15 )
@@ -468,6 +489,7 @@ bool CSensor::axisMoved( const OIS::JoyStickEvent& arg, int axis )
     // Nulling opposite direction
     if( m_ChangedAxis[opp_direct] == true )
     {
+        log_debug("Nulling %d", opp_direct);
         m_ChangedAxis[opp_direct] = false;
         sig = CSignal(genId(OIS::OISJoyStick, 2, opp_direct), 0.0);
 
@@ -479,9 +501,9 @@ bool CSensor::axisMoved( const OIS::JoyStickEvent& arg, int axis )
     return true;
 }
 
-bool CSensor::addSubscribe(unsigned int id, CUser* pUser)
+bool CSensor::addSubscribe(uint id, CUser* pUser)
 {
-    unsigned int device = id / 10000u;
+    uint device = id / 10000u;
 
     log_debug("Subscribing user \"%s\" to %s signal id#%u", pUser->name().c_str(), m_DeviceType[device].c_str(), id);
 
@@ -490,7 +512,7 @@ bool CSensor::addSubscribe(unsigned int id, CUser* pUser)
     return true;
 }
 
-bool CSensor::delSubscribe(unsigned int id)
+bool CSensor::delSubscribe(uint id)
 {
     // @todo add recognize type of device by id
     OIS::Type device = OIS::OISKeyboard;

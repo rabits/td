@@ -16,7 +16,7 @@
 #include "Nerv/CSignal.h"
 #include "Nerv/CAction.h"
 
-CSynaps::CSynaps(unsigned int id, CAction* act, float sens, float limit)
+CSynaps::CSynaps(uint id, CAction* act, float sens, float limit)
     : m_Id(id)
     , m_Action(act)
     , m_Sensitivity()
