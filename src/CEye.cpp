@@ -21,7 +21,7 @@ CEye::CEye(Ogre::Camera* camera)
     , m_cameraPositionLimits()
     , m_Style(EYE_CS_FREELOOK)
     , m_pTarget()
-    , m_orbiting(false)
+    , m_orbiting(true)
     , m_zooming(false)
     , m_TopSpeed(150)
     , m_Velocity(Ogre::Vector3::ZERO)
@@ -72,16 +72,16 @@ void CEye::update(const Ogre::FrameEvent& evt)
 
         if( m_Velocity != Ogre::Vector3::ZERO )
             m_pCamera->move(m_Velocity * evt.timeSinceLastFrame);
-
-        if( m_ActLookUpDown || m_ActLookLeftRight )
-        {
-            Ogre::Vector3 look_direction(m_ValLookLeftRight, m_ValLookUpDown, 0.0f);
-            actionLook(look_direction);
-        }
     }
     else if( m_Style == EYE_CS_ORBIT )
     {
-        m_pCamera->setPosition(m_pTarget->getPosition() + 20);
+        //m_pCamera->setPosition(m_pTarget->getPosition() + 20);
+    }
+
+    if( m_ActLookUpDown || m_ActLookLeftRight )
+    {
+        Ogre::Vector3 look_direction(m_ValLookLeftRight, m_ValLookUpDown, 0.0f);
+        actionLook(look_direction);
     }
 }
 
@@ -130,7 +130,6 @@ void CEye::style(CameraStyle style)
         stop();
     }
     m_Style = style;
-
 }
 
 void CEye::stop()
@@ -159,86 +158,46 @@ void CEye::registerActions()
 
 void CEye::doAction(char act, CSignal& sig)
 {
-    if( m_Style == EYE_CS_FREELOOK )
-    {
-        switch(act){
-        case 'f':
-            m_ActMove.z = sig.value();
-            break;
-        case 'b':
-            m_ActMove.z = -sig.value();
-            break;
-        case 'l':
-            m_ActMove.x = -sig.value();
-            break;
-        case 'r':
-            m_ActMove.x = sig.value();
-            break;
-        case 'u':
-            m_ActMove.y = sig.value();
-            break;
-        case 'd':
-            m_ActMove.y = -sig.value();
-            break;
-        case 's':
-            m_ActSpeedUp = (sig.value() > 0) ? true : false;
-            break;
-        case 'U':
-            m_ActLookUpDown = (sig.value() > 0) ? true : false;
-            m_ValLookUpDown = -sig.value();
-            break;
-        case 'D':
-            m_ActLookUpDown = (sig.value() > 0) ? true : false;
-            m_ValLookUpDown = sig.value();
-            break;
-        case 'L':
-            m_ActLookLeftRight = (sig.value() > 0) ? true : false;
-            m_ValLookLeftRight = -sig.value();
-            break;
-        case 'R':
-            m_ActLookLeftRight = (sig.value() > 0) ? true : false;
-            m_ValLookLeftRight = sig.value();
-            break;
-        }
+    switch(act){
+    case 'f':
+        m_ActMove.z = sig.value();
+        break;
+    case 'b':
+        m_ActMove.z = -sig.value();
+        break;
+    case 'l':
+        m_ActMove.x = -sig.value();
+        break;
+    case 'r':
+        m_ActMove.x = sig.value();
+        break;
+    case 'u':
+        m_ActMove.y = sig.value();
+        break;
+    case 'd':
+        m_ActMove.y = -sig.value();
+        break;
+    case 's':
+        m_ActSpeedUp = (sig.value() > 0) ? true : false;
+        break;
+    case 'U':
+        m_ActLookUpDown = (sig.value() > 0) ? true : false;
+        m_ValLookUpDown = -sig.value();
+        break;
+    case 'D':
+        m_ActLookUpDown = (sig.value() > 0) ? true : false;
+        m_ValLookUpDown = sig.value();
+        break;
+    case 'L':
+        m_ActLookLeftRight = (sig.value() > 0) ? true : false;
+        m_ValLookLeftRight = -sig.value();
+        break;
+    case 'R':
+        m_ActLookLeftRight = (sig.value() > 0) ? true : false;
+        m_ValLookLeftRight = sig.value();
+        break;
     }
 }
-
-/* Will be replaced by Nerv control system
-
-bool CUser::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
-{
-    if( useMouse() )
-    {
-        -----------------------------------------------------------------------------
-        | Processes mouse presses. Only applies for orbit style.
-        | Left button is for orbiting, and right button is for zooming.
-        ------------------------------------------------------------------------
-        if( m_Style == EYE_CS_ORBIT )
-        {
-            if( id == OIS::MB_Left ) m_orbiting = true;
-            else if( id == OIS::MB_Right ) m_zooming = true;
-        }
-    }
-
-    return true;
-}
-
-bool CUser::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
-{
-    if( useMouse() )
-    {
-        -----------------------------------------------------------------------------
-        | Processes mouse releases. Only applies for orbit style.
-        | Left button is for orbiting, and right button is for zooming.
-        ------------------------------------------------------------------------
-        if( m_Style == EYE_CS_ORBIT )
-        {
-            if( id == OIS::MB_Left ) m_orbiting = false;
-            else if( id == OIS::MB_Right ) m_zooming = false;
-        }
-    }
-
-*/
 
 void CEye::actionMove(Ogre::Vector3& one)
 {
@@ -262,8 +221,8 @@ void CEye::actionLook(Ogre::Vector3& rel)
         {
             m_pCamera->setPosition(m_pTarget->_getDerivedPosition());
 
-            m_pCamera->yaw(Ogre::Degree(-rel.x * 0.25f));
-            m_pCamera->pitch(Ogre::Degree(-rel.y * 0.25f));
+            m_pCamera->yaw(Ogre::Degree(-rel.x * 4.0f));
+            m_pCamera->pitch(Ogre::Degree(-rel.y * 4.0f));
 
             m_pCamera->moveRelative(Ogre::Vector3(0, 0, dist));
 
@@ -282,7 +241,7 @@ void CEye::actionLook(Ogre::Vector3& rel)
     }
     else if( m_Style == EYE_CS_FREELOOK )
     {
-        m_pCamera->yaw(Ogre::Degree(-rel.x * 4));
-        m_pCamera->pitch(Ogre::Degree(-rel.y * 4));
+        m_pCamera->yaw(Ogre::Degree(-rel.x * 4.0f));
+        m_pCamera->pitch(Ogre::Degree(-rel.y * 4.0f));
     }
 }

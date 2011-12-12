@@ -11,13 +11,5 @@
  *
  *
  */
+
 #include "CMaster.h"
-
-CMaster::CMaster(const char* name)
-    : m_Name(name)
-{
-}
-
-CMaster::~CMaster()
-{
-}

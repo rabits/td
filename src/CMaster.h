@@ -23,8 +23,17 @@ public:
      *
      * @param name const char*
      */
-    CMaster(const char* name);
-    virtual ~CMaster();
+    CMaster(const char* name)
+        : m_Name(name), m_Description("") {  }
+
+    /** @brief Master object
+     *
+     * @param name const char*
+     */
+    CMaster(const char* name, const char* description)
+        : m_Name(name), m_Description(description) {  }
+
+    virtual ~CMaster() {  }
 
     /** @brief Get name
      *
@@ -32,8 +41,15 @@ public:
      */
     const std::string& name() const { return m_Name; }
 
+    /** @brief Get description
+     *
+     * @return const std::string&
+     */
+    const std::string& description() const { return m_Description; }
+
 protected:
     std::string                          m_Name;    ///< Name
+    std::string                          m_Description; ///< Description
 };
 
 #endif // CMASTER_H

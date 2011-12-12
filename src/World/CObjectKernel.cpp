@@ -18,6 +18,7 @@
 CObjectKernel::CObjectKernel(CWorld& pWorld, const btScalar mass, const Ogre::Vector3& pos)
     : CObject("Kernel", pWorld, pos, mass)
     , CControlled("Kernel")
+    , m_Front(Ogre::Vector3::UNIT_Z)
     , m_Gravity(btVector3(0.0f,0.0f,0.0f))
     , m_ActMove(Ogre::Vector3::ZERO)
     , m_Velocity(Ogre::Vector3::ZERO)
