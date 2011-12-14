@@ -17,7 +17,7 @@
 
 #include "Common.h"
 
-#include "CObject.h"
+#include "World/CObject.h"
 #include "Nerv/CControlled.h"
 
 /** @brief Sphere - it is minimal bot and kernel of user

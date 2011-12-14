@@ -20,7 +20,7 @@
 #include <OGRE/Ogre.h>
 
 #include "CData.h"
-#include "CWorld.h"
+#include "World/CWorld.h"
 
 class CControlled;
 class CEye;

@@ -26,7 +26,7 @@
 
 #include "CData.h"
 #include "Nerv/CControlled.h"
-#include "CWorld.h"
+#include "World/CWorld.h"
 
 #include "CUser.h"
 

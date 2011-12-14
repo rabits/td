@@ -24,13 +24,13 @@ CTypeWaveEmitter::CTypeWaveEmitter()
     m_Type.addAvailable("Noice", "");
     m_Type.addAvailable("Info", "");
 
-    m_Directivity("Direct", "");
-    m_Directivity("Omni", "");
+    m_Directivity.addAvailable("Direct", "");
+    m_Directivity.addAvailable("Omni", "");
 
-    m_Spectrum("Sound", "");
-    m_Spectrum("Radio", "");
-    m_Spectrum("Infrared", "");
-    m_Spectrum("Light", "");
-    m_Spectrum("UltraViolet", "");
-    m_Spectrum("Radiation", "");
+    m_Spectrum.addAvailable("Sound", "");
+    m_Spectrum.addAvailable("Radio", "");
+    m_Spectrum.addAvailable("Infrared", "");
+    m_Spectrum.addAvailable("Light", "");
+    m_Spectrum.addAvailable("UltraViolet", "");
+    m_Spectrum.addAvailable("Radiation", "");
 }

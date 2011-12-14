@@ -14,7 +14,7 @@
 
 
 #include "CGravityField.h"
-#include "CWorld.h"
+#include "World/CWorld.h"
 #include "CGame.h"
 
 CGravityElement::CGravityElement(btVector3* box, btVector3* position, btVector3* force)

@@ -12,7 +12,7 @@
  *
  */
 
-#include "CObjectKernel.h"
+#include "World/CObjectKernel.h"
 #include "CGame.h"
 
 CObjectKernel::CObjectKernel(CWorld& pWorld, const btScalar mass, const Ogre::Vector3& pos)

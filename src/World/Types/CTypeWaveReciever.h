@@ -26,7 +26,7 @@ public:
     CTypeWaveReciever();
 
 protected:
-    CTypeParameter<uint>        m_Power;
+    CTypeParameter<uint>        m_Range;
     CTypeParameter<std::string> m_Type;
     CTypeParameter<std::string> m_Spectrum;
     CTypeParameter<uint>        m_NoiceReduction;

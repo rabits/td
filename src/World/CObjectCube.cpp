@@ -12,7 +12,7 @@
  *
  */
 
-#include "CObjectCube.h"
+#include "World/CObjectCube.h"
 #include "CGravityField.h"
 #include "CGame.h"
 

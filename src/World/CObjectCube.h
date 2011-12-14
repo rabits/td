@@ -15,7 +15,7 @@
 #ifndef COBJECTCUBE_H_INCLUDED
 #define COBJECTCUBE_H_INCLUDED
 
-#include "CObject.h"
+#include "World/CObject.h"
 
 class CGame;
 
