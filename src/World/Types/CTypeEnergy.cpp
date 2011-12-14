@@ -25,3 +25,8 @@ CTypeEnergy::CTypeEnergy()
     m_Type.addAvailable("Plasma", "Ionized gas");
     m_Type.addAvailable("Dark Energy", "From universe deep");
 }
+
+void CTypeEnergy::info() const
+{
+    log_debug("Energy: %s", m_Type.info().c_str());
+}

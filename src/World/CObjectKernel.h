@@ -19,6 +19,8 @@
 
 #include "World/CObject.h"
 #include "Nerv/CControlled.h"
+#include "World/Types/CTypeCamera.h"
+#include "World/Types/CTypeEnergy.h"
 
 /** @brief Sphere - it is minimal bot and kernel of user
  *
@@ -32,6 +34,8 @@
 class CObjectKernel
     : public CObject
     , public CControlled
+    , public CTypeCamera
+    , public CTypeEnergy
 {
 public:
     /** @brief Constructor

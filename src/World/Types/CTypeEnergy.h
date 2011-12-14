@@ -25,6 +25,8 @@ class CTypeEnergy
 public:
     CTypeEnergy();
 
+    void info() const;
+
 protected:
     CTypeParameter<float>        m_Energy;
     CTypeParameter<std::string>  m_Type;

@@ -30,8 +30,9 @@ public:
     CType(const char* name, const char* description)
         : CMaster(name, description) {  }
 
-protected:
+    virtual void info() const {  }
 
+protected:
     /** @brief Class for contain need value with limiters
      *
      */
@@ -72,7 +73,21 @@ protected:
          *
          * @param value
          */
-        void value(const T& value);
+        void value(const T& value)
+        {
+            switch( m_Limit ) {
+            case CTypeParameter::LIMIT_MINMAX:
+                if( (value >= m_ValueMin) && (value <= m_ValueMax) )
+                    m_Value = value;
+                break;
+            case CTypeParameter::LIMIT_AVAILABLE:
+                if( m_ValuesAvailable[value] != m_ValuesAvailable.end() )
+                    m_Value = value;
+                break;
+            default:
+                m_Value = value;
+            }
+        }
 
         /** @brief Get value
          *
@@ -80,9 +95,45 @@ protected:
          */
         T& value() const { return &m_Value; }
 
+        /** @brief Set minimal and maximum value and set minmax limiter
+         *
+         * @param min
+         * @param max
+         */
         void setMinMax(const T &min, const T &max) { m_ValueMin = min; m_ValueMax = max; m_Limit = LIMIT_MINMAX; }
 
+        /** @brief Add available value and set available limiter
+         *
+         * @param value
+         * @param description
+         */
         void addAvailable(const T &value, const std::string &description) { m_ValuesAvailable[value] = description; m_Limit = LIMIT_AVAILABLE; }
+
+        /** @brief Info about parameter
+         *
+         * @return std::string
+         */
+        std::string info() const
+        {
+            std::string info;
+
+            switch( m_Limit ) {
+            case CTypeParameter::LIMIT_MINMAX:
+                info = "name: " + name() + " description: " + description()
+                        + " min: " + std::string(m_ValueMin) + " max: " + std::string(m_ValueMax);
+                break;
+            case CTypeParameter::LIMIT_AVAILABLE:
+                info = "name: " + name() + " description: " + description();
+                for( class std::map<T, std::string>::const_iterator it = m_ValuesAvailable.begin(); it != m_ValuesAvailable.end(); it++ )
+                    info += "\n\tAvailable: " + std::string(it->first) + "(" + it->second + ")";
+                break;
+            default:
+                info = "name: " + name() + " description: " + description();
+            }
+
+            return info;
+        }
+
     private:
         enum Limiter {
             LIMIT_NONE      = 0,

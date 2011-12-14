@@ -31,3 +31,8 @@ CTypeCamera::CTypeCamera()
     m_Person.addAvailable("Third", "1rd view from eyes");
     m_Person.addAvailable("First", "3rd view from back");
 }
+
+void CTypeCamera::info() const
+{
+    log_debug("Camera: %s", m_Type.info().c_str());
+}

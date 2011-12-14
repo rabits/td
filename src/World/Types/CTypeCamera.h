@@ -25,6 +25,8 @@ class CTypeCamera
 public:
     CTypeCamera();
 
+    void info() const;
+
 protected:
     CTypeParameter<uint>        m_Range;
     CTypeParameter<std::string> m_Type;
