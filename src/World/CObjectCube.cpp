@@ -79,10 +79,6 @@ CObjectCube::~CObjectCube()
     //    m_pWorld->m_pGravityField->remove(i);
 }
 
-void CObjectCube::update(const Ogre::FrameEvent& evt)
-{
-}
-
-void CObjectCube::setObjectState(int iState)
+void CObjectCube::update(const Ogre::Real)
 {
 }

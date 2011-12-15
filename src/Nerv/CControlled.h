@@ -91,7 +91,7 @@ protected:
     virtual void registerActions() = 0;
 
     std::vector<CAction*>                m_Actions; ///< List of this object actions
-    uint                         m_Id;      ///< Id of controlled object
+    uint                                 m_Id;      ///< Id of controlled object
 
 private:
     static std::map<uint, CControlled*> s_ControlledObjects; ///< List of all created controlled objects

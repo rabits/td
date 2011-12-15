@@ -18,6 +18,9 @@
 #include "Common.h"
 #include "CMaster.h"
 
+/** @brief Type with special functions
+ *
+ */
 class CType
     : public CMaster
 {
@@ -30,6 +33,12 @@ public:
     CType(const char* name, const char* description)
         : CMaster(name, description) {  }
 
+    /** @brief Virtual destructor
+     */
+    virtual ~CType() {  }
+
+    /** @brief Prints info about type
+     */
     virtual void info() const {  }
 
 protected:
@@ -135,10 +144,13 @@ protected:
         }
 
     private:
+        /** @brief Limit type
+         *
+         */
         enum Limiter {
-            LIMIT_NONE      = 0,
-            LIMIT_MINMAX    = 1,
-            LIMIT_AVAILABLE = 2
+            LIMIT_NONE      = 0,  ///< Not use limit
+            LIMIT_MINMAX    = 1,  ///< Using minimal and maximal limit
+            LIMIT_AVAILABLE = 2   ///< Using available list of values
         };
 
         Limiter                  m_Limit;           ///< Value is limited

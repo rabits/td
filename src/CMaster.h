@@ -47,6 +47,18 @@ public:
      */
     const std::string& description() const { return m_Description; }
 
+    /** @brief Update object data, it may be animation or just object translation or so on
+     *
+     * @param time_since_last_frame
+     *
+     */
+    virtual void update(const Ogre::Real) {  }
+
+    /** @brief Initialize object
+     *
+     */
+    virtual void init() {  }
+
 protected:
     std::string                          m_Name;    ///< Name
     std::string                          m_Description; ///< Description

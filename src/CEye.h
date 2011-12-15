@@ -14,20 +14,21 @@
 #ifndef CEYE_H
 #define CEYE_H
 
-#include <OGRE/Ogre.h>
-#include "Nerv/CControlled.h"
+#include "Common.h"
 
-/** @brief It is invisible camera controller
+#include "World/Types/CTypeCamera.h"
+
+/** @brief It is invisible camera controller for game needs
  *
  * Container for camera for connection to controll set
  */
 class CEye
-    : public CControlled
+    : public CTypeCamera
 {
 public:
     /** @brief Constructor
      */
-    CEye(Ogre::Camera* camera);
+    CEye(Ogre::Camera* cam);
 
     /** @brief Destructor
      */
@@ -35,151 +36,13 @@ public:
 
     /** @brief Update eye state
      *
-     * @param evt const Ogre::FrameEvent&
+     * @param time_since_last_frame
      * @return void
      *
      */
-    void update(const Ogre::FrameEvent& evt);
-
-    /** @brief Enumerator values for different styles of camera movement
-     */
-    enum CameraStyle
-    {
-        EYE_CS_FREELOOK, ///< Free fly (without connection point)
-        EYE_CS_ORBIT,    ///< Orbit around controlled object
-        EYE_CS_MANUAL    ///< Self-defined style
-    };
-
-    /** @brief Swaps the camera on our camera man for another camera.
-     *
-     * @param cam Ogre::Camera*
-     * @return void
-     *
-     */
-    inline void camera(Ogre::Camera* cam) { m_pCamera = cam; }
-
-    /** @brief Get connected camera object
-     *
-     * @return Ogre::Camera*
-     *
-     */
-    inline Ogre::Camera* camera() { return m_pCamera; }
-
-
-    /** @brief Sets the target we will revolve around. Only applies for orbit style
-     *
-     * @param target Ogre::SceneNode*
-     * @return void
-     *
-     */
-    void target(Ogre::SceneNode* target);
-
-    /** @brief Get target of camera
-     *
-     * @return Ogre::SceneNode*
-     *
-     */
-    inline Ogre::SceneNode* target() { return m_pTarget; }
-
-    /** @brief Sets the spatial offset from the target. Only applies for orbit style
-     *
-     * @param yaw Ogre::Radian
-     * @param pitch Ogre::Radian
-     * @param dist Ogre::Real
-     * @return void
-     *
-     */
-    void yawPitchDist(Ogre::Radian yaw, Ogre::Radian pitch, Ogre::Real dist);
-
-
-    /** @brief Sets the camera's top speed. Only applies for free-look style
-     *
-     * @param top_speed Ogre::Real
-     * @return void
-     *
-     */
-    inline void topSpeed(Ogre::Real top_speed) { m_TopSpeed = top_speed; }
-
-    /** @brief Get top speed
-     *
-     * @return Ogre::Real
-     *
-     */
-    inline Ogre::Real topSpeed() { return m_TopSpeed; }
-
-
-    /** @brief Sets the movement style of our camera man
-     *
-     * @param style CameraStyle
-     * @return void
-     *
-     */
-    void style(CameraStyle style);
-
-    /** @brief Get camera controlling style
-     *
-     * @return CameraStyle
-     *
-     */
-    inline CameraStyle style() { return m_Style; }
-
-
-    /** @brief Manually stops the camera when in free-look mode
-     *
-     * @return void
-     *
-     */
-    void stop();
-
-    /** @brief Move eye
-     *
-     * @param one
-     */
-    void actionMove(Ogre::Vector3 &one);
-
-    /** @brief Speed boost
-     *
-     * @param act
-     */
-    void actionSpeedBoost(float act);
-
-    /** @brief Set look
-     *
-     * @param rel
-     */
-    void actionLook(Ogre::Vector3 &rel);
-
-
-    /** @brief Doing need actions
-     *
-     * @see CControlled::doAction()
-     */
-    void doAction(char act, CSignal& sig);
+    void update(const Ogre::Real time_since_last_frame);
 
 protected:
-    /** @brief Adding actions
-     *
-     * @see CControlled::registerActions()
-     */
-    void registerActions();
-
-    Ogre::Camera*                m_pCamera; ///< Camera object
-
-    Ogre::Vector3                m_cameraPositionLimits; ///< Camera limits of posioion
-
-    CameraStyle m_Style;
-    Ogre::SceneNode* m_pTarget;
-    bool m_orbiting;
-    bool m_zooming;
-    Ogre::Real m_TopSpeed;
-    Ogre::Vector3 m_Velocity;
-
-    Ogre::Vector3 m_ActMove; ///< Action move
-    bool m_ActSpeedUp;     ///< Action speed up
-    bool m_ActLookUpDown;       ///< Action look up-down
-    bool m_ActLookLeftRight;    ///< Action look left-right
-    float m_ValLookUpDown;      ///< Value look up-down
-    float m_ValLookLeftRight;   ///< Value look left-right
 
 private:
     /** @brief Fake copy constructor

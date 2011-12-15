@@ -75,7 +75,7 @@ void CUser::init(const char* data_file)
     m_pEye = new CEye(CGame::getInstance()->m_pCamera);
     // For debug attach cameta to first object in world
     // @todo remove this debug
-    m_pEye->style(CEye::EYE_CS_ORBIT);
+    m_pEye->style(CEye::CS_ORBIT);
     std::vector<CObject*>* childrens = m_pWorld->getChildrens();
     m_pEye->target(childrens->front()->node());
 
@@ -129,9 +129,9 @@ void CUser::init(const char* data_file)
         log_warn("Not found nerv mappings for user %s", m_Name.c_str());
 }
 
-void CUser::update(const Ogre::FrameEvent& evt)
+void CUser::update(const Ogre::Real time_since_last_frame)
 {
-    m_pEye->update(evt);
+    m_pEye->update(time_since_last_frame);
 }
 
 void CUser::addNerv(const char* name, uint id)

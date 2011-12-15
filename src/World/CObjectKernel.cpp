@@ -16,10 +16,9 @@
 #include "CGame.h"
 
 CObjectKernel::CObjectKernel(CWorld& pWorld, const btScalar mass, const Ogre::Vector3& pos)
-    : CObject("Kernel", pWorld, pos, mass)
-    , CControlled("Kernel")
+    : CControlled("Kernel")
+    , CObject("Kernel", pWorld, pos, mass)
     , CTypeCamera()
-    , CTypeEnergy()
     , m_Front(Ogre::Vector3::UNIT_Z)
     , m_Gravity(btVector3(0.0f,0.0f,0.0f))
     , m_ActMove(Ogre::Vector3::ZERO)
@@ -64,7 +63,7 @@ CObjectKernel::~CObjectKernel()
 {
 }
 
-void CObjectKernel::update(const Ogre::FrameEvent& evt)
+void CObjectKernel::update(const Ogre::Real time_since_last_frame)
 {
     // Update gravity
     btVector3 new_gravity = m_pWorld->m_pGravityField->getObjectGravity(m_pBody->getBroadphaseProxy()->getUid());
@@ -86,10 +85,10 @@ void CObjectKernel::update(const Ogre::FrameEvent& evt)
     if( ! move.isZeroLength() )
     {
         m_pBody->activate();
-        m_Velocity += move.normalisedCopy() * m_SpeedMax * evt.timeSinceLastFrame * 10;
+        m_Velocity += move.normalisedCopy() * m_SpeedMax * time_since_last_frame * 10;
     }
     else
-        m_Velocity -= m_Velocity * evt.timeSinceLastFrame * 10;
+        m_Velocity -= m_Velocity * time_since_last_frame * 10;
 
     // Processing action state
     if( m_Velocity.squaredLength() > (m_SpeedMax * m_SpeedMax) )
@@ -129,10 +128,6 @@ void CObjectKernel::update(const Ogre::FrameEvent& evt)
     Ogre::AxisAlignedBox cube = m_pEntity->getBoundingBox();
     cube.transform(m_pNode->_getFullTransform());
     ODD.drawCuboid(cube.getAllCorners(), Ogre::ColourValue::Red, true);
-}
-
-void CObjectKernel::setObjectState(int iState)
-{
 }
 
 void CObjectKernel::registerActions()

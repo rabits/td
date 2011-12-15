@@ -46,11 +46,11 @@ public:
 
     /** @brief Update object data, it may be animation or just object translation or so on
      *
-     * @param evt const Ogre::FrameEvent&
+     * @param time_since_last_frame
      * @return void
      *
      */
-    void update(const Ogre::FrameEvent& evt);
+    void update(const Ogre::Real time_since_last_frame);
 
     /** @brief Initialize object
      *
@@ -58,14 +58,6 @@ public:
      *
      */
     void init();
-
-    /** @brief Setting up object state
-     *
-     * @param State int
-     * @return void
-     *
-     */
-    void setObjectState(int State);
 
     btDiscreteDynamicsWorld*              m_pPhyWorld;     ///< Physical World
     CGravityField*                        m_pGravityField; ///< World gravity field

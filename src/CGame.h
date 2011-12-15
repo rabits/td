@@ -17,7 +17,6 @@
 
 #include "Common.h"
 
-#include <OGRE/Ogre.h>
 #include <OIS/OIS.h>
 
 #include <OGRE/SdkTrays.h>
@@ -208,16 +207,14 @@ private:
      */
     void setLocale(const char* messages_path, const char* locale = "");
 
-    /** @brief Frame listener of info panel
-     *
-     * @return void
+    /** @brief Frame listener of window
      *
      */
     void createFrameListener();
 
     /** @brief Main event on update frame
      *
-     * @param evt const Ogre::FrameEvent&
+     * @param evt
      * @return bool
      *
      */
@@ -225,23 +222,23 @@ private:
 
     /** @brief Updating worlds actions on every frame event
      *
-     * @param evt const Ogre::FrameEvent&
+     * @param time_since_last_frame
      * @return void
      *
      */
-    void updateWorlds(const Ogre::FrameEvent& evt);
+    void updateWorlds(const Ogre::Real time_since_last_frame);
 
     /** @brief Updating users state on every frame event
      *
-     * @param evt const Ogre::FrameEvent&
+     * @param time_since_last_frame
      * @return void
      *
      */
-    void updateUsers(const Ogre::FrameEvent& evt);
+    void updateUsers(const Ogre::Real time_since_last_frame);
 
     /** @brief Event on start frame
      *
-     * @param evt const Ogre::FrameEvent&
+     * @param evt
      * @return bool
      *
      */
@@ -249,7 +246,7 @@ private:
 
     /** @brief Event on end frame
      *
-     * @param evt const Ogre::FrameEvent&
+     * @param evt
      * @return bool
      *
      */
@@ -258,7 +255,7 @@ private:
 
     /** @brief Adjust mouse clipping area
      *
-     * @param rw Ogre::RenderWindow*
+     * @param rw
      * @return void
      *
      */
@@ -266,7 +263,7 @@ private:
 
     /** @brief Unattach OIS
      *
-     * @param rw Ogre::RenderWindow*
+     * @param rw
      * @return void
      *
      * Unattach OIS before window shutdown (very important under Linux)

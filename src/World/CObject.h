@@ -93,32 +93,6 @@ public:
      */
     Ogre::SceneNode* node(){ return m_pNode; }
 
-    //--------------------------------------------------------------------------------------
-    // Pure virtual functions. Must be overriden in derived objects.
-    //--------------------------------------------------------------------------------------
-
-    /** @brief Update object data, it may be animation or just object translation or so on
-     *
-     * @return virtual void
-     *
-     */
-    virtual void update(const Ogre::FrameEvent& evt) = 0;
-
-    /** @brief Initialize object
-     *
-     * @return virtual void
-     *
-     */
-    virtual void init() = 0;
-
-    /** @brief Setting up object state
-     *
-     * @param State int
-     * @return virtual void
-     *
-     */
-    virtual void setObjectState(int State) = 0;
-
     /** @brief Groups for collision detection
      */
     enum CollisionObjectGroup {

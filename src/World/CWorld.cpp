@@ -63,25 +63,21 @@ CWorld::~CWorld()
     delete m_pBroadphase;
 }
 
-void CWorld::update(const Ogre::FrameEvent& evt)
+void CWorld::update(const Ogre::Real time_since_last_frame)
 {
     // Check ForceFields
     m_pGravityField->catchFieldContact();
 
     //Update Bullet world. Don't forget the debugDrawWorld() part!
-    m_pPhyWorld->stepSimulation(evt.timeSinceLastFrame, 10);
+    m_pPhyWorld->stepSimulation(time_since_last_frame, 10);
     m_pPhyWorld->debugDrawWorld();
 
     m_pDbgDraw->step();
 
     // Update childrens
     for( m_itChildrens = m_Childrens.begin() ; m_itChildrens < m_Childrens.end(); m_itChildrens++ )
-        (*m_itChildrens)->update(evt);
+        (*m_itChildrens)->update(time_since_last_frame);
 
     // Clear object in gravity fields map
     m_pGravityField->clearObjectsInGravityField();
-}
-
-void CWorld::setObjectState(int iState)
-{
 }

@@ -468,7 +468,7 @@ void CGame::createFrameListener()
     m_pRoot->addFrameListener(this);
 }
 
-bool CGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
+bool CGame::frameRenderingQueued(const Ogre::FrameEvent&)
 {
     if(m_pWindow->isClosed())
         return false;
@@ -482,24 +482,24 @@ bool CGame::frameRenderingQueued(const Ogre::FrameEvent& evt)
     return true;
 }
 
-void CGame::updateWorlds(const Ogre::FrameEvent& evt)
+void CGame::updateWorlds(const Ogre::Real time_since_last_frame)
 {
     for( m_oCurrentWorld=m_Worlds.begin() ; m_oCurrentWorld < m_Worlds.end(); m_oCurrentWorld++ )
-        (*m_oCurrentWorld)->update(evt);
+        (*m_oCurrentWorld)->update(time_since_last_frame);
 }
 
-void CGame::updateUsers(const Ogre::FrameEvent& evt)
+void CGame::updateUsers(const Ogre::Real time_since_last_frame)
 {
     for( m_oCurrentUser = m_Users.begin() ; m_oCurrentUser < m_Users.end(); m_oCurrentUser++ )
-        (*m_oCurrentUser)->update(evt);
+        (*m_oCurrentUser)->update(time_since_last_frame);
 }
 
 bool CGame::frameStarted(const Ogre::FrameEvent& evt)
 {
     // Updating worlds
-    updateWorlds(evt);
+    updateWorlds(evt.timeSinceLastFrame);
     // Updating users
-    updateUsers(evt);
+    updateUsers(evt.timeSinceLastFrame);
 
 #ifdef CONFIG_DEBUG
     DebugDrawer::getSingleton().build();
@@ -507,7 +507,7 @@ bool CGame::frameStarted(const Ogre::FrameEvent& evt)
     return true;
 }
 
-bool CGame::frameEnded(const Ogre::FrameEvent& evt)
+bool CGame::frameEnded(const Ogre::FrameEvent&)
 {
 #ifdef CONFIG_DEBUG
     DebugDrawer::getSingleton().clear();

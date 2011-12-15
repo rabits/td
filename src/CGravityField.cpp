@@ -50,7 +50,7 @@ struct CGravityField::SForceFieldCallback : public btCollisionWorld::ContactResu
      * @return virtual btScalar
      *
      */
-    virtual btScalar addSingleResult(btManifoldPoint& cp, const btCollisionObject* colObj0, int partId0, int index0, const btCollisionObject* colObj1, int partId1, int index1)
+    virtual btScalar addSingleResult(btManifoldPoint&, const btCollisionObject* colObj0, int, int, const btCollisionObject* colObj1, int, int)
     {
         if (colObj1->getInternalType() == btCollisionObject::CO_RIGID_BODY)
         {
@@ -125,10 +125,12 @@ btVector3* CGravityField::get(int elId)
 
 void CGravityField::enable(int elId)
 {
+    // @todo create this function
 }
 
 void CGravityField::disable(int elId)
 {
+    // @todo create this function
 }
 
 void CGravityField::zeroObjectGravity(int objectId, btVector3* gravity)

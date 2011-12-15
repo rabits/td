@@ -32,10 +32,9 @@
  * of user camera.
  */
 class CObjectKernel
-    : public CObject
-    , public CControlled
+    : public virtual CControlled
+    , public CObject
     , public CTypeCamera
-    , public CTypeEnergy
 {
 public:
     /** @brief Constructor
@@ -53,11 +52,11 @@ public:
 
     /** @brief Update object data, it may be animation or just object translation or so on
      *
-     * @param evt const Ogre::FrameEvent&
+     * @param time_since_last_frame
      * @return void
      *
      */
-    void update(const Ogre::FrameEvent& evt);
+    void update(const Ogre::Real time_since_last_frame);
 
     /** @brief Initialize object
      *
@@ -65,14 +64,6 @@ public:
      *
      */
     void init();
-
-    /** @brief Setting up object state
-     *
-     * @param State int
-     * @return void
-     *
-     */
-    void setObjectState(int State);
 
 
     /** @brief Doing need actions

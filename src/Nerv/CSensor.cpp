@@ -312,7 +312,7 @@ bool CSensor::mouseMoved( const OIS::MouseEvent& arg )
     return true;
 }
 
-bool CSensor::mousePressed( const OIS::MouseEvent& arg, OIS::MouseButtonID button )
+bool CSensor::mousePressed( const OIS::MouseEvent&, OIS::MouseButtonID button )
 {
     // Converting mouse button press to nerv Signal
     CSignal sig(genId(OIS::OISMouse, 1, button), 1.0);
@@ -324,7 +324,7 @@ bool CSensor::mousePressed( const OIS::MouseEvent& arg, OIS::MouseButtonID butto
     return true;
 }
 
-bool CSensor::mouseReleased( const OIS::MouseEvent& arg, OIS::MouseButtonID button )
+bool CSensor::mouseReleased( const OIS::MouseEvent&, OIS::MouseButtonID button )
 {
     // Converting mouse button release to nerv Signal
     CSignal sig(genId(OIS::OISMouse, 1, button), 0.0);
@@ -392,7 +392,7 @@ bool CSensor::povMoved( const OIS::JoyStickEvent& arg, int pov )
     return true;
 }
 
-bool CSensor::buttonPressed( const OIS::JoyStickEvent& arg, int button )
+bool CSensor::buttonPressed( const OIS::JoyStickEvent&, int button )
 {
     // @todo Realize many joysticks
     // Converting joystick button press to nerv Signal
