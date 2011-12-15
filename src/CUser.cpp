@@ -21,15 +21,14 @@
 #include "Nerv/CSynaps.h"
 #include "CEye.h"
 
-CUser::CUser(CWorld* world)
+CUser::CUser()
     : CData("User")
-    , m_Name()
-    , m_pWorld(world)
-    , m_pEye()
+    , CMaster("")
+    , m_pCamera(NULL)
     , m_Nervs()
     , m_NervMaps()
     , m_CurrentSynapsMap()
-    , m_pControlledObject()
+    , m_pKernel(NULL)
 {
     // Loading default skeleton config
     fs::path skeleton_path(CGame::getInstance()->getPrefix());
@@ -38,15 +37,14 @@ CUser::CUser(CWorld* world)
     init(skeleton_path.c_str());
 }
 
-CUser::CUser(CWorld* world, const char* data_file)
+CUser::CUser(const char* data_file)
     : CData("User")
-    , m_Name()
-    , m_pWorld(world)
-    , m_pEye()
+    , CMaster("")
+    , m_pCamera(NULL)
     , m_Nervs()
     , m_NervMaps()
     , m_CurrentSynapsMap()
-    , m_pControlledObject()
+    , m_pKernel(NULL)
 {
     init(data_file);
 }
@@ -59,7 +57,7 @@ CUser::~CUser()
             delete it->second;
     }
 
-    delete m_pEye;
+    CGame::getInstance()->m_pSceneMgr->destroyCamera(m_pCamera);
 }
 
 void CUser::init(const char* data_file)
@@ -69,15 +67,15 @@ void CUser::init(const char* data_file)
     pugi::xml_node user_config = m_data.child("config");
 
     // Set name
-    m_Name = user_config.child_value("name");
+    name(user_config.child_value("name"));
 
-    // Create Eye
-    m_pEye = new CEye(CGame::getInstance()->m_pCamera);
+    // Create user's personal camera
+    m_pCamera = CGame::getInstance()->m_pSceneMgr->createCamera(Common::Name::next(name()));
     // For debug attach cameta to first object in world
     // @todo remove this debug
-    m_pEye->style(CEye::CS_ORBIT);
-    std::vector<CObject*>* childrens = m_pWorld->getChildrens();
-    m_pEye->target(childrens->front()->node());
+    //m_pEye->style(CEye::CS_ORBIT);
+    //std::vector<CObject*>* childrens = m_pWorld->getChildrens();
+    //m_pEye->target(childrens->front()->node());
 
     // Controlling set
 
@@ -89,7 +87,7 @@ void CUser::init(const char* data_file)
             addNerv(nerv->attribute("name").value(), static_cast<uint>(nerv->attribute("id").as_int()));
     }
     else
-        log_warn("Not found nervs for user %s", m_Name.c_str());
+        log_warn("Not found nervs for user %s", name().c_str());
 
     // Parsing mappings
     pugi::xml_node mapping = user_config.child("control").child("mapping");
@@ -126,12 +124,11 @@ void CUser::init(const char* data_file)
         }
     }
     else
-        log_warn("Not found nerv mappings for user %s", m_Name.c_str());
+        log_warn("Not found nerv mappings for user %s", name().c_str());
 }
 
-void CUser::update(const Ogre::Real time_since_last_frame)
+void CUser::update(const Ogre::Real)
 {
-    m_pEye->update(time_since_last_frame);
 }
 
 void CUser::addNerv(const char* name, uint id)
@@ -149,7 +146,7 @@ void CUser::delNerv(uint id)
 
 bool CUser::nervSignal(CSignal& sig)
 {
-    log_debug("USER %s: Recieved signal %d: %f", m_Name.c_str(), sig.id(), sig.value());
+    log_debug("USER %s: Recieved signal %d: %f", name().c_str(), sig.id(), sig.value());
     std::pair<SynapsMap::iterator, SynapsMap::iterator> itp = m_NervMaps[m_CurrentSynapsMap.c_str()].equal_range(sig.id());
     for( SynapsMap::iterator it = itp.first; it != itp.second; ++it )
         it->second->route(sig);
@@ -160,6 +157,20 @@ bool CUser::nervSignal(CSignal& sig)
 void CUser::setSynapsMapping(uint nerv_id, CSynaps* synaps)
 {
     m_NervMaps[m_CurrentSynapsMap.c_str()].insert(std::pair<uint, CSynaps*>(nerv_id, synaps));
+}
+
+void CUser::kernel(CObjectKernel* kernel)
+{
+    if( kernel != m_pKernel )
+    {
+        if( m_pKernel != NULL )
+            m_pKernel->camera(NULL);
+
+        if( kernel != NULL )
+            kernel->camera(m_pCamera);
+
+        m_pKernel = kernel;
+    }
 }
 
 void CUser::save()

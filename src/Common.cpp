@@ -28,17 +28,17 @@
 
 using namespace Common;
 
-CLog::LogLevel CLog::s_displayLevel = CLog::LOG_NONE;
-unsigned long CLog::s_logTime = 0;
+CLog::LogLevel CLog::s_DisplayLevel = CLog::LOG_NONE;
+unsigned long CLog::s_LogTime = 0;
 Ogre::Timer CLog::s_Timer;
 
 bool CLog::log(CLog::LogLevel level, const char* format, ...)
 {
-    if( level < s_displayLevel )
+    if( level < s_DisplayLevel )
         return level < 5;
 
     // Message time
-    s_logTime = s_Timer.getMilliseconds();
+    s_LogTime = s_Timer.getMilliseconds();
 
     char msgbuffer[CONFIG_LOG_BUFFER];
     char msglevel[] = "       ";
@@ -85,7 +85,7 @@ bool CLog::log(CLog::LogLevel level, const char* format, ...)
             return true;
     }
 
-    std::fprintf(output, "[%06lu.%03lu] %6s: %s\n", s_logTime/1000, s_logTime%1000, msglevel, msgbuffer);
+    std::fprintf(output, "[%06lu.%03lu] %6s: %s\n", s_LogTime/1000, s_LogTime%1000, msglevel, msgbuffer);
 
     return level < CLog::LOG_ERROR;
 }
@@ -93,9 +93,9 @@ bool CLog::log(CLog::LogLevel level, const char* format, ...)
 CLog::LogLevel CLog::displayLogLevel(CLog::LogLevel level)
 {
     if( level != CLog::LOG_NONE )
-        s_displayLevel = level;
+        s_DisplayLevel = level;
 
-    return s_displayLevel;
+    return s_DisplayLevel;
 }
 
 std::string Common::getPrefixPath()
@@ -166,6 +166,18 @@ std::string Common::getPrefixPath()
     */
 #endif
     throw EXCEPTION("Can't find binary path");
+}
+
+Name::NameCountMap Name::s_NameCount;
+
+std::string Name::next( const std::string& prefix )
+{
+    if(s_NameCount.count(prefix) == 0)
+        s_NameCount[prefix] = 0;
+
+    std::stringstream ss;
+    ss << prefix << "_" << s_NameCount[prefix]++;
+    return ss.str();
 }
 
 Exception::Exception(const std::string& description, const std::string& source)

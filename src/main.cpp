@@ -22,8 +22,8 @@ Common::SignalTranslator<Common::FloatingPointException> g_objFloatingPointExcep
 
 /** @brief Main started function
  *
- * @param argc int
- * @param argv[] char*
+ * @param argc
+ * @param argv[]
  * @return int
  *
  */
@@ -31,8 +31,8 @@ int main(int, char**)
 #else
 /** @brief Main started function
  *
- * @param hInst HINSTANCE - Handle to current instance
- * @param strCmdLine LPSTR - Pointer to the command file
+ * @param hInst - Handle to current instance
+ * @param strCmdLine - Pointer to the command file
  * @return INT WINAPI
  *
  */

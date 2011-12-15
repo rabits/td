@@ -27,16 +27,16 @@ class CAction
 public:
     /** @brief Constructor for action
      *
-     * @param obj CControlled* - Controlled object of action
-     * @param act char - Identificator of action in controlled object
-     * @param name const char* - Readable name of action
+     * @param obj - Controlled object of action
+     * @param act - Identificator of action in controlled object
+     * @param name - Readable name of action
      */
     CAction(CControlled* obj, char act, const char* name);
     ~CAction();
 
     /** @brief Do attached action
      *
-     * @param sig CSignal&
+     * @param sig
      */
     void action(CSignal& sig) const;
 
@@ -48,7 +48,7 @@ public:
 
     /** @brief Comparing by name with char string
      *
-     * @param name const char*
+     * @param name
      * @return bool
      */
     bool operator==(const char* name){ return m_Name.compare(name) == 0; }
@@ -62,7 +62,7 @@ private:
     CAction(const CAction& obj);
     /** @brief Copy operator
      *
-     * @param obj const CAction&
+     * @param obj
      * @return CAction& operator
      */
     CAction& operator=(const CAction& obj);

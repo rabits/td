@@ -29,7 +29,7 @@ class CControlled
 public:
     /** @brief Constructor with name
      *
-     * @param name const char*
+     * @param name
      */
     CControlled(const char* name);
     virtual ~CControlled();
@@ -50,15 +50,15 @@ public:
 
     /** @brief Get action by name
      *
-     * @param name const char* - name of searched action
+     * @param name - name of searched action
      * @return CAction*
      */
     CAction* getAction(const char* name);
 
     /** @brief Doing hardcoded actions
      *
-     * @param act char - ident of action
-     * @param sig CSignal& - signal from Sensor
+     * @param act - ident of action
+     * @param sig - signal from Sensor
      *
      * C++ not provided refs to object member functions.
      * This is bad realization of my idea - maybe need to use delegates...
@@ -70,8 +70,8 @@ public:
 protected:
     /** @brief Add action
      *
-     * @param act char - Identifier in object
-     * @param name const char* - Readable name
+     * @param act - Identifier in object
+     * @param name - Readable name
      * @return void
      *
      */

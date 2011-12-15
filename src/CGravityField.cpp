@@ -40,13 +40,13 @@ struct CGravityField::SForceFieldCallback : public btCollisionWorld::ContactResu
 {
     /** @brief Bullet auto-execute this function if object contacts with field
      *
-     * @param cp btManifoldPoint&
-     * @param colObj0 const btCollisionObject*
-     * @param partId0 int
-     * @param index0 int
-     * @param colObj1 const btCollisionObject*
-     * @param partId1 int
-     * @param index1 int
+     * @param cp
+     * @param colObj0
+     * @param partId0
+     * @param index0
+     * @param colObj1
+     * @param partId1
+     * @param index1
      * @return virtual btScalar
      *
      */

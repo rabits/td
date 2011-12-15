@@ -28,9 +28,9 @@ class CGravityElement
 public:
     /** @brief Constructor of gravity element
      *
-     * @param box btVector3*
-     * @param position btVector3*
-     * @param force btVector3*
+     * @param box
+     * @param position
+     * @param force
      *
      */
     CGravityElement(btVector3* box, btVector3* position, btVector3* force);
@@ -57,14 +57,14 @@ private:
 
     /** @brief Fake copy constructor
      *
-     * @param obj const CGravityElement&
+     * @param obj
      *
      * @todo create copy constructor
      */
     CGravityElement(const CGravityElement& obj);
     /** @brief Fake eq operator
      *
-     * @param obj const CGravityElement&
+     * @param obj
      *
      * @toto create eq copy operator
      */
@@ -78,8 +78,8 @@ class CGravityField
 public:
     /** @brief Constructor of gravity field
      *
-     * @param world CWorld*
-     * @param gravityValue float
+     * @param world
+     * @param gravityValue
      *
      */
     CGravityField(CWorld* world, float gravityValue);
@@ -92,7 +92,7 @@ public:
     // For world
     /** @brief Set gravity force of field
      *
-     * @param newGravity float
+     * @param newGravity
      * @return void
      *
      */
@@ -123,7 +123,7 @@ public:
     // For elements
     /** @brief Add new gravity element to field
      *
-     * @param el CGravityElement*
+     * @param el - Gravity element object
      * @return int
      *
      */
@@ -131,7 +131,7 @@ public:
 
     /** @brief Remove gravity element from field by id
      *
-     * @param elId int
+     * @param elId - Id of element
      * @return void
      *
      */
@@ -139,7 +139,7 @@ public:
 
     /** @brief Get gravity element object by id
      *
-     * @param elId int
+     * @param elId - Id of element
      * @return btVector3*
      *
      */
@@ -147,7 +147,7 @@ public:
 
     /** @brief Enabling gravity element by id
      *
-     * @param elId int
+     * @param elId - Id of element
      * @return void
      *
      */
@@ -155,7 +155,7 @@ public:
 
     /** @brief Disable gravity element by id
      *
-     * @param elId int
+     * @param elId - Id of element
      * @return void
      *
      */
@@ -164,8 +164,8 @@ public:
     // For objects
     /** @brief Zeroing of object gravity
      *
-     * @param objectId int
-     * @param gravity btVector3*
+     * @param objectId
+     * @param gravity
      * @return void
      *
      */
@@ -173,8 +173,8 @@ public:
 
     /** @brief Set gravity to object
      *
-     * @param objectId int
-     * @param gravity btVector3*
+     * @param objectId
+     * @param gravity
      * @return void
      *
      */
@@ -182,7 +182,7 @@ public:
 
     /** @brief Get object gravity
      *
-     * @param objectId int
+     * @param objectId
      * @return btVector3
      *
      */
@@ -202,14 +202,14 @@ private:
 
     /** @brief Fake copy constructor
      *
-     * @param obj const CGravityField&
+     * @param obj
      *
      * @todo create copy constructor
      */
     CGravityField(const CGravityField& obj);
     /** @brief Fake eq operator
      *
-     * @param obj const CGravityField&
+     * @param obj
      *
      * @toto create eq copy operator
      */

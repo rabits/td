@@ -26,10 +26,10 @@ class CSynaps
 public:
     /** @brief Constructor
      *
-     * @param id uint
-     * @param act CAction*
-     * @param sens float
-     * @param limit float
+     * @param id
+     * @param act
+     * @param sens
+     * @param limit
      */
     CSynaps(uint id, CAction* act, float sens = 0.0f, float limit = 0.0f);
 
@@ -46,7 +46,7 @@ public:
 
     /** @brief Set coefficient of sensitivity
      *
-     * @param sens float - coefficient of value
+     * @param sens - coefficient of value
      */
     inline void sensitivity(float sens) { if( sens > 0.0f ) m_Sensitivity = sens; }
 
@@ -58,7 +58,7 @@ public:
 
     /** @brief Set minimal non-zero value
      *
-     * @param limit float - Minimal non-zero value
+     * @param limit - Minimal non-zero value
      */
     inline void limit(float limit) { if( limit > 0.0f ) m_Limit = limit; }
 
@@ -70,7 +70,7 @@ public:
 
     /** @brief Route and change Signal by Synaps settings
      *
-     * @param sig CSignal&
+     * @param sig
      */
     void route(CSignal& sig);
 
@@ -84,14 +84,14 @@ protected:
 private:
     /** @brief Fake copy constructor
      *
-     * @param obj const CSynaps&
+     * @param obj
      *
      * @todo create copy constructor
      */
     CSynaps(const CSynaps& obj);
     /** @brief Fake eq operator
      *
-     * @param obj const CSynaps&
+     * @param obj
      *
      * @toto create eq copy operator
      */

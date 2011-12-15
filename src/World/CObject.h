@@ -36,10 +36,10 @@ class CObject
 public:
     /** @brief Constructor of object
      *
-     * @param name const char*
-     * @param pWorld CWorld&
-     * @param pos const Ogre::Vector3&
-     * @param mass const btScalar
+     * @param name
+     * @param pWorld
+     * @param pos
+     * @param mass
      */
     CObject(const char* name, CWorld& pWorld, const Ogre::Vector3& pos = Ogre::Vector3(), const btScalar mass = 0.0);
 
@@ -50,7 +50,7 @@ public:
 
     /** @brief Setting object parent
      *
-     * @param pParent CObject*
+     * @param pParent
      * @return void
      *
      */
@@ -58,7 +58,7 @@ public:
 
     /** @brief Setting object World
      *
-     * @param pWorld CWorld*
+     * @param pWorld
      * @return void
      *
      */
@@ -74,7 +74,7 @@ public:
 
     /** @brief Add child object
      *
-     * @param pChild CObject*
+     * @param pChild
      * @return void
      *
      */
@@ -124,14 +124,14 @@ protected:
 private:
     /** @brief Fake copy constructor
      *
-     * @param obj const CObject&
+     * @param obj
      *
      * @todo create copy constructor
      */
     CObject(const CObject& obj);
     /** @brief Fake eq operator
      *
-     * @param obj const CObject&
+     * @param obj
      *
      * @toto create eq copy operator
      */

@@ -21,14 +21,14 @@ class CMaster
 public:
     /** @brief Master object
      *
-     * @param name const char*
+     * @param name
      */
     CMaster(const char* name)
         : m_Name(name), m_Description("") {  }
 
     /** @brief Master object
      *
-     * @param name const char*
+     * @param name
      */
     CMaster(const char* name, const char* description)
         : m_Name(name), m_Description(description) {  }
@@ -41,11 +41,23 @@ public:
      */
     const std::string& name() const { return m_Name; }
 
+    /** @brief Change name
+     *
+     * @param name
+     */
+    void name(const std::string& name) { m_Name = name; }
+
     /** @brief Get description
      *
      * @return const std::string&
      */
     const std::string& description() const { return m_Description; }
+
+    /** @brief Change description
+     *
+     * @param description
+     */
+    void description(const std::string& description) { m_Description = description; }
 
     /** @brief Update object data, it may be animation or just object translation or so on
      *

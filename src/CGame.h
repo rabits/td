@@ -103,14 +103,14 @@ public:
 
     /** @brief Return environment variable
      *
-     * @param name char const*
-     * @return char const*
+     * @param name
+     * @return const char*
      */
     inline const char* env(const char* name) { return m_data.child("env").child_value(name); }
 
     /** @brief Return path variable
      *
-     * @param name const char*
+     * @param name
      * @return const char*
      */
     inline const char* path(const char* name) { return m_data.child("path").child_value(name); }
@@ -146,14 +146,14 @@ private:
 
     /** @brief Fake copy constructor
      *
-     * @param obj const CGame&
+     * @param obj
      *
      * @todo create copy constructor
      */
     CGame(const CGame& obj);
     /** @brief Fake eq operator
      *
-     * @param obj const CGame&
+     * @param obj
      *
      * @toto create eq copy operator
      */
@@ -202,8 +202,8 @@ private:
 
     /** @brief This function changes program locale
      *
-     * @param messages_path const char* - Path to directory with locale messages was be searched
-     * @param locale const char* ("") - Need locale, "" - is default
+     * @param messages_path - Path to directory with locale messages was be searched
+     * @param locale ("") - Need locale
      */
     void setLocale(const char* messages_path, const char* locale = "");
 

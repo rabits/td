@@ -47,7 +47,7 @@ protected:
 private:
     /** @brief Fake copy constructor
      *
-     * @param obj const CEye&
+     * @param obj
      *
      * @todo create copy constructor
      *
@@ -55,7 +55,7 @@ private:
     CEye(const CEye& obj);
     /** @brief Fake eq operator
      *
-     * @param obj const CEye&
+     * @param obj
      *
      * @toto create eq copy operator
      */

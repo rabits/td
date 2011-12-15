@@ -414,14 +414,13 @@ bool CGame::initGame()
 
     // Create worlds
     log_info("Creating worlds");
-    CWorld* world = new CWorld();
-    m_Worlds.push_back(world);
+    m_Worlds.push_back(new CWorld());
 
     // Registering actions
     registerActions();
 
     // Create users after all game initialised - used game actions
-    m_pMainUser = new CUser(world);
+    m_pMainUser = new CUser();
     m_Users.push_back(m_pMainUser);
 
     return true;

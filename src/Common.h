@@ -85,8 +85,8 @@ namespace Common
 
         /** @brief Log message
          *
-         * @param level LogLevel - Level of message
-         * @param format const char* - format of message like printf
+         * @param level - Level of message
+         * @param format - format of message like printf
          * @param ... - Message or printf format + parameters
          * @return bool - false, if level > 4
          *
@@ -95,15 +95,17 @@ namespace Common
 
         /** @brief Get or set current displaying log level
          *
-         * @param level LogLevel - Set level of displaying message
+         * @param level - Set level of displaying message
          * @return LogLevel - Current displaying log level
          *
          */
         static LogLevel displayLogLevel(LogLevel level = LOG_NONE);
 
     protected:
-        static LogLevel      s_displayLevel; ///< Display messages with >= this level
-        static unsigned long s_logTime;      ///< Last log time
+        CLog();
+        ~CLog();
+        static LogLevel      s_DisplayLevel; ///< Display messages with >= this level
+        static unsigned long s_LogTime;      ///< Last log time
         static Ogre::Timer   s_Timer;        ///< Logging timer
     };
 
@@ -114,6 +116,31 @@ namespace Common
      * Thanx Ogre wiki <http://www.ogre3d.org/tikiwiki/GetExecutablePath&structure=Cookbook>
      */
     std::string getPrefixPath();
+
+    /** @brief A utility class to generate unique names
+     *
+     * Thanx Ogre forum <http://www.ogre3d.org/forums/viewtopic.php?f=2&t=58048>
+     */
+    class Name
+    {
+    public:
+        /** @brief Gets the next unique name for a given prefix.
+         */
+        static std::string next(const std::string& prefix = "AutoGen");
+
+        /** @brief Counts the number of names generated for a given prefix.
+         *
+         * @param prefix - The prefix of the generated names.
+         */
+        static ulong count(const std::string& prefix = "AutoGen") { return (s_NameCount.count(prefix) == 0) ? 0 : s_NameCount[prefix]; }
+
+    private:
+        Name() {  }
+        ~Name() {  }
+
+        typedef std::map<std::string, ulong> NameCountMap; ///< Name-Count map
+        static NameCountMap s_NameCount;                   ///< Name-Count map instance
+    };
 
     /** @brief Common simple Exception
      *
@@ -128,17 +155,17 @@ namespace Common
     public:
         /** @brief Default constructor
          *
-         * @param description const std::string&
-         * @param source const std::string&
+         * @param description
+         * @param source
          */
         Exception(const std::string& description, const std::string& source);
 
         /** @brief Extended constructor for CONFIG_DEBUG mode
          *
-         * @param description const std::string&
-         * @param source const std::string&
-         * @param file const char*
-         * @param line long
+         * @param description
+         * @param source
+         * @param file
+         * @param line
          */
         Exception(const std::string& description, const std::string& source, const char* file, long line);
 

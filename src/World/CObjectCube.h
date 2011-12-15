@@ -46,9 +46,9 @@ public:
 
     /** @brief Constructor
      *
-     * @param pWorld CWorld&
-     * @param size CObjectCube::Cube_Size (default CObjectCube::ACUBE)
-     * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
+     * @param pWorld
+     * @param size (default CObjectCube::ACUBE)
+     * @param pos (default Ogre::Vector3(0.0f))
      */
     CObjectCube(CWorld& pWorld, CObjectCube::Cube_Size size = CObjectCube::ACUBE, const Ogre::Vector3& pos = Ogre::Vector3(0.0f));
 
@@ -59,7 +59,7 @@ public:
 
     /** @brief Set cube size
      *
-     * @param cube_size CObjectCube::Cube_Size
+     * @param cube_size
      * @return void
      *
      */
@@ -82,7 +82,7 @@ public:
 
     /** @brief Setting up object state
      *
-     * @param State int
+     * @param State
      * @return void
      *
      */

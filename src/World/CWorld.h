@@ -35,7 +35,7 @@ class CWorld
 public:
     /** @brief Constructor
      *
-     * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
+     * @param pos (default Ogre::Vector3(0.0f))
      */
     CWorld(const Ogre::Vector3& pos = Ogre::Vector3(0.0f));
 
@@ -71,14 +71,14 @@ private:
 
     /** @brief Fake copy constructor
      *
-     * @param obj const CWorld&
+     * @param obj
      *
      * @todo create copy constructor
      */
     CWorld(const CWorld& obj);
     /** @brief Fake eq operator
      *
-     * @param obj const CWorld&
+     * @param obj
      *
      * @toto create eq copy operator
      */

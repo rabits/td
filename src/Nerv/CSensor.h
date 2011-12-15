@@ -32,7 +32,7 @@ class CSensor : public OIS::KeyListener, public OIS::MouseListener, public OIS::
 public:
     /** @brief Constructor of global input handler
      *
-     * @param windowHnd size_t
+     * @param windowHnd
      *
      */
     CSensor(size_t windowHnd);
@@ -74,7 +74,7 @@ public:
 
     /** @brief Get joystick by id
      *
-     * @param joyId int
+     * @param joyId
      * @return OIS::JoyStick*
      *
      */
@@ -82,21 +82,21 @@ public:
 
     /** @brief Add subscribe on event with special id
      *
-     * @param id uint
-     * @param pUser CUser*
+     * @param id
+     * @param pUser
      */
     bool addSubscribe(uint id, CUser* pUser);
 
     /** @brief Delete subscribe on event
      *
-     * @param id uint
+     * @param id
      */
     bool delSubscribe(uint id);
 
 protected:
     /** @brief Function on keyboard key pressed event
      *
-     * @param arg const OIS::KeyEvent&
+     * @param arg
      * @return bool
      *
      */
@@ -104,7 +104,7 @@ protected:
 
     /** @brief Function on keyboard key released event
      *
-     * @param arg const OIS::KeyEvent&
+     * @param arg
      * @return bool
      *
      */
@@ -113,7 +113,7 @@ protected:
 
     /** @brief Function on mouse moved event
      *
-     * @param arg const OIS::MouseEvent&
+     * @param arg
      * @return bool
      *
      */
@@ -121,8 +121,8 @@ protected:
 
     /** @brief Function on mouse button pressed
      *
-     * @param arg const OIS::MouseEvent&
-     * @param id OIS::MouseButtonID
+     * @param arg
+     * @param id
      * @return bool
      *
      */
@@ -130,8 +130,8 @@ protected:
 
     /** @brief Function on mouse button released
      *
-     * @param arg const OIS::MouseEvent&
-     * @param id OIS::MouseButtonID
+     * @param arg
+     * @param id
      * @return bool
      *
      */
@@ -140,8 +140,8 @@ protected:
 
     /** @brief Function on joystick cross pov pressed
      *
-     * @param arg const OIS::JoyStickEvent&
-     * @param pov int
+     * @param arg
+     * @param pov
      * @return bool
      *
      */
@@ -149,8 +149,8 @@ protected:
 
     /** @brief Function on joystick button pressed
      *
-     * @param arg const OIS::JoyStickEvent&
-     * @param button int
+     * @param arg
+     * @param button
      * @return bool
      *
      */
@@ -158,8 +158,8 @@ protected:
 
     /** @brief Function on joystick button released
      *
-     * @param arg const OIS::JoyStickEvent&
-     * @param button int
+     * @param arg
+     * @param button
      * @return bool
      *
      */
@@ -167,8 +167,8 @@ protected:
 
     /** @brief Function on joystick stick moved
      *
-     * @param arg const OIS::JoyStickEvent&
-     * @param axis int
+     * @param arg
+     * @param axis
      * @return bool
      *
      */
@@ -188,14 +188,14 @@ protected:
 private:
     /** @brief Fake copy constructor
      *
-     * @param obj const CSensor&
+     * @param obj
      *
      * @todo create copy constructor
      */
     CSensor(const CSensor& obj);
     /** @brief Fake eq operator
      *
-     * @param obj const CSensor&
+     * @param obj
      *
      * @toto create eq copy operator
      */

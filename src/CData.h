@@ -27,7 +27,7 @@ class CData
 public:
     /** @brief Constructor with container name
      *
-     * @param name char* - Name of data container
+     * @param name - Name of data container
      *
      */
     CData(const char* name);
@@ -35,7 +35,7 @@ public:
 
     /** @brief Load data file for object
      *
-     * @param datafile const char* - Path to xml data file
+     * @param datafile - Path to xml data file
      * @return bool
      *
      * Merge with previous loaded data.
@@ -44,7 +44,7 @@ public:
 
     /** @brief Convert object data into string format
      *
-     * @param stream std::ostream& - Output stream (like std::cout or any file stream)
+     * @param stream - Output stream (like std::cout or any file stream)
      * @return void
      *
      */
@@ -52,15 +52,15 @@ public:
 
     /** @brief Verifying of xml document to consistent (good root td_name, root version, container name, ...)
      *
-     * @param document pugi::xml_document& - Document to verify
+     * @param document - Document to verify
      * @return bool - consistent data
      */
     bool verifyData(pugi::xml_document& document) const;
 
     /** @brief Merging current data and new data. Current data root will be copied to m_dataBefore
      *
-     * @param new_node pugi::xml_node& - Merge with it container node
-     * @param cur_node pugi::xml_node* - For recurse
+     * @param new_node - Merge with it container node
+     * @param cur_node - For recurse
      * @return bool
      */
     bool mergeData(pugi::xml_node& new_node, pugi::xml_node* cur_node = NULL);

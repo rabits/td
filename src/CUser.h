@@ -20,12 +20,11 @@
 #include <OGRE/Ogre.h>
 
 #include "CData.h"
-#include "World/CWorld.h"
+#include "CMaster.h"
 
-class CControlled;
-class CEye;
 class CSynaps;
 class CSignal;
+class CObjectKernel;
 
 typedef std::multimap<uint, CSynaps*> SynapsMap; ///< SignalId->Action multimap
 typedef std::map<std::string, SynapsMap> NervMaps; ///< Name->SynapsMap map
@@ -37,20 +36,19 @@ typedef std::map<uint, std::string> Nervs; ///< Nervs of current user (for unsub
  */
 class CUser
     : CData
+    , public CMaster
 {
 public:
     /** @brief Constructor of user
      *
-     * @param world CWorld*
      */
-    CUser(CWorld* world);
+    CUser();
 
     /** @brief Constructor with data file path
      *
-     * @param world CWorld*
-     * @param data_file const char* - path to User xml data
+     * @param data_file - path to User xml data
      */
-    CUser(CWorld* world, const char* data_file);
+    CUser(const char* data_file);
 
     /** @brief Destructor of user
      */
@@ -59,24 +57,9 @@ public:
 
     /** @brief Initialise member vars from xml data
      *
-     * @param data_file const char*
+     * @param data_file - path to user datafile
      */
     void init(const char* data_file);
-
-    /** @brief Set user world
-     *
-     * @param world CWorld*
-     * @return void
-     *
-     */
-    void world(CWorld* world) { m_pWorld = world; }
-
-    /** @brief Get user world
-     *
-     * @return CWorld*
-     *
-     */
-    CWorld* world(){ return m_pWorld; }
 
     /** @brief Updating user state
      *
@@ -87,14 +70,14 @@ public:
 
     /** @brief Create new nerv
      *
-     * @param name const char* - name of nerv
-     * @param id int - id of need event
+     * @param name - name of nerv
+     * @param id - id of need event
      */
     void addNerv(const char* name, uint id);
 
     /** @brief Remove nerv with specified id
      *
-     * @param id int - id of nerv
+     * @param id - id of nerv
      */
     void delNerv(uint id);
 
@@ -102,88 +85,78 @@ public:
      *
      * @return NervMaps::iterator*
      */
-    SynapsMap* currentSynapsMap(){ return &m_NervMaps[m_CurrentSynapsMap.c_str()]; }
+    SynapsMap* currentSynapsMap() { return &m_NervMaps[m_CurrentSynapsMap.c_str()]; }
 
     /** @brief Select or create new nerv map with specified name
      *
-     * @param name const char* - name of map
+     * @param name - name of map
      * @return NervMaps::iterator*
      */
-    SynapsMap* currentSynapsMap(const char* name){ m_CurrentSynapsMap = name; return &m_NervMaps[name]; }
+    SynapsMap* currentSynapsMap(const char* name) { m_CurrentSynapsMap = name; return &m_NervMaps[name]; }
 
     /** @brief Map nerv to action in selected nerv map
      *
-     * @param nerv_id int - nerv identificator
-     * @param synaps CSynaps* - synaps with need action
+     * @param nerv_id - nerv identificator
+     * @param synaps - synaps with need action
      */
     void setSynapsMapping(uint nerv_id, CSynaps* synaps);
 
     /** @brief Recieve, modify and route to controlled object signal from Sensor
      *
-     * @param sig CSignal& - input event from human
+     * @param sig - input event from human
      * @return bool
      */
     bool nervSignal(CSignal& sig);
 
 
-    /** @brief Set object, which will be controlled
+    /** @brief Set main kernel object
      *
-     * @param obj CControlled*
-     * @return void
-     *
-     */
-    void controlledObject(CControlled* obj){ m_pControlledObject = obj; }
-
-    /** @brief Get object, which will be controlled
-     *
-     * @return CControlled*
+     * @param kernel
      *
      */
-    CControlled* controlledObject(){ return m_pControlledObject; }
+    void kernel(CObjectKernel* kernel);
 
-
-    /** @brief Change name of user
+    /** @brief Get main kernel object
      *
-     * @param name std::string& - new name
-     */
-    void name(std::string& name){ m_Name = name; }
-
-    /** @brief Gets name of user
+     * @return CObjectKernel*
      *
-     * @return std::string& - curent name of user
      */
-    std::string& name(){ return m_Name; }
+    CObjectKernel* kernel() { return m_pKernel; }
+
 
     /** @brief Saving user configs and state
      */
     void save();
 
 protected:
-    std::string                        m_Name; ///< User name
-    CWorld*                            m_pWorld; ///< User's world
-    CEye*                              m_pEye;   ///< User's eye
+    Ogre::Camera*                      m_pCamera; ///< User's camera
 
     Nervs                              m_Nervs; ///< Subscribed events
     NervMaps                           m_NervMaps; ///< Lists with mappings of nervs to actions
     std::string                        m_CurrentSynapsMap; ///< Current selected map
 
-    CControlled*                       m_pControlledObject; ///< Object under control
+    CObjectKernel*                     m_pKernel; ///< User's main object in world
 
 private:
     /** @brief Fake copy constructor
      *
-     * @param obj const CUser&
+     * @param obj
      *
      * @todo create copy constructor
      */
     CUser(const CUser& obj);
     /** @brief Fake eq operator
      *
-     * @param obj const CUser&
+     * @param obj
      *
      * @toto create eq copy operator
      */
     CUser& operator=(const CUser& obj);
+
+    /** @brief Fake initialize object
+     *
+     */
+    void init() {  }
 };
 
 #endif // CUSER_H

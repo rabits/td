@@ -39,9 +39,9 @@ class CObjectKernel
 public:
     /** @brief Constructor
      *
-     * @param pWorld CWorld&
-     * @param mass const btScalar
-     * @param pos const Ogre::Vector3& (default Ogre::Vector3(0.0f))
+     * @param pWorld
+     * @param mass
+     * @param pos (default Ogre::Vector3(0.0f))
      */
     CObjectKernel(CWorld& pWorld, const btScalar mass, const Ogre::Vector3& pos = Ogre::Vector3(0.0f));
 
@@ -80,7 +80,7 @@ public:
 
     /** @brief Set look direction of object
      *
-     * @param direct Ogre::Vector3&
+     * @param direct
      */
     void front(Ogre::Vector3& direct);
 
